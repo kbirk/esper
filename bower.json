@@ -1,0 +1,29 @@
+{
+  "name": "esper",
+  "version": "0.1.0",
+  "homepage": "https://github.com/kbirk/esper",
+  "authors": [
+    "kbirk <birk.kevin@gmail.com>"
+  ],
+  "description": "A low-level WebGL rendering framework",
+  "main": "./build/esper.min.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "webgl",
+    "graphics",
+    "3d",
+    "rendering"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src",
+    "gulpfile.js",
+    "package.json",
+    "test"
+  ]
+}
