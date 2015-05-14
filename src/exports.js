@@ -30,7 +30,6 @@
         Cylinder: require('./util/shapes/Cylinder'),
         Sphere: require('./util/shapes/Sphere'),
         ShapeUtil: require('./util/shapes/ShapeUtil'),
-        Triangle: require('./util/shapes/Triangle'),
         // util
         Util: require('./util/Util'),
         OBJMTLLoader: require('./util/obj/OBJMTLLoader'),
