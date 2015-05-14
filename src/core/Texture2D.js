@@ -18,53 +18,30 @@
         return image;
     }
 
-    function bufferImage( gl, spec, image, texture ) {
-        gl.bindTexture( gl.TEXTURE_2D, texture );
-        gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, spec.wrap );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, spec.wrap );
-        gl.generateMipmap( gl.TEXTURE_2D );
-        gl.bindTexture( gl.TEXTURE_2D, null );
-    }
-
-    function bufferData( gl, spec, texture ) {
-        gl.bindTexture( gl.TEXTURE_2D, texture );
-        gl.texImage2D( gl.TEXTURE_2D, 0, spec.internalFormat, spec.width, spec.height, 0, spec.format, spec.type, spec.data );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, spec.filter );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, spec.filter );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, spec.wrap );
-        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, spec.wrap );
-        //gl.generateMipmap( gl.TEXTURE_2D );
-        gl.bindTexture( gl.TEXTURE_2D, null );
-    }
-
     function Texture2D( spec, callback ) {
-        var that = this,
-            gl = this.gl = WebGLContext.get();
+        var that = this;
+        // default
+        spec = spec || {};
+        this.gl = WebGLContext.get();
         // create texture object
-        this.id = gl.createTexture();
-        this.spec = spec || {};
-        this.spec.wrap = gl[ spec.wrap ] || gl.REPEAT;
+        this.id = this.gl.createTexture();
+        this.wrap = spec.wrap || "REPEAT";
+        this.filter = spec.filter || "LINEAR";
         // buffer the texture based on arguments
         if ( spec.image ) {
             // use existing Image object
-            this.image = spec.image;
-            this.image = ensurePowerOfTwo( this.image );
-            bufferImage( gl, this.spec, this.image, this.id );
+            this.bufferData( spec.image );
         } else if ( spec.url ) {
             // request image source from url
-            this.image = new Image();
-            this.image.onload = function() {
-                that.image = ensurePowerOfTwo( that.image );
-                bufferImage( gl, that.spec, that.image, that.id );
+            var image = new Image();
+            image.onload = function() {
+                that.bufferData( image );
                 callback( that );
             };
-            this.image.src = spec.url;
+            image.src = spec.url;
         } else {
             // buffer data
-            if ( this.spec.format === "DEPTH_COMPONENT" ) {
+            if ( spec.format === "DEPTH_COMPONENT" ) {
                 var depthTextureExt = WebGLContext.checkExtension( "WEBGL_depth_texture" );
                 if( !depthTextureExt ) {
                     console.log( "Cannot create Texture2D of format " +
@@ -73,14 +50,11 @@
                     return;
                 }
             }
-            this.spec.format = gl[ spec.format ] || gl.RGBA;
-            this.spec.internalFormat = this.spec.format; // webgl requires that format === internalFormat
-            this.spec.type = gl[ spec.type ] || gl.UNSIGNED_BYTE;
-            this.spec.width = spec.width || 256;
-            this.spec.height = spec.height || 256;
-            this.spec.data = spec.data || null;
-            this.spec.filter = gl[ spec.filter ] || gl.LINEAR;
-            bufferData( gl, this.spec, this.id );
+            this.format = spec.format || "RGBA";
+            this.internalFormat = this.format; // webgl requires format === internalFormat
+            this.type = spec.type || "UNSIGNED_BYTE";
+            this.mipMap = spec.mipMap || false;
+            this.bufferData( spec.data || null, spec.width, spec.height );
         }
     }
 
@@ -108,17 +82,75 @@
         return this;
     };
 
+    Texture2D.prototype.bufferData = function( data, width, height ) {
+        var gl = this.gl;
+        gl.bindTexture( gl.TEXTURE_2D, this.id );
+        if ( data instanceof HTMLImageElement ) {
+            data = ensurePowerOfTwo( data );
+            this.image = data;
+            this.width = data.width;
+            this.height = data.height;
+            this.mipMap = true;
+            // images are inverted along the y, load them upside down
+            gl.pixelStorei(
+                gl.UNPACK_FLIP_Y_WEBGL, true );
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0, // level
+                gl.RGBA,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                data );
+        } else {
+            this.data = data;
+            this.width = width || this.width;
+            this.height = height || this.height;
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0, // level
+                gl[ this.internalFormat ],
+                this.width,
+                this.height,
+                0, // border, must be 0
+                gl[ this.format ],
+                gl[ this.type ],
+                this.data );
+        }
+        // filter
+        gl.texParameteri(
+            gl.TEXTURE_2D,
+            gl.TEXTURE_MAG_FILTER,
+            gl[ this.filter ] );
+        gl.texParameteri(
+            gl.TEXTURE_2D,
+            gl.TEXTURE_MIN_FILTER,
+             gl[ this.filter + ( ( this.mipMap ) ? "_MIPMAP_LINEAR" : "" ) ] );
+        // wrap
+        gl.texParameteri(
+            gl.TEXTURE_2D,
+            gl.TEXTURE_WRAP_S,
+            gl[ this.wrap ] );
+        gl.texParameteri(
+            gl.TEXTURE_2D,
+            gl.TEXTURE_WRAP_T,
+            gl[ this.wrap ] );
+        if ( this.mipMap ) {
+            gl.generateMipmap( gl.TEXTURE_2D );
+        }
+        gl.bindTexture( gl.TEXTURE_2D, null );
+        return this;
+    };
+
     Texture2D.prototype.resize = function( width, height ) {
         if ( this.image ) {
             console.log( "Cannot resize image based Texture2D" );
             return;
         }
         if ( !width || !height ) {
+            console.log("Width or height arguments missing, command ignored.");
             return;
         }
-        this.spec.width = width;
-        this.spec.height = height;
-        bufferData( this.gl, this.spec, this.id );
+        this.bufferData( this.data, width, height );
         return this;
     };
 
