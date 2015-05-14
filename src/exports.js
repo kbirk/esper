@@ -27,6 +27,8 @@
         Octree: require('./render/Octree'),
         // shapes
         Cube: require('./util/shapes/Cube'),
+        Cylinder: require('./util/shapes/Cylinder'),
+        Sphere: require('./util/shapes/Sphere'),
         ShapeUtil: require('./util/shapes/ShapeUtil'),
         Triangle: require('./util/shapes/Triangle'),
         // util

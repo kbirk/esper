@@ -30,7 +30,31 @@
 
     module.exports = {
 
-        computeTangents: function( positions, uvs, normals, indices ) {
+        computeNormals: function( positions, indices ) {
+            var normals = new Array( positions.length ),
+                normal,
+                a, b, c,
+                p0, p1, p2,
+                u, v,
+                i;
+            for ( i=0; i<indices.length; i+=3 ) {
+                a = indices[i];
+                b = indices[i+1];
+                c = indices[i+2];
+                p0 = new Vec3( positions[ a ] );
+                p1 = new Vec3( positions[ b ] );
+                p2 = new Vec3( positions[ c ] );
+                u = p1.sub( p0 );
+                v = p2.sub( p0 );
+                normal = u.cross( v ).normalize();
+                normals[a] = normal;
+                normals[b] = normal;
+                normals[c] = normal;
+            }
+            return normals;
+        },
+
+        computeTangents: function( positions, normals, uvs, indices ) {
 
             var tangents = new Array( positions.length ),
                 bitangents = new Array( positions.length ),

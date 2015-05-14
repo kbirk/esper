@@ -140,31 +140,52 @@
             nextObject = null;
         }
 
+        function getPosition( value ) {
+			var index = parseInt( value );
+			if ( index >= 0  ) {
+                return positions[ index - 1 ];
+            }
+            return positions[ index + positions.length ];
+		}
+
+        function getUV( value ) {
+			var index = parseInt( value );
+			if ( index >= 0  ) {
+                return uvs[ index - 1 ];
+            }
+            return uvs[ index + uvs.length ];
+		}
+
+        function getNormal( value ) {
+			var index = parseInt( value );
+			if ( index >= 0  ) {
+                return normals[ index - 1 ];
+            }
+            return normals[ index + normals.length ];
+		}
+
         function buildTriangleFromIndices( posIndices, uvIndices, normIndices ) {
             var triangle = {},
                 a, b, c, u, v,
                 normal, mag;
             // add positions to the triangle
             triangle.positions = [
-                positions[ parseInt( posIndices[0] ) - 1 ],
-                positions[ parseInt( posIndices[1] ) - 1 ],
-                positions[ parseInt( posIndices[2] ) - 1 ]
-            ];
+                getPosition( posIndices[0] ),
+                getPosition( posIndices[1] ),
+                getPosition( posIndices[2] ) ];
             // if uvs are provided, add them to the triangle
-            if ( uvIndices !== undefined ) {
+            if ( uvIndices ) {
                 triangle.uvs = [
-                    uvs[ parseInt( uvIndices[0] ) - 1 ],
-                    uvs[ parseInt( uvIndices[1] ) - 1 ],
-                    uvs[ parseInt( uvIndices[2] ) - 1 ],
-                ];
+                    getUV( uvIndices[0] ),
+                    getUV( uvIndices[1] ),
+                    getUV( uvIndices[2] ) ];
             }
             // if normals are provided, add them to the triangle
-            if ( normIndices !== undefined ) {
+            if ( normIndices ) {
                 triangle.normals = [
-                    normals[ parseInt( normIndices[0] ) - 1 ],
-                    normals[ parseInt( normIndices[1] ) - 1 ],
-                    normals[ parseInt( normIndices[2] ) - 1 ]
-                ];
+                    getNormal( normIndices[0] ),
+                    getNormal( normIndices[1] ),
+                    getNormal( normIndices[2] ) ];
             } else {
                 // if normals are not provided, generate them
                 a = triangle.positions[0];
@@ -198,26 +219,16 @@
         }
 
         function parseFaceInput( posIndices, uvIndices, normIndices ) {
-            var posTri0, posTri1,
-                normTri0, normTri1,
-                uvTri0, uvTri1;
-            if ( posIndices[ 3 ] === undefined ) {
-                // face is a triangle
-                buildTriangleFromIndices( posIndices, uvIndices, normIndices );
-            } else {
-                // face is a quad, create two triangles
-                posTri0 = [ posIndices[ 0 ], posIndices[ 1 ], posIndices[ 2 ] ];
-                posTri1 = [ posIndices[ 0 ], posIndices[ 2 ], posIndices[ 3 ] ];
+            buildTriangleFromIndices( posIndices, uvIndices, normIndices );
+            if ( posIndices[ 3 ] !== undefined ) {
+                posIndices = [ posIndices[ 0 ], posIndices[ 2 ], posIndices[ 3 ] ];
                 if ( uvIndices ) {
-                    uvTri0 = [ uvIndices[ 0 ], uvIndices[ 1 ], uvIndices[ 2 ] ];
-                    uvTri1 = [ uvIndices[ 0 ], uvIndices[ 2 ], uvIndices[ 3 ] ];
+                    uvIndices = [ uvIndices[ 0 ], uvIndices[ 2 ], uvIndices[ 3 ] ];
                 }
                 if ( normIndices ) {
-                    normTri0 = [ normIndices[ 0 ], normIndices[ 1 ], normIndices[ 2 ] ];
-                    normTri1 = [ normIndices[ 0 ], normIndices[ 2 ], normIndices[ 3 ] ];
+                    normIndices = [ normIndices[ 0 ], normIndices[ 2 ], normIndices[ 3 ] ];
                 }
-                buildTriangleFromIndices( posTri0, uvTri0, normTri0 );
-                buildTriangleFromIndices( posTri1, uvTri1, normTri1 );
+                buildTriangleFromIndices( posIndices, uvIndices, normIndices );
             }
         }
 
@@ -228,13 +239,13 @@
             // vt float float
             UV_REGEX = /vt( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/,
             // f vertex vertex vertex ...
-            FACE_V_REGEX = /f( +\d+)( +\d+)( +\d+)( +\d+)?/,
-            // f vertex/uv vertex/uv vertex/uv ...
-            FACE_V_UV_REGEX = /f( +(\d+)\/(\d+))( +(\d+)\/(\d+))( +(\d+)\/(\d+))( +(\d+)\/(\d+))?/,
-            // f vertex/uv/normal vertex/uv/normal vertex/uv/normal ...
-            FACE_V_UV_N_REGEX = /f( +(\d+)\/(\d+)\/(\d+))( +(\d+)\/(\d+)\/(\d+))( +(\d+)\/(\d+)\/(\d+))( +(\d+)\/(\d+)\/(\d+))?/,
-            // f vertex//normal vertex//normal vertex//normal ...
-            FACE_V_N_REGEX = /f( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))?/,
+            FACE_V_REGEX = /f( +-?\d+)( +-?\d+)( +-?\d+)( +-?\d+)?/,
+    		// f vertex/uv vertex/uv vertex/uv ...
+    		FACE_V_UV_REGEX = /f( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))?/,
+    		// f vertex/uv/normal vertex/uv/normal vertex/uv/normal ...
+    		FACE_V_UV_N_REGEX = /f( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))?/,
+    		// f vertex//normal vertex//normal vertex//normal ...
+    		FACE_V_N_REGEX = /f( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))?/,
             model = {
                 meshes: []
             },
@@ -275,7 +286,7 @@
                 // ["vt 0.1 0.2", "0.1", "0.2"]
                 uvs.push([
                     parseFloat( result[ 1 ] ),
-                    1-parseFloat( result[ 2 ] ) // invert this uv component...
+                    parseFloat( result[ 2 ] )
                 ]);
             } else if ( ( result = FACE_V_REGEX.exec( line ) ) !== null ) {
                 // face of positions
@@ -286,7 +297,9 @@
                         result[ 2 ],
                         result[ 3 ],
                         result[ 4 ]
-                    ]);
+                    ],
+                    null, // uvs
+                    null ); // normals
             } else if ( ( result = FACE_V_UV_REGEX.exec( line ) ) !== null ) {
                 // face of positions and uvs
                 // ["f 1/1 2/2 3/3", " 1/1", "1", "1", " 2/2", "2", "2", " 3/3", "3", "3", undefined, undefined, undefined]
@@ -302,7 +315,8 @@
                         result[ 6 ],
                         result[ 9 ],
                         result[ 12 ]
-                    ]);
+                    ],
+                    null ); // normals
             } else if ( ( result = FACE_V_UV_N_REGEX.exec( line ) ) !== null ) {
                 // face of positions, uvs, and normals
                 // ["f 1/1/1 2/2/2 3/3/3", " 1/1/1", "1", "1", "1", " 2/2/2", "2", "2", "2", " 3/3/3", "3", "3", "3", undefined, undefined, undefined, undefined]
@@ -335,7 +349,7 @@
                         result[ 8 ],
                         result[ 11 ]
                     ],
-                    [], // uvs
+                    null, // uvs
                     [ // normals
                         result[ 3 ],
                         result[ 6 ],
@@ -355,8 +369,6 @@
                 // mtl file
                 model.mtllib = model.mtllib || [];
                 model.mtllib.push( line.substring( 7 ).trim() );
-            } else {
-                console.log( "OBJLoader: Unhandled line " + line );
             }
         }
         if ( model.meshes.length === 0 ) {
