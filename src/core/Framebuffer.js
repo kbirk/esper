@@ -55,8 +55,8 @@
      * Attaches the provided texture to the provided attachment location.
      * @memberof Framebuffer
      *
-     * @params {Texture2D} texture - The texture to attach.
-     * @params {String} attachment - The attachment location.
+     * @param {Texture2D} texture - The texture to attach.
+     * @param {String} attachment - The attachment location.
      *
      * @returns {Framebuffer} Returns the framebuffer object for chaining.
      */
@@ -68,7 +68,7 @@
             gl.FRAMEBUFFER,
             gl[ attachment ],
             gl.TEXTURE_2D,
-            texture.id, 
+            texture.id,
             0 );
         gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         return this;

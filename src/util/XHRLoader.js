@@ -8,7 +8,7 @@
          * Sends an XMLHttpRequest GET request to the supplied url.
          *
          * @param {String} url - The URL for the resource.
-         * @params {Object} options - Contains the following options:
+         * @param {Object} options - Contains the following options:
          * <pre>
          *     {
          *         {String} success - The success callback function.

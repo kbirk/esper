@@ -126,7 +126,7 @@
     /**
      * Filters out duplicate declarations present between shaders.
      *
-     * @params {Array} declarations - The array of declarations.
+     * @param {Array} declarations - The array of declarations.
      *
      * @returns {Array} The filtered array of declarations.
      */
