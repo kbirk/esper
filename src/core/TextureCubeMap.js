@@ -31,7 +31,7 @@
         return image;
     }
 
-    function loadImage( cubeMap, url, face ) {
+    function loadAndBufferImage( cubeMap, url, face ) {
         return function( done ) {
             var image = new Image();
             image.onload = function() {
@@ -58,19 +58,24 @@
             for ( face in spec.images ) {
                 if ( spec.images.hasOwnProperty( face ) ) {
                     // buffer face texture
-                    that.bufferFaceData( face, spec.images[ face ] );
+                    this.bufferFaceData( face, spec.images[ face ] );
                 }
             }
+            this.setParameters( this );
         } else if ( spec.urls ) {
             // multiple urls
             jobs = {};
             for ( face in spec.urls ) {
                 if ( spec.urls.hasOwnProperty( face ) ) {
                     // add job to map
-                    jobs[ face ] = loadImage( this, spec.urls[ face ], face );
+                    jobs[ face ] = loadAndBufferImage(
+                        this,
+                        spec.urls[ face ],
+                        face );
                 }
             }
             Util.async( jobs, function() {
+                that.setParameters( that );
                 callback( that );
             });
         } else {
@@ -81,8 +86,9 @@
             this.mipMap = spec.mipMap || false;
             FACES.forEach( function( face ) {
                 var data = ( spec.data ? spec.data[face] : spec.data ) || null;
-                that.bufferFaceData( face, data );
+                that.bufferFaceData( face, data, spec.width, spec.height );
             });
+            this.setParameters( this );
         }
     }
 
@@ -108,7 +114,7 @@
         _boundTexture = null;
     };
 
-    TextureCubeMap.prototype.bufferFaceData = function( face, data ) {
+    TextureCubeMap.prototype.bufferFaceData = function( face, data, width, height ) {
         var gl = this.gl,
             faceTarget = gl[ FACE_TARGETS[ face ] ];
         if ( !faceTarget ) {
@@ -123,10 +129,7 @@
             this.filter = "LINEAR";
             this.mipMap = true;
             // images are inverted along the y, load them upside down
-            /*
-            gl.pixelStorei(
-                gl.UNPACK_FLIP_Y_WEBGL, true );
-            */
+            // gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
             gl.texImage2D(
                 faceTarget,
                 0, // level
@@ -137,6 +140,8 @@
         } else {
             this.data = this.data || {};
             this.data[ face ] = data;
+            this.width = width || this.width;
+            this.height = height || this.height;
             gl.texImage2D(
                 faceTarget,
                 0, // level
@@ -148,27 +153,10 @@
                 gl[ this.type ],
                 data );
         }
-        // filter
-        gl.texParameteri(
-            gl.TEXTURE_CUBE_MAP,
-            gl.TEXTURE_MAG_FILTER,
-            gl[ this.filter ] );
-        gl.texParameteri(
-            gl.TEXTURE_CUBE_MAP,
-            gl.TEXTURE_MIN_FILTER,
-             gl[ this.filter + ( ( this.mipMap ) ? "_MIPMAP_LINEAR" : "" ) ] );
-        // wrap
-        gl.texParameteri(
-            gl.TEXTURE_CUBE_MAP,
-            gl.TEXTURE_WRAP_S,
-            gl[ this.wrap ] );
-        gl.texParameteri(
-            gl.TEXTURE_CUBE_MAP,
-            gl.TEXTURE_WRAP_T,
-            gl[ this.wrap ] );
         // only generate mipmaps if all faces are buffered
         this.bufferedFaces = this.bufferedFaces || {};
         this.bufferedFaces[ face ] = true;
+        // once all faces are buffered
         if ( this.mipMap &&
             this.bufferedFaces['-x'] && this.bufferedFaces['+x'] &&
             this.bufferedFaces['-y'] && this.bufferedFaces['+y'] &&
@@ -176,6 +164,50 @@
             // generate mipmaps once all faces are buffered
             gl.generateMipmap( gl.TEXTURE_CUBE_MAP );
         }
+        gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
+        return this;
+    };
+
+    TextureCubeMap.prototype.setParameters = function( parameters ) {
+        var gl = this.gl;
+        gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.id );
+        if ( parameters.wrap ) {
+            // set wrap parameters
+            this.wrap = parameters.wrap;
+            gl.texParameteri(
+                gl.TEXTURE_CUBE_MAP,
+                gl.TEXTURE_WRAP_S,
+                gl[ this.wrap.s || this.wrap ] );
+            gl.texParameteri(
+                gl.TEXTURE_CUBE_MAP,
+                gl.TEXTURE_WRAP_T,
+                gl[ this.wrap.t || this.wrap ] );
+            /* not supported in webgl 1.0
+            gl.texParameteri(
+                gl.TEXTURE_CUBE_MAP,
+                gl.TEXTURE_WRAP_R,
+                gl[ this.wrap.r || this.wrap ] );
+            */
+        }
+        if ( parameters.filter ) {
+            // set filter parameters
+            this.filter = parameters.filter;
+            var minFilter = this.filter.min || this.filter;
+            if ( this.minMap ) {
+                // append min mpa suffix to min filter
+                minFilter += "_MIPMAP_LINEAR";
+            }
+            gl.texParameteri(
+                gl.TEXTURE_CUBE_MAP,
+                gl.TEXTURE_MAG_FILTER,
+                gl[ this.filter.mag || this.filter ] );
+            gl.texParameteri(
+                gl.TEXTURE_CUBE_MAP,
+                gl.TEXTURE_MIN_FILTER,
+                gl[ minFilter] );
+        }
+        gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
+        return this;
     };
 
     module.exports = TextureCubeMap;
