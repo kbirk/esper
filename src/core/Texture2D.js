@@ -31,11 +31,13 @@
         if ( spec.image ) {
             // use existing Image object
             this.bufferData( spec.image );
+            this.setParameters( this );
         } else if ( spec.url ) {
             // request image source from url
             var image = new Image();
             image.onload = function() {
                 that.bufferData( image );
+                that.setParameters( this );
                 callback( that );
             };
             image.src = spec.url;
@@ -55,6 +57,7 @@
             this.type = spec.type || "UNSIGNED_BYTE";
             this.mipMap = spec.mipMap || false;
             this.bufferData( spec.data || null, spec.width, spec.height );
+            this.setParameters( this );
         }
     }
 
@@ -92,8 +95,7 @@
             this.height = data.height;
             this.mipMap = true;
             // images are inverted along the y, load them upside down
-            gl.pixelStorei(
-                gl.UNPACK_FLIP_Y_WEBGL, true );
+            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
             gl.texImage2D(
                 gl.TEXTURE_2D,
                 0, // level
@@ -116,26 +118,44 @@
                 gl[ this.type ],
                 this.data );
         }
-        // filter
-        gl.texParameteri(
-            gl.TEXTURE_2D,
-            gl.TEXTURE_MAG_FILTER,
-            gl[ this.filter ] );
-        gl.texParameteri(
-            gl.TEXTURE_2D,
-            gl.TEXTURE_MIN_FILTER,
-             gl[ this.filter + ( ( this.mipMap ) ? "_MIPMAP_LINEAR" : "" ) ] );
-        // wrap
-        gl.texParameteri(
-            gl.TEXTURE_2D,
-            gl.TEXTURE_WRAP_S,
-            gl[ this.wrap ] );
-        gl.texParameteri(
-            gl.TEXTURE_2D,
-            gl.TEXTURE_WRAP_T,
-            gl[ this.wrap ] );
         if ( this.mipMap ) {
             gl.generateMipmap( gl.TEXTURE_2D );
+        }
+        gl.bindTexture( gl.TEXTURE_2D, null );
+        return this;
+    };
+
+    Texture2D.prototype.setParameters = function( parameters ) {
+        var gl = this.gl;
+        gl.bindTexture( gl.TEXTURE_2D, this.id );
+        if ( parameters.wrap ) {
+            // set wrap parameters
+            this.wrap = parameters.wrap;
+            gl.texParameteri(
+                gl.TEXTURE_2D,
+                gl.TEXTURE_WRAP_S,
+                gl[ this.wrap.s || this.wrap ] );
+            gl.texParameteri(
+                gl.TEXTURE_2D,
+                gl.TEXTURE_WRAP_T,
+                gl[ this.wrap.t || this.wrap ] );
+        }
+        if ( parameters.filter ) {
+            // set filter parameters
+            this.filter = parameters.filter;
+            var minFilter = this.filter.min || this.filter;
+            if ( this.minMap ) {
+                // append min mpa suffix to min filter
+                minFilter += "_MIPMAP_LINEAR";
+            }
+            gl.texParameteri(
+                gl.TEXTURE_2D,
+                gl.TEXTURE_MAG_FILTER,
+                gl[ this.filter.mag || this.filter ] );
+            gl.texParameteri(
+                gl.TEXTURE_2D,
+                gl.TEXTURE_MIN_FILTER,
+                gl[ minFilter] );
         }
         gl.bindTexture( gl.TEXTURE_2D, null );
         return this;

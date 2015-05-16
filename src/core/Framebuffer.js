@@ -57,17 +57,18 @@
      *
      * @param {Texture2D} texture - The texture to attach.
      * @param {String} attachment - The attachment location.
+     * @param {String} target - The texture target type.
      *
      * @returns {Framebuffer} Returns the framebuffer object for chaining.
      */
-    Framebuffer.prototype.attach = function( texture, attachment ) {
+    Framebuffer.prototype.attach = function( texture, attachment, target ) {
         var gl = this.gl;
         this.textures.push( texture );
         gl.bindFramebuffer( gl.FRAMEBUFFER, this.id );
         gl.framebufferTexture2D(
             gl.FRAMEBUFFER,
             gl[ attachment ],
-            gl.TEXTURE_2D,
+            gl[ target || "TEXTURE_2D" ],
             texture.id,
             0 );
         gl.bindFramebuffer( gl.FRAMEBUFFER, null );
