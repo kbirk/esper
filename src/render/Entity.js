@@ -37,6 +37,7 @@
             }
         }
         // set skeleton, if it exists
+        this.skeleton = null;
         if ( spec.skeleton ) {
             if ( spec.skeleton instanceof Skeleton ) {
                 this.skeleton = spec.skeleton;
@@ -95,10 +96,14 @@
     };
 
     Entity.prototype.forEach = function( callback ) {
-        var i;
+        var child,
+            i;
         callback( this );
         for ( i=0; i<this.children.length; i++ ) {
-            this.children[i].forEach( callback );
+            child = this.children[i];
+            if ( child.forEach ) {
+                child.forEach( callback );
+            }
         }
     };
 
@@ -107,23 +112,16 @@
                 up: this.up(),
                 forward: this.forward(),
                 origin: this.origin(),
-                scale: this.scale()
+                scale: this.scale(),
+                meshes: this.meshes, // copy by reference,
+                skeleton: this.skeleton, // copy by reference
+                animations: this.animations // copy by reference
             }),
             i;
         // copy children by value
         for ( i=0; i<this.children.length; i++ ) {
             that.addChild( this.children[i].copy() );
         }
-        // copy meshes by reference
-        for ( i=0; i<this.meshes.length; i++ ) {
-            that.meshes.push( this.meshes[i] );
-        }
-        // copy animations by reference
-        for ( i=0; i<this.animations.length; i++ ) {
-            that.animations.push( this.animations[i] );
-        }
-        // copy skeleton
-        that.skeleton = this.skeleton;
         return that;
     };
 
