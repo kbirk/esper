@@ -14,6 +14,7 @@
         ElementArrayBuffer: require('./core/IndexBuffer'),
         WebGLContext: require('./core/WebGLContext'),
         // render
+        Camera: require('./render/Camera'),
         Entity: require('./render/Entity'),
         Geometry: require('./render/Geometry'),
         Renderable: require('./render/Renderable'),

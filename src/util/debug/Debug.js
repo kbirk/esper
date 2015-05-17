@@ -48,7 +48,6 @@
         RenderPass = require('../../render/RenderPass'),
         _debugUUID = 1,
         _renderMap = {},
-        _projMatrix = null,
         _camera = null;
 
     function getFuncName( func ) {
@@ -240,7 +239,7 @@
                 });
             }
             DEBUG_SHADER.bind();
-            DEBUG_SHADER.setUniform( PROJ_MATRIX, _projMatrix );
+            DEBUG_SHADER.setUniform( PROJ_MATRIX, _camera.projectionMatrix() );
             DEBUG_SHADER.setUniform( VIEW_MATRIX, _camera.globalViewMatrix() );
         },
         forEachEntity: function( entity ) {
@@ -263,10 +262,6 @@
 
 
     module.exports = {
-
-        setProjection: function( proj ) {
-            _projMatrix = proj;
-        },
 
         setCamera: function( camera ) {
             _camera = camera;
