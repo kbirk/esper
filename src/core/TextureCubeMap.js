@@ -75,6 +75,15 @@
         _boundTexture = null;
     }
 
+    /**
+     * Returns a function to load and buffer a given cube map face.
+     *
+     * @param {TextureCubeMap} cubeMap - The cube map object.
+     * @param {String} url - The url to load the image.
+     * @param {String} face - The face identification string.
+     *
+     * @returns {Function} The resulting function.
+     */
     function loadAndBufferImage( cubeMap, url, face ) {
         return function( done ) {
             var image = new Image();
@@ -87,6 +96,11 @@
         };
     }
 
+    /**
+     * Instantiates a TextureCubeMap object.
+     * @class TextureCubeMap
+     * @classdesc A texture class to represent a cube map texture.
+     */
     function TextureCubeMap( spec, callback ) {
         var that = this,
             face,
@@ -174,6 +188,17 @@
         return this;
     };
 
+    /**
+     * Buffer data into the respective cube map face.
+     * @memberof TextureCubeMap
+     *
+     * @param {String} face - The face identification string.
+     * @param {ImageData|ArrayBufferView|HTMLImageElement} data - The data.
+     * @param {number} width - The width of the data.
+     * @param {number} height - The height of the data.
+     *
+     * @returns {TextureCubeMap} The texture object, for chaining.
+     */
     TextureCubeMap.prototype.bufferFaceData = function( face, data, width, height ) {
         var gl = this.gl,
             faceTarget = gl[ FACE_TARGETS[ face ] ];
@@ -228,6 +253,17 @@
         return this;
     };
 
+    /**
+     * Set the texture parameters.
+     * @memberof TextureCubeMap
+     *
+     * @param {Object} parameters - The parameters by name.
+     * <pre>
+     *     wrap | wrap.s | wrap.t - The wrapping type.
+     *     filter | filter.min | filter.mag - The filter type.
+     * </pre>
+     * @returns {TextureCubeMap} The texture object, for chaining.
+     */
     TextureCubeMap.prototype.setParameters = function( parameters ) {
         var gl = this.gl;
         gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.id );

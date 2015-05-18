@@ -135,7 +135,11 @@
         // sources, this function will remove duplicates from the results
         var seen = {};
         return declarations.filter( function( declaration ) {
-            return seen.hasOwnProperty( declaration.name ) ? false : ( seen[ declaration.name ] = true );
+            if ( seen[ declaration.name ] ) {
+                return false;
+            }
+            seen[ declaration.name ] = true;
+            return true;
         });
     }
 
@@ -146,21 +150,19 @@
          * that contain the provided qualifier type. This can be used to extract
          * all attributes and uniform names and types from a shader.
          *
-         * Ex.
-         *
-         *     When provided a "uniform" qualifiers, the declaration:
-         *
-         *         "uniform highp vec3 uSpecularColor;"
-         *
-         *     Would be parsed to:
-         *
-         *         {
-         *             qualifier: "uniform",
-         *             type: "vec3",
-         *             name: "uSpecularColor",
-         *             count: 1
-         *         }
-         *
+         * For example, when provided a "uniform" qualifiers, the declaration:
+         * <pre>
+         *     "uniform highp vec3 uSpecularColor;"
+         * </pre>
+         * Would be parsed to:
+         * <pre>
+         *     {
+         *         qualifier: "uniform",
+         *         type: "vec3",
+         *         name: "uSpecularColor",
+         *         count: 1
+         *     }
+         * </pre>
          * @param {String|Array} source - The shader sources.
          * @param {String|Array} qualifiers - The qualifiers to extract.
          *

@@ -62,6 +62,11 @@
         _boundTexture = null;
     }
 
+    /**
+     * Instantiates a Texture2D object.
+     * @class Texture2D
+     * @classdesc A texture class to represent a 2D texture.
+     */
     function Texture2D( spec, callback ) {
         var that = this;
         // default
@@ -143,6 +148,16 @@
         return this;
     };
 
+    /**
+     * Buffer data into the texture.
+     * @memberof Texture2D
+     *
+     * @param {ImageData|ArrayBufferView|HTMLImageElement} data - The data.
+     * @param {number} width - The width of the data.
+     * @param {number} height - The height of the data.
+     *
+     * @returns {Texture2D} The texture object, for chaining.
+     */
     Texture2D.prototype.bufferData = function( data, width, height ) {
         var gl = this.gl;
         gl.bindTexture( gl.TEXTURE_2D, this.id );
@@ -183,6 +198,17 @@
         return this;
     };
 
+    /**
+     * Set the texture parameters.
+     * @memberof Texture2D
+     *
+     * @param {Object} parameters - The parameters by name.
+     * <pre>
+     *     wrap | wrap.s | wrap.t - The wrapping type.
+     *     filter | filter.min | filter.mag - The filter type.
+     * </pre>
+     * @returns {Texture2D} The texture object, for chaining.
+     */
     Texture2D.prototype.setParameters = function( parameters ) {
         var gl = this.gl;
         gl.bindTexture( gl.TEXTURE_2D, this.id );
@@ -219,6 +245,15 @@
         return this;
     };
 
+    /**
+     * Resize the texture.
+     * @memberof Texture2D
+     *
+     * @param {number} width - The new width of the texture.
+     * @param {number} height - The new height of the texture.
+     *
+     * @returns {Texture2D} The texture object, for chaining.
+     */
     Texture2D.prototype.resize = function( width, height ) {
         if ( this.image ) {
             console.log( "Cannot resize image based Texture2D" );
