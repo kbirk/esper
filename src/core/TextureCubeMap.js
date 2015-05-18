@@ -4,6 +4,7 @@
 
     var WebGLContext = require('./WebGLContext'),
         Util = require('../util/Util'),
+        Stack = require('../util/Stack'),
         FACES = [
             '-x', '+x',
             '-y', '+y',
@@ -17,8 +18,17 @@
             '+y': "TEXTURE_CUBE_MAP_POSITIVE_Y",
             '-y': "TEXTURE_CUBE_MAP_NEGATIVE_Y"
         },
+        _stack = {},
         _boundTexture = null;
 
+    /**
+     * If the provided image dimensions are not powers of two, it will redraw
+     * the image to the next highest power of two.
+     *
+     * @param {HTMLImageElement} image - The image object.
+     *
+     * @param {HTMLImageElement} The new image object.
+     */
     function ensurePowerOfTwo( image ) {
         if ( !Util.isPowerOfTwo( image.width ) || !Util.isPowerOfTwo( image.height ) ) {
             var canvas = document.createElement( "canvas" );
@@ -29,6 +39,40 @@
             return canvas;
         }
         return image;
+    }
+
+    /**
+     * Binds the texture object to a location and activates the texture unit
+     * while caching it to prevent unnecessary rebinds.
+     *
+     * @param {TextureCubeMap} texture - The TextureCubeMap object to bind.
+     * @param {String} location - The texture unit location.
+     */
+    function bind( texture, location ) {
+        // if this buffer is already bound, exit early
+        if ( _boundTexture === texture ) {
+            return;
+        }
+        var gl = texture.gl;
+        location = gl[ location ] || gl.TEXTURE0;
+        gl.activeTexture( location );
+        gl.bindTexture( gl.TEXTURE_CUBE_MAP, texture.id );
+        _boundTexture = texture;
+    }
+
+    /**
+     * Unbinds the texture object. Prevents unnecessary unbinding.
+     *
+     * @param {TextureCubeMap} texture - The TextureCubeMap object to unbind.
+     */
+    function unbind( texture ) {
+        // if no buffer is bound, exit early
+        if ( _boundTexture === null ) {
+            return;
+        }
+        var gl = texture.gl;
+        gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
+        _boundTexture = null;
     }
 
     function loadAndBufferImage( cubeMap, url, face ) {
@@ -92,26 +136,42 @@
         }
     }
 
-    TextureCubeMap.prototype.bind = function( location ) {
-        // if this buffer is already bound, exit early
-        if ( _boundTexture === this ) {
-            return;
-        }
-        var gl = this.gl;
-        location = gl[ location ] || gl.TEXTURE0;
-        gl.activeTexture( location );
-        gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.id );
-        _boundTexture = this;
+    /**
+     * Binds the texture object and pushes it to the front of the stack.
+     * @memberof TextureCubeMap
+     *
+     * @param {String} location - The texture unit location.
+     *
+     * @returns {TextureCubeMap} The texture object, for chaining.
+     */
+     TextureCubeMap.prototype.push = function( location ) {
+        _stack[ location ] = _stack[ location ] || new Stack();
+        _stack[ location ].push( this );
+        bind( this, location );
+        return this;
     };
 
-    TextureCubeMap.prototype.unbind = function() {
-        // if no buffer is bound, exit bound
-        if ( _boundTexture === null ) {
-            return;
+    /**
+     * Unbinds the texture object and binds the framebuffer beneath it on
+     * this stack. If there is no underlying framebuffer, bind the backbuffer.
+     * @memberof TextureCubeMap
+     *
+     * @returns {TextureCubeMap} The texture object, for chaining.
+     */
+     TextureCubeMap.prototype.pop = function( location ) {
+        var top;
+        if ( !_stack[ location ] ) {
+            console.log("No texture was bound to texture unit '" + location +
+                "'. Command ignored.");
         }
-        var gl = this.gl;
-        gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
-        _boundTexture = null;
+        _stack[ location ].pop();
+        top = _stack[ location ].top();
+        if ( top ) {
+            bind( top, location );
+        } else {
+            unbind( this );
+        }
+        return this;
     };
 
     TextureCubeMap.prototype.bufferFaceData = function( face, data, width, height ) {

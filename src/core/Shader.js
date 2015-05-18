@@ -6,6 +6,7 @@
         ShaderParser = require('./ShaderParser'),
         Util = require('../util/Util'),
         XHRLoader = require('../util/XHRLoader'),
+        Stack = require('../util/Stack'),
         UNIFORM_FUNCTIONS = {
             'bool': 'uniform1i',
             'float': 'uniform1f',
@@ -23,8 +24,18 @@
             'sampler2D': 'uniform1i',
             'samplerCube': 'uniform1i'
         },
+        _stack = new Stack(),
         _boundShader = null;
 
+    /**
+     * Given vertex and fragment shader source, returns an object containing
+     * information pertaining to the uniforms and attribtues declared.
+     *
+     * @param {String} vertSource - The vertex shader source.
+     * @param {String} fragSource - The fragment shader source.
+     *
+     * @returns {Object} The attribute and uniform information.
+     */
     function getAttributesAndUniformsFromSource( vertSource, fragSource ) {
         var declarations = ShaderParser.parseDeclarations(
                 [ vertSource, fragSource ],
@@ -58,8 +69,18 @@
         };
     }
 
+    /*
+     * Given a shader source string and shader type, compiles the shader and
+     * returns the resulting WebGLShader object.
+     *
+     * @param {WebGLRenderingContext} gl - The webgl rendering context.
+     * @param {String} shaderSource - The shader source.
+     * @param {String} type - The shader type.
+     *
+     * @returns {WebGLShader} The compiled shader object.
+     */
     function compileShader( gl, shaderSource, type ) {
-        var shader = gl.createShader( type );
+        var shader = gl.createShader( gl[ type ] );
         gl.shaderSource( shader, shaderSource );
         gl.compileShader( shader );
         if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
@@ -70,30 +91,58 @@
         return shader;
     }
 
-    function bindAttributeLocations( gl, shader ) {
-        var attributes = shader.attributes,
+    /**
+     * Binds the attribute locations for the Shader object.
+     *
+     * @param {Shader} shader - The Shader object.
+     */
+    function bindAttributeLocations( shader ) {
+        var gl = shader.gl,
+            attributes = shader.attributes,
             name;
         for ( name in attributes ) {
             if ( attributes.hasOwnProperty( name ) ) {
                 // bind the attribute location
-                gl.bindAttribLocation( shader.id, attributes[ name ].index, name );
-                //console.log( 'Bound vertex attribute \'' + name + '\' to location ' + attributes[ name ].index );
+                gl.bindAttribLocation(
+                    shader.id,
+                    attributes[ name ].index,
+                    name );
+                /*
+                console.log( 'Bound vertex attribute \'' + name +
+                    '\' to location ' + attributes[ name ].index );
+                */
             }
         }
     }
 
-    function getUniformLocations( gl, shader ) {
-        var uniforms = shader.uniforms,
+    /**
+     * Queries the webgl rendering context for the uniform locations.
+     *
+     * @param {Shader} shader - The Shader object.
+     */
+    function getUniformLocations( shader ) {
+        var gl = shader.gl,
+            uniforms = shader.uniforms,
+            uniform,
             name;
         for ( name in uniforms ) {
             if ( uniforms.hasOwnProperty( name ) ) {
+                uniform = uniforms[ name ];
                 // get the uniform location
-                uniforms[ name ].location = gl.getUniformLocation( shader.id, name );
-                //console.log( name + ", " + gl.getUniformLocation( shader.id, name ) + "," );
+                uniform.location = gl.getUniformLocation( shader.id, name );
+                /*
+                console.log( name + ", " +
+                    gl.getUniformLocation( shader.id, name ) + "," );
+                */
             }
         }
     }
 
+    /**
+     * Returns a function to load shader source from a url.
+     *
+     * @returns {Function} The function to load the shader source.
+     */
     function loadShaderSource( url ) {
         return function( done ) {
             XHRLoader.load(
@@ -105,6 +154,40 @@
         };
     }
 
+    /**
+     * Binds the shader object, caching it to prevent unnecessary rebinds.
+     *
+     * @param {Shader} shader - The Shader object to bind.
+     */
+    function bind( shader ) {
+        // if this shader is already bound, exit early
+        if ( _boundShader === shader ) {
+            return;
+        }
+        shader.gl.useProgram( shader.id );
+        _boundShader = shader;
+    }
+
+    /**
+     * Unbinds the shader object. Prevents unnecessary unbinding.
+     *
+     * @param {Shader} shader - The Shader object to unbind.
+     */
+    function unbind( shader ) {
+        // if there is no shader bound, exit early
+        if ( _boundShader === null ) {
+            return;
+        }
+        shader.gl.useProgram( null );
+        _boundShader = null;
+    }
+
+    /**
+     * Instantiates a Shader object.
+     * @class Shader
+     * @classdesc A shader class to assist in compiling and linking webgl
+     * shaders, storing attribute and uniform locations, and buffering uniforms.
+     */
     function Shader( spec, callback ) {
         spec = spec || {};
         this.id = 0;
@@ -128,13 +211,26 @@
         }
     }
 
+    /**
+     * Creates the shader object from source strings. This includes:
+     *    1) Compiling and linking the shader program.
+     *    2) Parsing shader source for attribute and uniform information.
+     *    3) Binding attribute locations, by order of delcaration.
+     *    4) Querying and storing uniform location.
+     * @memberof Shader
+     *
+     * @param {Object} shaders - A map containing sources under 'vert' and
+     *     'frag' attributes.
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
     Shader.prototype.create = function( shaders ) {
         // once all shader sources are loaded
         var gl = this.gl,
             vert = shaders.vert,
             frag = shaders.frag,
-            fragmentShader = compileShader( gl, frag, gl.FRAGMENT_SHADER ),
-            vertexShader = compileShader( gl, vert, gl.VERTEX_SHADER ),
+            fragmentShader = compileShader( gl, frag, "FRAGMENT_SHADER" ),
+            vertexShader = compileShader( gl, vert, "VERTEX_SHADER" ),
             attributesAndUniforms;
         // parse source for attribute and uniforms
         attributesAndUniforms = getAttributesAndUniformsFromSource( vert, frag );
@@ -147,7 +243,7 @@
         gl.attachShader( this.id, vertexShader );
         gl.attachShader( this.id, fragmentShader );
         // bind vertex attribute locations BEFORE linking
-        bindAttributeLocations( gl, this );
+        bindAttributeLocations( this );
         // link shader
         gl.linkProgram( this.id );
         // If creating the shader program failed, alert
@@ -156,27 +252,50 @@
                 gl.getProgramInfoLog( this.id ) );
         }
         // get shader uniform locations
-        getUniformLocations( gl, this );
+        getUniformLocations( this );
+        return this;
     };
 
-    Shader.prototype.bind = function() {
-        // if this shader is already bound, exit early
-        if ( _boundShader === this ) {
-            return;
+    /**
+     * Binds the shader object and pushes it to the front of the stack.
+     * @memberof Shader
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    Shader.prototype.push = function() {
+        _stack.push( this );
+        bind( this );
+        return this;
+    };
+
+    /**
+     * Unbinds the shader object and binds the framebuffer beneath it on
+     * this stack. If there is no underlying framebuffer, bind the backbuffer.
+     * @memberof Shader
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    Shader.prototype.pop = function() {
+        var top;
+        _stack.pop();
+        top = _stack.top();
+        if ( top ) {
+            bind( top );
+        } else {
+            unbind( this );
         }
-        this.gl.useProgram( this.id );
-        _boundShader = this;
+        return this;
     };
 
-    Shader.prototype.unbind = function() {
-        // if there is no shader bound, exit early
-        if ( _boundShader === null ) {
-            return;
-        }
-        this.gl.useProgram( null );
-        _boundShader = null;
-    };
-
+    /**
+     * Buffer a uniform value by name.
+     * @memberof Shader
+     *
+     * @param {String} uniformName - The uniform name in the shader source.
+     * @param {*} uniform - The uniform value to buffer.
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
     Shader.prototype.setUniform = function( uniformName, uniform ) {
         var uniformSpec = this.uniforms[ uniformName ],
             func,
@@ -214,8 +333,8 @@
                 this.gl[ func ]( location, value );
                 break;
         }
+        return this;
     };
-
 
     module.exports = Shader;
 

@@ -3,7 +3,40 @@
     "use strict";
 
     var WebGLContext = require('./WebGLContext'),
+        Stack = require('../util/Stack'),
+        _stack = new Stack(),
         _boundBuffer = null;
+
+
+    /**
+     * Binds the framebuffer object, caching it to prevent unnecessary rebinds.
+     *
+     * @param {Framebuffer} framebuffer - The Framebuffer object to bind.
+     */
+     function bind( framebuffer ) {
+        // if this buffer is already bound, exit early
+        if ( _boundBuffer === framebuffer ) {
+            return;
+        }
+        var gl = framebuffer.gl;
+        gl.bindFramebuffer( gl.FRAMEBUFFER, framebuffer.id );
+        _boundBuffer = framebuffer;
+    }
+
+    /**
+     * Unbinds the framebuffer object. Prevents unnecessary unbinding.
+     *
+     * @param {Framebuffer} framebuffer - The Framebuffer object to unbind.
+     */
+     function unbind( framebuffer ) {
+        // if there is no buffer bound, exit early
+        if ( _boundBuffer === null ) {
+            return;
+        }
+        var gl = framebuffer.gl;
+        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
+        _boundBuffer = null;
+    }
 
     /**
      * Instantiates a Framebuffer object.
@@ -18,36 +51,33 @@
     }
 
     /**
-     * Binds the framebuffer object.
+     * Binds the framebuffer object and pushes it to the front of the stack.
      * @memberof Framebuffer
      *
-     * @returns {Framebuffer} Returns the framebuffer object for chaining.
+     * @returns {Framebuffer} The framebuffer object, for chaining.
      */
-    Framebuffer.prototype.bind = function() {
-        // if this buffer is already bound, exit early
-        if ( _boundBuffer === this ) {
-            return;
-        }
-        var gl = this.gl;
-        gl.bindFramebuffer( gl.FRAMEBUFFER, this.id );
-        _boundBuffer = this;
+    Framebuffer.prototype.push = function() {
+        _stack.push( this );
+        bind( this );
         return this;
     };
 
     /**
-     * Unbinds the framebuffer object.
+     * Unbinds the framebuffer object and binds the framebuffer beneath it on
+     * this stack. If there is no underlying framebuffer, bind the backbuffer.
      * @memberof Framebuffer
      *
-     * @returns {Framebuffer} Returns the framebuffer object for chaining.
+     * @returns {Framebuffer} The framebuffer object, for chaining.
      */
-    Framebuffer.prototype.unbind = function() {
-        // if there is no buffer bound, exit early
-        if ( _boundBuffer === null ) {
-            return;
+    Framebuffer.prototype.pop = function() {
+        var top;
+        _stack.pop();
+        top = _stack.top();
+        if ( top ) {
+            bind( top );
+        } else {
+            unbind( this );
         }
-        var gl = this.gl;
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
-        _boundBuffer = null;
         return this;
     };
 
@@ -59,7 +89,7 @@
      * @param {String} attachment - The attachment location.
      * @param {String} target - The texture target type.
      *
-     * @returns {Framebuffer} Returns the framebuffer object for chaining.
+     * @returns {Framebuffer} The framebuffer object, for chaining.
      */
     Framebuffer.prototype.attach = function( texture, attachment, target ) {
         var gl = this.gl;
@@ -83,7 +113,7 @@
      * @param {number} width - The new width of the framebuffer.
      * @param {number} height - The new height of the framebuffer.
      *
-     * @returns {Framebuffer} Returns the framebuffer object for chaining.
+     * @returns {Framebuffer} The framebuffer object, for chaining.
      */
     Framebuffer.prototype.resize = function( width, height ) {
         var i;

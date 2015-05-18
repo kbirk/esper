@@ -181,7 +181,6 @@
             if ( num !== 0 ) {
                 num = num-1;
             }
-
             for ( i=1; i<32; i<<=1 ) {
                 num = num | num >> i;
             }
