@@ -10,13 +10,17 @@
         return this;
     }
 
-    Renderer.prototype.render = function( entities ) {
+    Renderer.prototype.render = function( camera, entitiesByTechnique ) {
         var techniques = this.techniques,
             technique,
+            entities,
             i;
         for ( i=0; i<techniques.length; i++ ) {
             technique = techniques[i];
-            technique.execute( entities[ technique.id ] || [] );
+            entities = entitiesByTechnique[ technique.id ];
+            if ( entities && entities.length > 0 ) {
+                technique.execute( camera, entities );
+            }
         }
     };
 

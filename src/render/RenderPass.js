@@ -21,7 +21,7 @@
         // for each Mesh
         if ( forEachMesh ) {
             for ( i=0; i<meshes.length; i++ ) {
-                forEachMesh( meshes[i] );
+                forEachMesh( meshes[i], entity );
             }
         }
         // depth first traversal
@@ -42,19 +42,20 @@
         return this;
     }
 
-    RenderPass.prototype.execute = function( entities ) {
+    RenderPass.prototype.execute = function( camera, entities ) {
         var before = this.before,
-            forEachEntity = this.forEachEntity,
-            forEachMesh = this.forEachMesh,
             after = this.after,
             i;
         // setup function
         if ( before ) {
-            before();
+            before( camera );
         }
         // rendering functions
         for ( i=0; i<entities.length; i++ ) {
-            forEachRecursive( entities[i], forEachEntity, forEachMesh );
+            forEachRecursive(
+                entities[i],
+                this.forEachEntity,
+                this.forEachMesh );
         }
         // teardown function
         if ( after ) {
