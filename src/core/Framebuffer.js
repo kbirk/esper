@@ -94,14 +94,14 @@
     Framebuffer.prototype.attach = function( texture, attachment, target ) {
         var gl = this.gl;
         this.textures.push( texture );
-        gl.bindFramebuffer( gl.FRAMEBUFFER, this.id );
+        this.push();
         gl.framebufferTexture2D(
             gl.FRAMEBUFFER,
             gl[ attachment ],
             gl[ target || "TEXTURE_2D" ],
             texture.id,
             0 );
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
+        this.pop();
         return this;
     };
 

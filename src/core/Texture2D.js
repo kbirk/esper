@@ -14,15 +14,21 @@
      *
      * @param {HTMLImageElement} image - The image object.
      *
-     * @param {HTMLImageElement} The new image object.
+     * @returns {HTMLImageElement} The new image object.
      */
     function ensurePowerOfTwo( image ) {
-        if ( !Util.isPowerOfTwo( image.width ) || !Util.isPowerOfTwo( image.height ) ) {
+        if ( !Util.isPowerOfTwo( image.width ) ||
+            !Util.isPowerOfTwo( image.height ) ) {
             var canvas = document.createElement( "canvas" );
             canvas.width = Util.nextHighestPowerOfTwo( image.width );
             canvas.height = Util.nextHighestPowerOfTwo( image.height );
             var ctx = canvas.getContext("2d");
-            ctx.drawImage( image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height );
+            ctx.drawImage(
+                image,
+                0, 0,
+                image.width, image.height,
+                0, 0,
+                canvas.width, canvas.height );
             return canvas;
         }
         return image;
@@ -126,9 +132,11 @@
     };
 
     /**
-     * Unbinds the texture object and binds the framebuffer beneath it on
-     * this stack. If there is no underlying framebuffer, bind the backbuffer.
+     * Unbinds the texture object and binds the texture beneath it on
+     * this stack. If there is no underlying texture, unbinds the unit.
      * @memberof Texture2D
+     *
+     * @param {String} location - The texture unit location.
      *
      * @returns {Texture2D} The texture object, for chaining.
      */
@@ -160,7 +168,7 @@
      */
     Texture2D.prototype.bufferData = function( data, width, height ) {
         var gl = this.gl;
-        gl.bindTexture( gl.TEXTURE_2D, this.id );
+        this.push();
         if ( data instanceof HTMLImageElement ) {
             data = ensurePowerOfTwo( data );
             this.image = data;
@@ -194,7 +202,7 @@
         if ( this.mipMap ) {
             gl.generateMipmap( gl.TEXTURE_2D );
         }
-        gl.bindTexture( gl.TEXTURE_2D, null );
+        this.pop();
         return this;
     };
 
@@ -211,7 +219,7 @@
      */
     Texture2D.prototype.setParameters = function( parameters ) {
         var gl = this.gl;
-        gl.bindTexture( gl.TEXTURE_2D, this.id );
+        this.push();
         if ( parameters.wrap ) {
             // set wrap parameters
             this.wrap = parameters.wrap;
@@ -241,7 +249,7 @@
                 gl.TEXTURE_MIN_FILTER,
                 gl[ minFilter] );
         }
-        gl.bindTexture( gl.TEXTURE_2D, null );
+        this.pop();
         return this;
     };
 

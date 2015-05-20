@@ -24,18 +24,12 @@
         spec = spec || {};
         this.id = spec.id;
         this.diffuseColor = parseColor( spec.diffuseColor ) || [ 1, 0, 1, 1 ];
+        this.diffuseTexture = createTexture( spec.diffuseTexture ) | null;
         this.ambientColor = parseColor( spec.ambientColor ) || [ 0, 0, 0, 1 ];
+        this.ambientTexture = createTexture( spec.ambientTexture ) || null;
         this.specularColor = parseColor( spec.specularColor ) || [ 1, 1, 1, 1 ];
+        this.specularTexture = createTexture( spec.specularTexture ) || null;
         this.specularComponent = spec.specularComponent || 10;
-        if ( spec.diffuseTexture ) {
-            this.diffuseTexture = createTexture( spec.diffuseTexture );
-        }
-        if ( spec.ambientTexture ) {
-            this.ambientTexture = createTexture( spec.ambientTexture );
-        }
-        if ( spec.specularTexture ) {
-            this.specularTexture = createTexture( spec.specularTexture );
-        }
         return this;
     }
 
