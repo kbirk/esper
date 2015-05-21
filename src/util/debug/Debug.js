@@ -6,11 +6,13 @@
         MODEL_MATRIX = "uModelMatrix",
         VIEW_MATRIX = "uViewMatrix",
         POS_ATTRIB = "aPosition",
+        UV_ATTRIB = "aTexCoord",
         USE_ATTRIB_COLOR = "uUseAttribColor",
         COL_ATTRIB = "aColor",
-        COL_UNIFORM = "uColor";
+        COL_UNIFORM = "uColor",
+        TEX_SAMPLER = "uDiffuseSampler";
 
-    var VERT_SRC = [
+    var FLAT_VERT_SRC = [
             "attribute highp vec3 " + POS_ATTRIB + ";",
             "attribute highp vec3 " + COL_ATTRIB + ";",
             "uniform highp mat4 " + MODEL_MATRIX + ";",
@@ -32,20 +34,44 @@
             "}"
         ].join('\n');
 
-    var FRAG_SRC = [
+    var FLAT_FRAG_SRC = [
             "varying highp vec3 vColor;",
             "void main() {",
                 "gl_FragColor = vec4( vColor, 1.0 );",
             "}"
         ].join('\n');
 
-    var DEBUG_SHADER = null;
+    var TEX_VERT_SRC = [
+            "attribute highp vec3 " + POS_ATTRIB + ";",
+            "attribute highp vec2 " + UV_ATTRIB + ";",
+            "uniform highp mat4 " + MODEL_MATRIX + ";",
+            "varying highp vec2 vTexCoord;",
+            "void main() {",
+                "gl_Position = " + MODEL_MATRIX +
+                    " * vec4( " + POS_ATTRIB + ", 1.0 );",
+                "vTexCoord = " + UV_ATTRIB + ";",
+            "}"
+        ].join('\n');
+
+    var TEX_FRAG_SRC = [
+            "varying highp vec3 vColor;",
+            "uniform sampler2D " + TEX_SAMPLER + ";",
+            "varying highp vec2 vTexCoord;",
+            "void main() {",
+                "gl_FragColor = texture2D( " + TEX_SAMPLER + ", vTexCoord );",
+            "}"
+        ].join('\n');
+
+    var FLAT_DEBUG_SHADER = null;
+    var TEX_DEBUG_SHADER = null;
 
     var Shader = require('../../core/Shader'),
         Mesh = require('../../render/Mesh'),
+        Entity = require('../../render/Entity'),
         Renderer = require('../../render/Renderer'),
         RenderTechnique = require('../../render/RenderTechnique'),
         RenderPass = require('../../render/RenderPass'),
+        Quad = require('../shapes/Quad'),
         _debugUUID = 1,
         _renderMap = {},
         _camera = null;
@@ -229,37 +255,71 @@
     var _useColor = false,
         _color = [1,1,0];
 
-    var debugPass = new RenderPass({
-        before: function() {
-            if ( !DEBUG_SHADER ) {
+    var debugFlatPass = new RenderPass({
+        before: function( camera ) {
+            if ( !FLAT_DEBUG_SHADER ) {
                 // create shader if it does not exist yet
-                DEBUG_SHADER = new Shader({
-                    vert: VERT_SRC,
-                    frag: FRAG_SRC
+                FLAT_DEBUG_SHADER = new Shader({
+                    vert: FLAT_VERT_SRC,
+                    frag: FLAT_FRAG_SRC
                 });
             }
-            DEBUG_SHADER.bind();
-            DEBUG_SHADER.setUniform( PROJ_MATRIX, _camera.projectionMatrix() );
-            DEBUG_SHADER.setUniform( VIEW_MATRIX, _camera.globalViewMatrix() );
+            FLAT_DEBUG_SHADER.push();
+            FLAT_DEBUG_SHADER.setUniform( PROJ_MATRIX, camera.projectionMatrix() );
+            FLAT_DEBUG_SHADER.setUniform( VIEW_MATRIX, camera.globalViewMatrix() );
         },
         forEachEntity: function( entity ) {
             _useColor = entity.$$DEBUG_USE_COLOR;
-            DEBUG_SHADER.setUniform( MODEL_MATRIX, entity.globalMatrix() );
+            FLAT_DEBUG_SHADER.setUniform( MODEL_MATRIX, entity.globalMatrix() );
         },
         forEachMesh: function( mesh ) {
-            DEBUG_SHADER.setUniform( USE_ATTRIB_COLOR, _useColor );
-            DEBUG_SHADER.setUniform( COL_UNIFORM, _color );
+            FLAT_DEBUG_SHADER.setUniform( USE_ATTRIB_COLOR, _useColor );
+            FLAT_DEBUG_SHADER.setUniform( COL_UNIFORM, _color );
             mesh.draw();
+        },
+        after: function() {
+            FLAT_DEBUG_SHADER.pop();
         }
     });
 
-    var debugTechnique = new RenderTechnique({
-        id: "debug",
-        passes: [ debugPass ]
+    var debugTexPass = new RenderPass({
+        before: function() {
+            if ( !TEX_DEBUG_SHADER ) {
+                // create shader if it does not exist yet
+                TEX_DEBUG_SHADER = new Shader({
+                    vert: TEX_VERT_SRC,
+                    frag: TEX_FRAG_SRC
+                });
+            }
+            TEX_DEBUG_SHADER.gl.disable( TEX_DEBUG_SHADER.gl.DEPTH_TEST );
+            TEX_DEBUG_SHADER.push();
+            TEX_DEBUG_SHADER.setUniform( TEX_SAMPLER, 0 );
+        },
+        forEachEntity: function( entity ) {
+            TEX_DEBUG_SHADER.setUniform( MODEL_MATRIX, entity.globalMatrix() );
+        },
+        forEachMesh: function( mesh ) {
+            mesh.material.diffuseTexture.push( 0 );
+            mesh.draw();
+            mesh.material.diffuseTexture.pop( 0 );
+        },
+        after: function() {
+            TEX_DEBUG_SHADER.gl.enable( TEX_DEBUG_SHADER.gl.DEPTH_TEST );
+            TEX_DEBUG_SHADER.pop();
+        }
     });
 
-    var debugRenderer = new Renderer([ debugTechnique ]);
+    var debugFlatTechnique = new RenderTechnique({
+        id: "debug",
+        passes: [ debugFlatPass ]
+    });
 
+    var debugTexTechnique = new RenderTechnique({
+        id: "tex",
+        passes: [ debugTexPass ]
+    });
+
+    var debugRenderer = new Renderer([ debugFlatTechnique, debugTexTechnique ]);
 
     module.exports = {
 
@@ -267,60 +327,82 @@
             _camera = camera;
         },
 
+        drawTexture: function( texture ) {
+            var geometry = {
+                    positions: Quad.positions(),
+                    uvs: Quad.uvs(),
+                    indices:  Quad.indices()
+                },
+                entity = new Entity({
+                meshes: [ new Mesh({
+                    renderable: geometry,
+                    geomertry: geometry,
+                    material: {
+                        diffuseTexture: texture
+                    }
+                }) ],
+                origin: [ -0.75, 0.75, 0 ],
+                scale: 0.5
+            });
+            debugRenderer.render( null, {
+                tex: [ entity ]
+            });
+        },
+
         drawWireFrame: function( entity ) {
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createWireFrameEntity ) ]
             });
         },
 
         drawUVsAsColor: function( entity ) {
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createUVColorEntity ) ]
             });
         },
 
         drawUVsAsVectors: function( entity, color ) {
             _color = color;
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createUVVectorEntity ) ]
             });
         },
 
         drawNormalsAsColor: function( entity ) {
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createNormalColorEntity ) ]
             });
         },
 
         drawNormalsAsVectors: function( entity, color ) {
             _color = color;
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createNormalVectorEntity ) ]
             });
         },
 
         drawTangentsAsColor: function( entity ) {
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createTangentColorEntity ) ]
             });
         },
 
         drawTangentsAsVectors: function( entity, color  ) {
             _color = color;
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createTangentVectorEntity ) ]
             });
         },
 
         drawBiTangentsAsColor: function( entity ) {
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createBiTangentColorEntity ) ]
             });
         },
 
         drawBiTangentsAsVectors: function( entity, color  ) {
             _color = color;
-            debugRenderer.render({
+            debugRenderer.render( _camera, {
                 debug: [ createDebugEntity( entity, createBiTangentVectorEntity ) ]
             });
         }
