@@ -4,37 +4,39 @@
 
     module.exports = {
         // core
-        Texture2D: require('./core/Texture2D'),
-        TextureCubeMap: require('./core/TextureCubeMap'),
+        CubeMapFramebuffer: require('./core/CubeMapFramebuffer'),
+        ElementArrayBuffer: require('./core/IndexBuffer'),
         FrameBuffer: require('./core/FrameBuffer'),
         Shader: require('./core/Shader'),
-        Viewport: require('./core/Viewport'),
+        Texture2D: require('./core/Texture2D'),
+        TextureCubeMap: require('./core/TextureCubeMap'),
         VertexBuffer: require('./core/VertexBuffer'),
         VertexPackage: require('./core/VertexPackage'),
-        ElementArrayBuffer: require('./core/IndexBuffer'),
+        Viewport: require('./core/Viewport'),
         WebGLContext: require('./core/WebGLContext'),
         // render
         Camera: require('./render/Camera'),
         Entity: require('./render/Entity'),
         Geometry: require('./render/Geometry'),
+        Material: require('./render/Material'),
+        Mesh: require('./render/Mesh'),
+        Joint: require('./render/Joint'),
+        Octree: require('./render/Octree'),
         Renderable: require('./render/Renderable'),
         Renderer: require('./render/Renderer'),
         RenderPass: require('./render/RenderPass'),
         RenderTechnique: require('./render/RenderTechnique'),
-        Mesh: require('./render/Mesh'),
-        Joint: require('./render/Joint'),
-        Material: require('./render/Material'),
         Skeleton: require('./render/Skeleton'),
-        Octree: require('./render/Octree'),
         // shapes
         Cube: require('./util/shapes/Cube'),
         Cylinder: require('./util/shapes/Cylinder'),
-        Sphere: require('./util/shapes/Sphere'),
+        Quad: require('./util/shapes/Quad'),
         ShapeUtil: require('./util/shapes/ShapeUtil'),
+        Sphere: require('./util/shapes/Sphere'),
         // util
-        Util: require('./util/Util'),
-        OBJMTLLoader: require('./util/obj/OBJMTLLoader'),
         glTFLoader: require('./util/gltf/glTFLoader'),
+        OBJMTLLoader: require('./util/obj/OBJMTLLoader'),
+        Util: require('./util/Util'),
         // debug
         Debug: require('./util/debug/Debug')
     };
