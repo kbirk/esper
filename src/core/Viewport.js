@@ -3,7 +3,9 @@
     "use strict";
 
     var WebGLContext = require('./WebGLContext'),
-        ASPECT_RATIO = 1.5;
+        Stack = require('../util/Stack'),
+        ASPECT_RATIO = 1.5,
+        _stack = new Stack();
 
     function executeCallbacks( callbacks, width, height ) {
         var i;
@@ -30,6 +32,14 @@
         };
     }
 
+    function set( viewport, width, height ) {
+        if ( width && height ) {
+            viewport.gl.viewport( 0, 0, width, height );
+        } else {
+            viewport.gl.viewport( 0, 0, viewport.width, viewport.height );
+        }
+    }
+
     function Viewport( spec ) {
         spec = spec || {};
         this.gl = WebGLContext.get();
@@ -40,21 +50,38 @@
         this.onResize();
     }
 
-    Viewport.prototype.set = function( x, y, width, height ) {
-        if ( x !== undefined &&
-            y !== undefined &&
-            width === undefined &&
-            height === undefined ) {
-            width = x;
-            x = 0;
-            height = y;
-            y = x;
-        }
-        if ( width && height ) {
-            this.gl.viewport( x, y, width, height );
+    /**
+     * Sets the viewport object and pushes it to the front of the stack.
+     * @memberof Viewport
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+     Viewport.prototype.push = function( width, height ) {
+        _stack.push({
+            viewport: this,
+            width: width,
+            height: height
+        });
+        set( this, width, height );
+        return this;
+    };
+
+    /**
+     * Pops current the viewport object and sets the viewport beneath it.
+     * @memberof Viewport
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+     Viewport.prototype.pop = function() {
+        var top;
+        _stack.pop();
+        top = _stack.top();
+        if ( top ) {
+            set( top.viewport, top.width, top.height );
         } else {
-            this.gl.viewport( 0, 0, this.width, this.height );
+            set( this );
         }
+        return this;
     };
 
     Viewport.prototype.resize = function( callback ) {
