@@ -144,7 +144,7 @@
             pos = line.indexOf( ' ' );
             if ( pos >= 0 ) {
                 key = line.substring( 0, pos ).toLowerCase();
-                value = line.substring( pos + 1 ).toLowerCase().trim();
+                value = line.substring( pos + 1 ).trim();
             } else {
                 key = line;
                 value = "";
