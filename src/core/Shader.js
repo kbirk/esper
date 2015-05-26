@@ -148,7 +148,7 @@
             XHRLoader.load(
                 url,
                 {
-                    responseType: "text/plain",
+                    responseType: "text",
                     success: done
                 });
         };

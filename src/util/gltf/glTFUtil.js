@@ -8,7 +8,8 @@
         Vec2 = alfador.Vec2,
         Vec3 = alfador.Vec3,
         Vec4 = alfador.Vec4,
-        Util = require('../Util');
+        Util = require('../Util'),
+        XHRLoader = require('../XHRLoader');
 
     module.exports = {
 
@@ -117,17 +118,14 @@
                 key;
             function loadBuffer( path ) {
                 return function( done ) {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open( 'GET', path, true );
-                    xhr.responseType = 'arraybuffer';
-                    xhr.onload = function() {
-                        var arrayBuffer = null;
-                        if ( this.status === 200 ) {
-                            arrayBuffer = xhr.response;
-                        }
-                        done( arrayBuffer );
-                    };
-                    xhr.send();
+                    XHRLoader.load(
+                        path,
+                        {
+                            responseType: "arraybuffer",
+                            success: function( arrayBuffer ) {
+                                done( arrayBuffer );
+                            }
+                        });
                 };
             }
             for ( key in buffers ) {

@@ -21,7 +21,7 @@
         load: function ( url, options ) {
             var request = new XMLHttpRequest();
             request.open( 'GET', url, true );
-            request.responseType = options.requestType;
+            request.responseType = options.responseType;
             request.addEventListener( 'load', function () {
                 if ( options.success ) {
                     options.success( this.response );
