@@ -286,7 +286,7 @@
                 // ["vt 0.1 0.2", "0.1", "0.2"]
                 uvs.push([
                     parseFloat( result[ 1 ] ),
-                    parseFloat( result[ 2 ] )
+                    parseFloat( 1 - result[ 2 ] ) // invert
                 ]);
             } else if ( ( result = FACE_V_REGEX.exec( line ) ) !== null ) {
                 // face of positions
@@ -393,7 +393,7 @@
             XHRLoader.load(
                 url,
                 {
-                    responseType: "text/plain",
+                    responseType: "text",
                     success: function( src ) {
                         var parsed = parseOBJSource( src ),
                             model = convertTrianglesToArrays( parsed );

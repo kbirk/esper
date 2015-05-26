@@ -176,7 +176,7 @@
             this.height = data.height;
             this.mipMap = true;
             // images are inverted along the y, load them upside down
-            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
+            //gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
             gl.texImage2D(
                 gl.TEXTURE_2D,
                 0, // level
