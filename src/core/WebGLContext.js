@@ -5,6 +5,7 @@
     var _boundContext = null,
         _contextsById = {},
         EXTENSIONS = [
+            // ratified
             'OES_texture_float',
             'OES_texture_half_float',
             'WEBGL_lose_context',
@@ -19,7 +20,17 @@
             'WEBGL_draw_buffers',
             'ANGLE_instanced_arrays',
             'OES_texture_float_linear',
-            'OES_texture_half_float_linear'
+            'OES_texture_half_float_linear',
+            // community
+            'WEBGL_compressed_texture_atc',
+            'WEBGL_compressed_texture_pvrtc',
+            'EXT_color_buffer_half_float',
+            'WEBGL_color_buffer_float',
+            'EXT_frag_depth',
+            'EXT_sRGB',
+            'WEBGL_compressed_texture_etc1',
+            'EXT_blend_minmax',
+            'EXT_shader_texture_lod'
         ];
 
     /**
