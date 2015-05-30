@@ -8,41 +8,41 @@
         _boundBuffer = null;
 
     /**
-     * Binds the framebuffer object, caching it to prevent unnecessary rebinds.
+     * Binds the renderTarget object, caching it to prevent unnecessary rebinds.
      *
-     * @param {Framebuffer} framebuffer - The Framebuffer object to bind.
+     * @param {RenderTarget} renderTarget - The RenderTarget object to bind.
      */
-     function bind( framebuffer ) {
+     function bind( renderTarget ) {
         // if this buffer is already bound, exit early
-        if ( _boundBuffer === framebuffer ) {
+        if ( _boundBuffer === renderTarget ) {
             return;
         }
-        var gl = framebuffer.gl;
-        gl.bindFramebuffer( gl.FRAMEBUFFER, framebuffer.id );
-        _boundBuffer = framebuffer;
+        var gl = renderTarget.gl;
+        gl.bindFramebuffer( gl.FRAMEBUFFER, renderTarget.id );
+        _boundBuffer = renderTarget;
     }
 
     /**
-     * Unbinds the framebuffer object. Prevents unnecessary unbinding.
+     * Unbinds the renderTarget object. Prevents unnecessary unbinding.
      *
-     * @param {Framebuffer} framebuffer - The Framebuffer object to unbind.
+     * @param {RenderTarget} renderTarget - The RenderTarget object to unbind.
      */
-     function unbind( framebuffer ) {
+     function unbind( renderTarget ) {
         // if there is no buffer bound, exit early
         if ( _boundBuffer === null ) {
             return;
         }
-        var gl = framebuffer.gl;
+        var gl = renderTarget.gl;
         gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         _boundBuffer = null;
     }
 
     /**
-     * Instantiates a Framebuffer object.
-     * @class Framebuffer
-     * @classdesc A framebuffer class to allow rendering to textures.
+     * Instantiates a RenderTarget object.
+     * @class RenderTarget
+     * @classdesc A renderTarget class to allow rendering to textures.
      */
-    function Framebuffer() {
+    function RenderTarget() {
         var gl = this.gl = WebGLContext.get();
         this.id = gl.createFramebuffer();
         this.textures = {};
@@ -50,25 +50,25 @@
     }
 
     /**
-     * Binds the framebuffer object and pushes it to the front of the stack.
-     * @memberof Framebuffer
+     * Binds the renderTarget object and pushes it to the front of the stack.
+     * @memberof RenderTarget
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.push = function() {
+    RenderTarget.prototype.push = function() {
         _stack.push( this );
         bind( this );
         return this;
     };
 
     /**
-     * Unbinds the framebuffer object and binds the framebuffer beneath it on
-     * this stack. If there is no underlying framebuffer, bind the backbuffer.
-     * @memberof Framebuffer
+     * Unbinds the renderTarget object and binds the renderTarget beneath it on
+     * this stack. If there is no underlying renderTarget, bind the backbuffer.
+     * @memberof RenderTarget
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.pop = function() {
+    RenderTarget.prototype.pop = function() {
         var top;
         _stack.pop();
         top = _stack.top();
@@ -82,15 +82,15 @@
 
     /**
      * Attaches the provided texture to the provided attachment location.
-     * @memberof Framebuffer
+     * @memberof RenderTarget
      *
      * @param {Texture2D} texture - The texture to attach.
      * @param {number} index - The attachment index. (optional)
      * @param {String} target - The texture target type. (optional)
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.setColorTarget = function( texture, index, target ) {
+    RenderTarget.prototype.setColorTarget = function( texture, index, target ) {
         var gl = this.gl;
         if ( typeof index === "string" ) {
             target = index;
@@ -111,13 +111,13 @@
 
     /**
      * Attaches the provided texture to the provided attachment location.
-     * @memberof Framebuffer
+     * @memberof RenderTarget
      *
      * @param {Texture2D} texture - The texture to attach.
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.setDepthTarget = function( texture ) {
+    RenderTarget.prototype.setDepthTarget = function( texture ) {
         var gl = this.gl;
         this.textures.depth = texture;
         this.push();
@@ -132,17 +132,17 @@
     };
 
     /**
-     * Clears the color bits of the framebuffer.
-     * @memberof Framebuffer
+     * Clears the color bits of the renderTarget.
+     * @memberof RenderTarget
      *
      * @param {number} r - The red value.
      * @param {number} g - The green value.
      * @param {number} b - The blue value.
      * @param {number} a - The alpha value.
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.clearColor = function( r, g, b, a ) {
+    RenderTarget.prototype.clearColor = function( r, g, b, a ) {
         var gl = this.gl;
         r = ( r !== undefined ) ? r : 0;
         g = ( g !== undefined ) ? g : 0;
@@ -156,12 +156,12 @@
     };
 
     /**
-     * Clears the depth bits of the framebuffer.
-     * @memberof Framebuffer
+     * Clears the depth bits of the renderTarget.
+     * @memberof RenderTarget
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.clearDepth = function( r, g, b, a ) {
+    RenderTarget.prototype.clearDepth = function( r, g, b, a ) {
         var gl = this.gl;
         r = ( r !== undefined ) ? r : 0;
         g = ( g !== undefined ) ? g : 0;
@@ -175,12 +175,12 @@
     };
 
     /**
-     * Clears the stencil bits of the framebuffer.
-     * @memberof Framebuffer
+     * Clears the stencil bits of the renderTarget.
+     * @memberof RenderTarget
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.clearStencil = function( r, g, b, a ) {
+    RenderTarget.prototype.clearStencil = function( r, g, b, a ) {
         var gl = this.gl;
         r = ( r !== undefined ) ? r : 0;
         g = ( g !== undefined ) ? g : 0;
@@ -194,12 +194,12 @@
     };
 
     /**
-     * Clears all the bits of the framebuffer.
-     * @memberof Framebuffer
+     * Clears all the bits of the renderTarget.
+     * @memberof RenderTarget
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.clear = function( r, g, b, a ) {
+    RenderTarget.prototype.clear = function( r, g, b, a ) {
         var gl = this.gl;
         r = ( r !== undefined ) ? r : 0;
         g = ( g !== undefined ) ? g : 0;
@@ -213,16 +213,16 @@
     };
 
     /**
-     * Resizes the framebuffer and all attached textures by the provided height
+     * Resizes the renderTarget and all attached textures by the provided height
      * and width.
-     * @memberof Framebuffer
+     * @memberof RenderTarget
      *
-     * @param {number} width - The new width of the framebuffer.
-     * @param {number} height - The new height of the framebuffer.
+     * @param {number} width - The new width of the renderTarget.
+     * @param {number} height - The new height of the renderTarget.
      *
-     * @returns {Framebuffer} The framebuffer object, for chaining.
+     * @returns {RenderTarget} The renderTarget object, for chaining.
      */
-    Framebuffer.prototype.resize = function( width, height ) {
+    RenderTarget.prototype.resize = function( width, height ) {
         var key;
         if ( !width || !height ) {
             return this;
@@ -235,6 +235,6 @@
         return this;
     };
 
-    module.exports = Framebuffer;
+    module.exports = RenderTarget;
 
 }());

@@ -4,9 +4,9 @@
 
     module.exports = {
         // core
-        CubeMapFramebuffer: require('./core/CubeMapFramebuffer'),
+        CubeMapRenderTarget: require('./core/CubeMapRenderTarget'),
         ElementArrayBuffer: require('./core/IndexBuffer'),
-        FrameBuffer: require('./core/FrameBuffer'),
+        RenderTarget: require('./core/RenderTarget'),
         Shader: require('./core/Shader'),
         Texture2D: require('./core/Texture2D'),
         TextureCubeMap: require('./core/TextureCubeMap'),

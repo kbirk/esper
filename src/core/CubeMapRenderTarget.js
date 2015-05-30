@@ -3,10 +3,10 @@
     "use strict";
 
     var WebGLContext = require('./WebGLContext'),
-        FrameBuffer = require('./FrameBuffer'),
+        RenderTarget = require('./RenderTarget'),
         Texture2D = require('./Texture2D'),
         TextureCubeMap = require('./TextureCubeMap'),
-        Viewport = require('.//Viewport'),
+        Viewport = require('./Viewport'),
         Camera = require('../render/Camera'),
         FACES = [
             '-x', '+x',
@@ -24,19 +24,19 @@
         DEFAULT_SIZE = 2048;
 
     /**
-     * Binds a particular face of the cube map framebuffer and readies it for
+     * Binds a particular face of the cube map renderTarget and readies it for
      * rendering.
      *
-     * @param {CubeMapFamebuffer} cubeMapBuffer - The cube map framebuffer.
+     * @param {CubeMapRenderTarget} cubeMapTarget - The cube map renderTarget.
      * @param {String} face - The face identification string.
      */
-    function bindFaceTexture( cubeMapBuffer, face ) {
+    function bindFaceTexture( cubeMapTarget, face ) {
         // bind relevant face of cube map
-        cubeMapBuffer.frameBuffer.setColorTarget(
-            cubeMapBuffer.cubeMap,
+        cubeMapTarget.renderTarget.setColorTarget(
+            cubeMapTarget.cubeMap,
             FACE_TARGETS[ face ] );
         // clear the face texture
-        cubeMapBuffer.frameBuffer.clear();
+        cubeMapTarget.renderTarget.clear();
     }
 
     /**
@@ -96,11 +96,11 @@
      */
 
     /**
-     * Instantiates a CubeMapFramebuffer object.
-     * @class CubeMapFramebuffer
-     * @classdesc A framebuffer class to allow rendering to textures.
+     * Instantiates a CubeMapRenderTarget object.
+     * @class CubeMapRenderTarget
+     * @classdesc A renderTarget class to allow rendering to textures.
      */
-    function CubeMapFramebuffer( spec ) {
+    function CubeMapRenderTarget( spec ) {
         var gl = this.gl = WebGLContext.get();
         spec = spec || {};
         this.id = gl.createFramebuffer();
@@ -116,20 +116,20 @@
             width: this.resolution,
             height: this.resolution
         });
-        this.frameBuffer = new FrameBuffer();
-        this.frameBuffer.setDepthTarget( this.depthTexture );
+        this.renderTarget = new RenderTarget();
+        this.renderTarget.setDepthTarget( this.depthTexture );
         this.viewport = new Viewport();
     }
 
     /**
      * Binds the cube map component and pushes it to the front of the stack.
-     * @memberof CubeMapFramebuffer
+     * @memberof CubeMapRenderTarget
      *
      * @param {String} location - The texture unit location.
      *
-     * @returns {CubeMapFramebuffer} The texture object, for chaining.
+     * @returns {CubeMapRenderTarget} The texture object, for chaining.
      */
-     CubeMapFramebuffer.prototype.push = function( location ) {
+     CubeMapRenderTarget.prototype.push = function( location ) {
         this.cubeMap.push( location );
         return this;
     };
@@ -137,30 +137,30 @@
     /**
      * Unbinds the texture object and binds the texture beneath it on
      * this stack. If there is no underlying texture, unbinds the unit.
-     * @memberof CubeMapFramebuffer
+     * @memberof CubeMapRenderTarget
      *
      * @param {String} location - The texture unit location.
      *
-     * @returns {CubeMapFramebuffer} The texture object, for chaining.
+     * @returns {CubeMapRenderTarget} The texture object, for chaining.
      */
-     CubeMapFramebuffer.prototype.pop = function( location ) {
+     CubeMapRenderTarget.prototype.pop = function( location ) {
         this.cubeMap.pop( location );
         return this;
     };
 
     /**
-     * Binds the framebuffer object.
-     * @memberof CubeMapFramebuffer
+     * Binds the renderTarget object.
+     * @memberof CubeMapRenderTarget
      *
      * @param {Vec3|Array} origin - The origin of the cube map.
      * @param {Renderer} renderer - The renderer to execute.
      * @param {Object} entitiesByTechnique - The entities keyed by technique.
      *
-     * @returns {CubeMapFramebuffer} The texture object, for chaining.
+     * @returns {CubeMapRenderTarget} The texture object, for chaining.
      */
-    CubeMapFramebuffer.prototype.render = function( origin, renderer, entitiesByTechnique ) {
+    CubeMapRenderTarget.prototype.render = function( origin, renderer, entitiesByTechnique ) {
         var that = this;
-        this.frameBuffer.push();
+        this.renderTarget.push();
         this.viewport.push( this.resolution, this.resolution );
         FACES.forEach( function( face ) {
             // bind face
@@ -170,11 +170,11 @@
                 getFaceCamera( face, origin ),
                 entitiesByTechnique );
         });
-        this.frameBuffer.pop();
+        this.renderTarget.pop();
         this.viewport.pop();
         return this;
     };
 
-    module.exports = CubeMapFramebuffer;
+    module.exports = CubeMapRenderTarget;
 
 }());

@@ -269,8 +269,8 @@
     };
 
     /**
-     * Unbinds the shader object and binds the framebuffer beneath it on
-     * this stack. If there is no underlying framebuffer, bind the backbuffer.
+     * Unbinds the shader object and binds the shader beneath it on
+     * this stack. If there is no underlying shader, bind the backbuffer.
      * @memberof Shader
      *
      * @returns {Shader} The shader object, for chaining.

@@ -7,7 +7,7 @@
 
     /**
      * Instantiates an IndexBuffer object.
-     * @class Framebuffer
+     * @class IndexBuffer
      * @classdesc An index buffer object.
      */
     function IndexBuffer( array, options ) {
