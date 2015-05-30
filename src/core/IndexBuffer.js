@@ -12,15 +12,15 @@
      */
     function IndexBuffer( array, options ) {
         options = options || {};
-        var gl = this.gl = WebGLContext.get();
+        this.gl = WebGLContext.get();
         this.id = 0;
         this.count = 0;
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
-        this.mode = gl[ options.mode ] || gl.TRIANGLES;
+        this.mode = options.mode || "TRIANGLES";
         if ( array instanceof WebGLBuffer ) {
             // if the argument is already a webglbuffer, simply wrap it
             this.id = array;
-            this.type = gl[ options.type ] || gl.UNSIGNED_SHORT;
+            this.type = options.type || "UNSIGNED_SHORT";
             this.count = ( options.count !== undefined ) ? options.count : 0;
         } else {
             // otherwise, buffer it
@@ -61,9 +61,9 @@
         }
         // set data type based on array
         if ( array instanceof Uint16Array ) {
-            this.type = gl.UNSIGNED_SHORT;
+            this.type = "UNSIGNED_SHORT";
         } else if ( array instanceof Uint32Array ) {
-            this.type = gl.UNSIGNED_INT;
+            this.type = "UNSIGNED_INT";
         } else {
             console.error( "IndexBuffer requires an Array or " +
                 "ArrayBuffer argument, command ignored" );
@@ -123,7 +123,11 @@
             return;
         }
         var gl = this.gl;
-        gl.drawElements( this.mode, this.count, this.type, this.offset );
+        gl.drawElements( 
+            gl[ this.mode ],
+            this.count,
+            gl[ this.type ],
+            this.offset );
         return this;
     };
 

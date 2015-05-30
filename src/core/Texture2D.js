@@ -39,7 +39,7 @@
      * while caching it to prevent unnecessary rebinds.
      *
      * @param {Texture2D} texture - The Texture2D object to bind.
-     * @param {String} location - The texture unit location.
+     * @param {number} location - The texture unit location index.
      */
     function bind( texture, location ) {
         // if this buffer is already bound, exit early
@@ -47,7 +47,7 @@
             return;
         }
         var gl = texture.gl;
-        location = gl[ location ] || gl.TEXTURE0;
+        location = gl[ 'TEXTURE' + location ] || gl.TEXTURE0;
         gl.activeTexture( location );
         gl.bindTexture( gl.TEXTURE_2D, texture.id );
         _boundTexture = texture;
@@ -120,7 +120,7 @@
      * Binds the texture object and pushes it to the front of the stack.
      * @memberof Texture2D
      *
-     * @param {String} location - The texture unit location.
+     * @param {number} location - The texture unit location index.
      *
      * @returns {Texture2D} The texture object, for chaining.
      */
@@ -136,7 +136,7 @@
      * this stack. If there is no underlying texture, unbinds the unit.
      * @memberof Texture2D
      *
-     * @param {String} location - The texture unit location.
+     * @param {number} location - The texture unit location index.
      *
      * @returns {Texture2D} The texture object, for chaining.
      */

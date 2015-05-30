@@ -31,16 +31,12 @@
      * @param {String} face - The face identification string.
      */
     function bindFaceTexture( cubeMapBuffer, face ) {
-        var gl = cubeMapBuffer.gl;
         // bind relevant face of cube map
-        cubeMapBuffer.frameBuffer.attach(
+        cubeMapBuffer.frameBuffer.setColorTarget(
             cubeMapBuffer.cubeMap,
-            "COLOR_ATTACHMENT0",
             FACE_TARGETS[ face ] );
         // clear the face texture
-        //gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
-        gl.clearColor( Math.random(), Math.random(), Math.random(), 1.0 );
-        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+        cubeMapBuffer.frameBuffer.clear();
     }
 
     /**
@@ -121,7 +117,7 @@
             height: this.resolution
         });
         this.frameBuffer = new FrameBuffer();
-        this.frameBuffer.attach( this.depthTexture, "DEPTH_ATTACHMENT" );
+        this.frameBuffer.setDepthTarget( this.depthTexture );
         this.viewport = new Viewport();
     }
 

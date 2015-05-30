@@ -7,7 +7,6 @@
         _stack = new Stack(),
         _boundBuffer = null;
 
-
     /**
      * Binds the framebuffer object, caching it to prevent unnecessary rebinds.
      *
@@ -46,7 +45,7 @@
     function Framebuffer() {
         var gl = this.gl = WebGLContext.get();
         this.id = gl.createFramebuffer();
-        this.textures = [];
+        this.textures = {};
         return this;
     }
 
@@ -86,21 +85,129 @@
      * @memberof Framebuffer
      *
      * @param {Texture2D} texture - The texture to attach.
-     * @param {String} attachment - The attachment location.
-     * @param {String} target - The texture target type.
+     * @param {number} index - The attachment index. (optional)
+     * @param {String} target - The texture target type. (optional)
      *
      * @returns {Framebuffer} The framebuffer object, for chaining.
      */
-    Framebuffer.prototype.attach = function( texture, attachment, target ) {
+    Framebuffer.prototype.setColorTarget = function( texture, index, target ) {
         var gl = this.gl;
-        this.textures.push( texture );
+        if ( typeof index === "string" ) {
+            target = index;
+            index = undefined;
+        }
+        index = ( index !== undefined ) ? index : 0;
+        this.textures[ 'color' + index ] = texture;
         this.push();
         gl.framebufferTexture2D(
             gl.FRAMEBUFFER,
-            gl[ attachment ],
+            gl[ 'COLOR_ATTACHMENT' + index ],
             gl[ target || "TEXTURE_2D" ],
             texture.id,
             0 );
+        this.pop();
+        return this;
+    };
+
+    /**
+     * Attaches the provided texture to the provided attachment location.
+     * @memberof Framebuffer
+     *
+     * @param {Texture2D} texture - The texture to attach.
+     *
+     * @returns {Framebuffer} The framebuffer object, for chaining.
+     */
+    Framebuffer.prototype.setDepthTarget = function( texture ) {
+        var gl = this.gl;
+        this.textures.depth = texture;
+        this.push();
+        gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            gl.DEPTH_ATTACHMENT,
+            gl.TEXTURE_2D,
+            texture.id,
+            0 );
+        this.pop();
+        return this;
+    };
+
+    /**
+     * Clears the color bits of the framebuffer.
+     * @memberof Framebuffer
+     *
+     * @param {number} r - The red value.
+     * @param {number} g - The green value.
+     * @param {number} b - The blue value.
+     * @param {number} a - The alpha value.
+     *
+     * @returns {Framebuffer} The framebuffer object, for chaining.
+     */
+    Framebuffer.prototype.clearColor = function( r, g, b, a ) {
+        var gl = this.gl;
+        r = ( r !== undefined ) ? r : 0;
+        g = ( g !== undefined ) ? g : 0;
+        b = ( b !== undefined ) ? b : 0;
+        a = ( a !== undefined ) ? a : 0;
+        this.push();
+        gl.clearColor( r, g, b, a );
+        gl.clear( gl.COLOR_BUFFER_BIT );
+        this.pop();
+        return this;
+    };
+
+    /**
+     * Clears the depth bits of the framebuffer.
+     * @memberof Framebuffer
+     *
+     * @returns {Framebuffer} The framebuffer object, for chaining.
+     */
+    Framebuffer.prototype.clearDepth = function( r, g, b, a ) {
+        var gl = this.gl;
+        r = ( r !== undefined ) ? r : 0;
+        g = ( g !== undefined ) ? g : 0;
+        b = ( b !== undefined ) ? b : 0;
+        a = ( a !== undefined ) ? a : 0;
+        this.push();
+        gl.clearColor( r, g, b, a );
+        gl.clear( gl.DEPTH_BUFFER_BIT );
+        this.pop();
+        return this;
+    };
+
+    /**
+     * Clears the stencil bits of the framebuffer.
+     * @memberof Framebuffer
+     *
+     * @returns {Framebuffer} The framebuffer object, for chaining.
+     */
+    Framebuffer.prototype.clearStencil = function( r, g, b, a ) {
+        var gl = this.gl;
+        r = ( r !== undefined ) ? r : 0;
+        g = ( g !== undefined ) ? g : 0;
+        b = ( b !== undefined ) ? b : 0;
+        a = ( a !== undefined ) ? a : 0;
+        this.push();
+        gl.clearColor( r, g, b, a );
+        gl.clear( gl.STENCIL_BUFFER_BIT );
+        this.pop();
+        return this;
+    };
+
+    /**
+     * Clears all the bits of the framebuffer.
+     * @memberof Framebuffer
+     *
+     * @returns {Framebuffer} The framebuffer object, for chaining.
+     */
+    Framebuffer.prototype.clear = function( r, g, b, a ) {
+        var gl = this.gl;
+        r = ( r !== undefined ) ? r : 0;
+        g = ( g !== undefined ) ? g : 0;
+        b = ( b !== undefined ) ? b : 0;
+        a = ( a !== undefined ) ? a : 0;
+        this.push();
+        gl.clearColor( r, g, b, a );
+        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
         this.pop();
         return this;
     };
@@ -116,12 +223,14 @@
      * @returns {Framebuffer} The framebuffer object, for chaining.
      */
     Framebuffer.prototype.resize = function( width, height ) {
-        var i;
+        var key;
         if ( !width || !height ) {
             return this;
         }
-        for ( i=0; i<this.textures.length; i++ ) {
-            this.textures[i].resize( width, height );
+        for ( key in this.textures ) {
+            if ( this.textures.hasOwnProperty( key ) ) {
+                this.textures[ key ].resize( width, height );
+            }
         }
         return this;
     };
