@@ -99,6 +99,7 @@
         } else {
             // buffer data
             if ( spec.format === "DEPTH_COMPONENT" ) {
+                // depth texture
                 var depthTextureExt = WebGLContext.checkExtension( "WEBGL_depth_texture" );
                 if( !depthTextureExt ) {
                     console.log( "Cannot create Texture2D of format " +
@@ -106,10 +107,22 @@
                         "unsupported by this browser, command ignored" );
                     return;
                 }
+                this.format = spec.format;
+                if ( !spec.type ||
+                    spec.type === "UNSIGNED_SHORT" ||
+                    spec.type === "UNSIGNED_INT" ) {
+                    this.type = spec.type;
+                } else {
+                    console.log( "Depth textures do not support type'" +
+                        spec.type + "', defaulting to 'UNSIGNED_SHORT'.");
+                    this.type = "UNSIGNED_SHORT";
+                }
+            } else {
+                // other
+                this.format = spec.format || "RGBA";
+                this.type = spec.type || "UNSIGNED_BYTE";
             }
-            this.format = spec.format || "RGBA";
             this.internalFormat = this.format; // webgl requires format === internalFormat
-            this.type = spec.type || "UNSIGNED_BYTE";
             this.mipMap = spec.mipMap || false;
             this.bufferData( spec.data || null, spec.width, spec.height );
             this.setParameters( this );

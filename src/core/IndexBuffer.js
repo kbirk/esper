@@ -123,7 +123,7 @@
             return;
         }
         var gl = this.gl;
-        gl.drawElements( 
+        gl.drawElements(
             gl[ this.mode ],
             this.count,
             gl[ this.type ],
