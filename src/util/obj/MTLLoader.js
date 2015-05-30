@@ -78,6 +78,14 @@
                                 material.alpha = value;
                             }
                             break;
+                        case 'illum':
+                            if ( value > 2 && value < 10 ) {
+                                material.reflection = 0.3;
+                            }
+                            if ( value === 6 || value === 7 ) {
+                                material.refraction = 0.8;
+                            }
+                            break;
                     }
                 }
             }

@@ -33,6 +33,8 @@
         this.specularColor = parseColor( spec.specularColor ) || [ 1, 1, 1, 1 ];
         this.specularTexture = createTexture( spec.specularTexture ) || null;
         this.specularComponent = spec.specularComponent || 10;
+        this.reflection = ( spec.reflection !== undefined ) ? spec.reflection : 0;
+        this.refraction = ( spec.refraction !== undefined ) ? spec.refraction : 0;
         return this;
     }
 
