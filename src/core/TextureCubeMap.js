@@ -221,8 +221,6 @@
             this.images[ face ] = ensurePowerOfTwo( data );
             this.filter = "LINEAR";
             this.mipMap = true;
-            // images are inverted along the y, load them upside down
-            // gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
             gl.texImage2D(
                 faceTarget,
                 0, // level
