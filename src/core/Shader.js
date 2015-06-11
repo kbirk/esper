@@ -141,6 +141,8 @@
     /**
      * Returns a function to load shader source from a url.
      *
+     * @param {String} url - The url to load the resource from.
+     *
      * @returns {Function} The function to load the shader source.
      */
     function loadShaderSource( url ) {
@@ -151,6 +153,41 @@
                     responseType: "text",
                     success: done
                 });
+        };
+    }
+
+    /**
+     * Returns a function to pass through the shader source.
+     *
+     * @param {String} source - The source of the shader.
+     *
+     * @returns {Function} The function to pass through the shader source.
+     */
+    function passThroughSource( source ) {
+        return function( done ) {
+            done( source );
+        };
+    }
+
+    /**
+     * Returns a function that takes an array of GLSL source strings and URLs,
+     * and resolves them into and array of GLSL source.
+     */
+    function resolveSources( sources ) {
+        return function( done ) {
+            var jobs = [];
+            sources = sources || [];
+            sources = ( !( sources instanceof Array ) ) ? [ sources ] : sources;
+            sources.forEach( function( source ) {
+                if ( ShaderParser.isGLSL( source ) ) {
+                    jobs.push( passThroughSource( source ) );
+                } else {
+                    jobs.push( loadShaderSource( source ) );
+                }
+            });
+            Util.async( jobs, function( results ) {
+                done( results );
+            });
         };
     }
 
@@ -189,26 +226,31 @@
      * shaders, storing attribute and uniform locations, and buffering uniforms.
      */
     function Shader( spec, callback ) {
+        var that = this;
         spec = spec || {};
         this.id = 0;
         this.gl = WebGLContext.get();
         this.version = spec.version || '1.00';
-        // create the shader
-        if ( ShaderParser.isGLSL( spec.vert ) &&
-            ShaderParser.isGLSL( spec.frag ) ) {
-            // shaders as src text
-            this.create( spec );
-        } else {
-            // shaders as urls
-            var that = this;
-            Util.async({
-                vert: loadShaderSource( spec.vert ),
-                frag: loadShaderSource( spec.frag ),
-            }, function( shaders ) {
-                that.create( shaders );
-                callback( that );
-            });
+        // check source arguments
+        if ( !spec.vert ) {
+            console.error( "Vertex shader argument has not been provided, " +
+                "shader initialization aborted." );
         }
+        if ( !spec.frag ) {
+            console.error( "Fragment shader argument has not been provided, " +
+                "shader initialization aborted." );
+        }
+        // create the shader
+        Util.async({
+            common: resolveSources( spec.common ),
+            vert: resolveSources( spec.vert ),
+            frag: resolveSources( spec.frag ),
+        }, function( shaders ) {
+            that.create( shaders );
+            if ( callback ) {
+                callback( that );
+            }
+        });
     }
 
     /**
@@ -227,11 +269,15 @@
     Shader.prototype.create = function( shaders ) {
         // once all shader sources are loaded
         var gl = this.gl,
-            vert = shaders.vert,
-            frag = shaders.frag,
-            fragmentShader = compileShader( gl, frag, "FRAGMENT_SHADER" ),
-            vertexShader = compileShader( gl, vert, "VERTEX_SHADER" ),
+            common = shaders.common.join( "" ),
+            vert = shaders.vert.join( "" ),
+            frag = shaders.frag.join( "" ),
+            vertexShader,
+            fragmentShader,
             attributesAndUniforms;
+        // compile shaders
+        vertexShader = compileShader( gl, common + vert, "VERTEX_SHADER" );
+        fragmentShader = compileShader( gl, common + frag, "FRAGMENT_SHADER" );
         // parse source for attribute and uniforms
         attributesAndUniforms = getAttributesAndUniformsFromSource( vert, frag );
         // set member attributes
