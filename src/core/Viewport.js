@@ -4,50 +4,26 @@
 
     var WebGLContext = require('./WebGLContext'),
         Stack = require('../util/Stack'),
-        ASPECT_RATIO = 1.5,
         _stack = new Stack();
 
-    function executeCallbacks( callbacks, width, height ) {
-        var i;
-        for ( i=0; i<callbacks.length; i++ ) {
-            callbacks[i]( height, width );
-        }
-    }
-
-    function getResizeCallback( viewport ) {
-        return function() {
-            var gl = viewport.gl,
-                windowHeight = window.innerHeight,
-                windowWidth = window.innerWidth;
-            viewport.height = windowWidth / viewport.aspectRatio;
-            if ( viewport.height <= windowHeight ) {
-                viewport.width = windowWidth;
-            } else {
-                viewport.width = windowHeight * viewport.aspectRatio;
-                viewport.height = windowHeight;
-            }
+    function set( viewport, width, height ) {
+        var gl = viewport.gl;
+        if ( width && height ) {
+            gl.viewport( 0, 0, width, height );
+            gl.canvas.height = height;
+            gl.canvas.width = width;
+        } else {
+            gl.viewport( 0, 0, viewport.width, viewport.height );
             gl.canvas.height = viewport.height;
             gl.canvas.width = viewport.width;
-            executeCallbacks( viewport.callbacks, viewport.height, viewport.width );
-        };
-    }
-
-    function set( viewport, width, height ) {
-        if ( width && height ) {
-            viewport.gl.viewport( 0, 0, width, height );
-        } else {
-            viewport.gl.viewport( 0, 0, viewport.width, viewport.height );
         }
     }
 
     function Viewport( spec ) {
         spec = spec || {};
+        this.width = spec.width || window.innerWidth;
+        this.height = spec.height || window.innerHeight;
         this.gl = WebGLContext.get();
-        this.aspectRatio = spec.aspectRatio || ASPECT_RATIO;
-        this.callbacks = [];
-        this.onResize = getResizeCallback( this );
-        window.addEventListener( 'resize', this.onResize );
-        this.onResize();
     }
 
     /**
