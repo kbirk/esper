@@ -156,8 +156,8 @@
     Texture2D.prototype.pop = function( location ) {
         var top;
         if ( !_stack[ location ] ) {
-            console.log("No texture was bound to texture unit '" + location +
-                "'. Command ignored.");
+            console.warn( "No texture was bound to texture unit '" + location +
+                "'. Command ignored." );
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();
@@ -275,11 +275,11 @@
      */
     Texture2D.prototype.resize = function( width, height ) {
         if ( this.image ) {
-            console.log( "Cannot resize image based Texture2D" );
+            console.error( "Cannot resize image based Texture2D" );
             return;
         }
         if ( !width || !height ) {
-            console.log("Width or height arguments missing, command ignored.");
+            console.warn( "Width or height arguments missing, command ignored." );
             return;
         }
         this.bufferData( this.data, width, height );

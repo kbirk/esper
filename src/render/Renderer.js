@@ -11,17 +11,12 @@
     }
 
     Renderer.prototype.render = function( camera, entitiesByTechnique ) {
-        var techniques = this.techniques,
-            technique,
-            entities,
-            i;
-        for ( i=0; i<techniques.length; i++ ) {
-            technique = techniques[i];
-            entities = entitiesByTechnique[ technique.id ];
+        this.techniques.forEach( function( technique ) {
+            var entities = entitiesByTechnique[ technique.id ];
             if ( entities && entities.length > 0 ) {
                 technique.execute( camera, entities );
             }
-        }
+        });
     };
 
     module.exports = Renderer;

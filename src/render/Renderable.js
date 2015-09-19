@@ -35,6 +35,15 @@
         return attributes;
     }
 
+    function createIndices( n ) {
+        var indices = new Array( n ),
+            i;
+        for ( i=0; i<n; i++ ) {
+            indices[i] = i;
+        }
+        return indices;
+    }
+
     function Renderable( spec ) {
         spec = spec || {};
         if ( spec.vertexBuffer || spec.vertexBuffers ) {
@@ -51,7 +60,7 @@
             this.indexBuffer = spec.indexBuffer;
         } else {
             // create element array buffer
-            this.indexBuffer = new IndexBuffer( spec.indices, spec.options );
+            this.indexBuffer = new IndexBuffer( spec.indices || createIndices( this.vertexPackage ), spec.options );
         }
         return this;
     }

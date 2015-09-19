@@ -220,6 +220,18 @@
     }
 
     /**
+     * Clears the shader attributes due to aborting of initialization.
+     *
+     * @param {Shader} shader - The Shader object.
+     */
+    function abortShader( shader ) {
+        shader.id = null;
+        shader.attributes = null;
+        shader.uniforms = null;
+        return shader;
+    }
+
+    /**
      * Instantiates a Shader object.
      * @class Shader
      * @classdesc A shader class to assist in compiling and linking webgl
@@ -278,6 +290,10 @@
         // compile shaders
         vertexShader = compileShader( gl, common + vert, "VERTEX_SHADER" );
         fragmentShader = compileShader( gl, common + frag, "FRAGMENT_SHADER" );
+        if ( !vertexShader || !fragmentShader ) {
+            console.error( "Aborting instantiation of shader due to compilation errors." );
+            return abortShader( this );
+        }
         // parse source for attribute and uniforms
         attributesAndUniforms = getAttributesAndUniformsFromSource( vert, frag );
         // set member attributes
@@ -296,6 +312,8 @@
         if ( !gl.getProgramParameter( this.id, gl.LINK_STATUS ) ) {
             console.error( "An error occured linking the shader: " +
                 gl.getProgramInfoLog( this.id ) );
+            console.error( "Aborting instantiation of shader due to linking errors." );
+            return abortShader( this );
         }
         // get shader uniform locations
         getUniformLocations( this );
@@ -343,6 +361,10 @@
      * @returns {Shader} The shader object, for chaining.
      */
     Shader.prototype.setUniform = function( uniformName, uniform ) {
+        if ( !this.id ) {
+            console.warn("Attempting to use an incomplete shader, ignoring command.");
+            return;
+        }
         var uniformSpec = this.uniforms[ uniformName ],
             func,
             type,
@@ -350,13 +372,13 @@
             value;
         // ensure that the uniform spec exists for the name
         if ( !uniformSpec ) {
-            console.error( 'No uniform found under name"' + uniformName +
+            console.warn( 'No uniform found under name"' + uniformName +
                 '", command ignored' );
             return;
         }
         // ensure that the uniform argument is defined
         if ( uniform === undefined ) {
-            console.error( 'Argument passed for uniform "' + uniformName +
+            console.warn( 'Argument passed for uniform "' + uniformName +
                 '" is undefined, command ignored' );
             return;
         }

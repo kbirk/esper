@@ -38,7 +38,16 @@
         OBJMTLLoader: require('./util/obj/OBJMTLLoader'),
         Util: require('./util/Util'),
         // debug
-        Debug: require('./util/debug/Debug')
+        Debug: require('./util/debug/Debug'),
+        // math
+        Mat33: require('alfador').Mat33,
+        Mat44: require('alfador').Mat44,
+        Vec2: require('alfador').Vec2,
+        Vec3: require('alfador').Vec3,
+        Vec4: require('alfador').Vec4,
+        Quaternion: require('alfador').Quaternion,
+        Transform: require('alfador').Transform,
+        Triangle: require('alfador').Triangle
     };
 
 

@@ -87,7 +87,7 @@
         var contextWrapper,
             gl;
         try {
-            // get WebGL context
+            // get WebGL context, fallback to experimental
             gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
             // wrap context
             contextWrapper = {

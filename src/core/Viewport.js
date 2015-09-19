@@ -27,6 +27,20 @@
     }
 
     /**
+     * Updates the viewport objects width and height.
+     * @memberof Viewport
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+    Viewport.prototype.resize = function( width, height ) {
+        if ( width && height ) {
+            this.width = width;
+            this.height = height;
+        }
+        return this;
+    };
+
+    /**
      * Sets the viewport object and pushes it to the front of the stack.
      * @memberof Viewport
      *
@@ -58,10 +72,6 @@
             set( this );
         }
         return this;
-    };
-
-    Viewport.prototype.resize = function( callback ) {
-        this.callbacks.push( callback );
     };
 
     module.exports = Viewport;

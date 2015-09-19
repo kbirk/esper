@@ -11,23 +11,20 @@
      * @param {Function} forEachMesh - The RenderPass forEachMesh function.
      */
     function forEachRecursive( entity, forEachEntity, forEachMesh ) {
-        var meshes = entity.meshes,
-            children = entity.children,
-            i;
         // for each entity
         if ( forEachEntity ) {
             forEachEntity( entity );
         }
         // for each Mesh
         if ( forEachMesh ) {
-            for ( i=0; i<meshes.length; i++ ) {
-                forEachMesh( meshes[i], entity );
-            }
+            entity.meshes.forEach( function( mesh ) {
+                forEachMesh( mesh, entity );
+            });
         }
         // depth first traversal
-        for ( i=0; i<children.length; i++ ) {
-            forEachRecursive( children[i], forEachEntity, forEachMesh );
-        }
+        entity.children.forEach( function( child ) {
+            forEachRecursive( child, forEachEntity, forEachMesh );
+        });
     }
 
     function RenderPass( spec ) {
@@ -44,19 +41,19 @@
 
     RenderPass.prototype.execute = function( camera, entities ) {
         var before = this.before,
-            after = this.after,
-            i;
+            forEachEntity = this.forEachEntity,
+            forEachMesh = this.forEachMesh,
+            after = this.after;
         // setup function
         if ( before ) {
             before( camera );
         }
         // rendering functions
-        for ( i=0; i<entities.length; i++ ) {
-            forEachRecursive(
-                entities[i],
-                this.forEachEntity,
-                this.forEachMesh );
-        }
+        entities.forEach( function( entity ) {
+            if ( entity ) {
+                forEachRecursive( entity, forEachEntity, forEachMesh );
+            }
+        });
         // teardown function
         if ( after ) {
             after();

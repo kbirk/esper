@@ -21,7 +21,7 @@
                  attribute.length > 0 ) {
                 goodAttributes.push( attribute );
             } else {
-                console.log( "Error parsing attribute of index " + i +
+                console.error( "Error parsing attribute of index " + i +
                     ", attribute discarded" );
             }
         }

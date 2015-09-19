@@ -58,7 +58,7 @@
     VertexBuffer.prototype.bufferSubData = function( array, offset ) {
         var gl = this.gl;
         if ( !this.id ) {
-            console.error( "VertexBuffer has not been intially buffered, " +
+            console.error( "VertexBuffer has not been initially buffered, " +
                 "command ignored" );
             return;
         }

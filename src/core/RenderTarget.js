@@ -225,6 +225,7 @@
     RenderTarget.prototype.resize = function( width, height ) {
         var key;
         if ( !width || !height ) {
+            console.warn( "Width or height arguments missing, command ignored." );
             return this;
         }
         for ( key in this.textures ) {

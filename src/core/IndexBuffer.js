@@ -47,7 +47,7 @@
                 array = new Uint16Array( array );
             } else if ( array instanceof Uint32Array ) {
                 // if uint32, downgrade to uint16
-                console.log( "Cannot create IndexBuffer of format " +
+                console.warn( "Cannot create IndexBuffer of format " +
                     "gl.UNSIGNED_INT as OES_element_index_uint is not " +
                     "supported, defaulting to gl.UNSIGNED_SHORT" );
                 array = new Uint16Array( array );
@@ -119,7 +119,7 @@
      */
     IndexBuffer.prototype.draw = function() {
         if ( _boundBuffer === null ) {
-            console.log( "No IndexBuffer is bound, command ignored." );
+            console.warn( "No IndexBuffer is bound, command ignored." );
             return;
         }
         var gl = this.gl;
