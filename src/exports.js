@@ -5,13 +5,13 @@
     module.exports = {
         // core
         CubeMapRenderTarget: require('./core/CubeMapRenderTarget'),
-        ElementArrayBuffer: require('./core/IndexBuffer'),
         RenderTarget: require('./core/RenderTarget'),
         Shader: require('./core/Shader'),
         Texture2D: require('./core/Texture2D'),
         TextureCubeMap: require('./core/TextureCubeMap'),
         VertexBuffer: require('./core/VertexBuffer'),
         VertexPackage: require('./core/VertexPackage'),
+        IndexBuffer: require('./core/IndexBuffer'),
         Viewport: require('./core/Viewport'),
         WebGLContext: require('./core/WebGLContext'),
         // render
