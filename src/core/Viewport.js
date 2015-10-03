@@ -10,12 +10,8 @@
         var gl = viewport.gl;
         if ( width && height ) {
             gl.viewport( 0, 0, width, height );
-            gl.canvas.height = height;
-            gl.canvas.width = width;
         } else {
             gl.viewport( 0, 0, viewport.width, viewport.height );
-            gl.canvas.height = viewport.height;
-            gl.canvas.width = viewport.width;
         }
     }
 
@@ -36,6 +32,8 @@
         if ( width && height ) {
             this.width = width;
             this.height = height;
+            this.gl.canvas.height = height;
+            this.gl.canvas.width = width;
         }
         return this;
     };
