@@ -140,8 +140,17 @@
             nextObject = null;
         }
 
+        function addMtlLib( line ) {
+            var mtllib = line.substring( 7 ).trim();
+            model.mtllib = model.mtllib || [];
+            if ( model.mtllib.indexOf( mtllib ) === -1 ) {
+                // only add if it already isn't there
+                model.mtllib.push( mtllib );
+            }
+        }
+
         function getPosition( value ) {
-			var index = parseInt( value );
+			var index = parseInt( value, 10 );
 			if ( index >= 0  ) {
                 return positions[ index - 1 ];
             }
@@ -149,7 +158,7 @@
 		}
 
         function getUV( value ) {
-			var index = parseInt( value );
+			var index = parseInt( value, 10 );
 			if ( index >= 0  ) {
                 return uvs[ index - 1 ];
             }
@@ -157,7 +166,7 @@
 		}
 
         function getNormal( value ) {
-			var index = parseInt( value );
+			var index = parseInt( value, 10 );
 			if ( index >= 0  ) {
                 return normals[ index - 1 ];
             }
@@ -367,8 +376,7 @@
                 addEmptyMesh( nextGroup, nextObject, line.substring( 7 ).trim() );
             } else if ( /^mtllib /.test( line ) ) {
                 // mtl file
-                model.mtllib = model.mtllib || [];
-                model.mtllib.push( line.substring( 7 ).trim() );
+                addMtlLib( line );
             }
         }
         if ( model.meshes.length === 0 ) {

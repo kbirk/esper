@@ -8,20 +8,6 @@
         MTLLoader = require('./MTLLoader');
 
     /**
-     * Returns a function to load an MTL file, and execute a callback upon
-     * completion.
-     *
-     * @param {String} url - The url for the MTL file to load.
-     *
-     * @returns {Function} The function to load the MTL file.
-     */
-    function loadMtl( url ) {
-        return function( done ) {
-            MTLLoader.load( url, done );
-        };
-    }
-
-    /**
      * Iterates through the mitlib attribute of the model and loads materials
      * from all associated .mtl files. Passes the material specification objects
      * to the callback function.
@@ -31,24 +17,24 @@
      * @param {Function} callback - The callback function executed upon completion.
      */
     function loadMaterials( model, baseUrl, callback ) {
-        var jobs = [],
-            i;
-        // if not material, exit early
+        var jobs = [];
+        // if no material, exit early
         if ( !model.mtllib ) {
             callback( model );
             return;
         }
         // set up the material loading job
-        for ( i=0; i<model.mtllib.length; i++ ) {
-            jobs.push( loadMtl( baseUrl + '/' + model.mtllib[ i ] ) );
-        }
+        model.mtllib.forEach( function( mtllib ) {
+            jobs.push( function( done ) {
+                MTLLoader.load( baseUrl + '/' + mtllib, done );
+            });
+        });
         // dispatch all material loading jobs
         Util.async( jobs, function( materials ) {
-            var materialsByName = {},
-                i;
-            for ( i=0; i<materials.length; i++ ) {
-                Util.extend( materialsByName, materials[i] );
-            }
+            var materialsByName = {};
+            materials.forEach( function( material ) {
+                Util.extend( materialsByName, material );
+            });
             callback( materialsByName );
         });
     }
@@ -70,11 +56,9 @@
                 // then load and parse MTL file
                 loadMaterials( model, path.dirname( url ), function( materialsById ) {
                     // add each material to the associated mesh
-                    var meshes = model.meshes,
-                        i;
-                    for ( i=0; i<meshes.length; i++ ) {
-                        meshes[i].material = materialsById[ meshes[i].material ];
-                    }
+                    model.meshes.forEach( function( mesh ) {
+                        mesh.material = materialsById[ mesh.material ];
+                    });
                     callback( model );
                 });
             });
