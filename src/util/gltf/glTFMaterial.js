@@ -198,7 +198,8 @@
                     format: TEXTURE_FORMATS[ texture.format ] || TEXTURE_FORMATS.default,
                     internalFormat: TEXTURE_INTERNAL_FORMATS[ texture.internalFormat ] || TEXTURE_INTERNAL_FORMATS.default,
                     type: TEXTURE_TYPES[ texture.type ] || TEXTURE_TYPES.default,
-                    wrap: "REPEAT"
+                    wrap: "REPEAT",
+                    invertY: false
                 });
             }
         }

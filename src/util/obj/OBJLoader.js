@@ -295,7 +295,7 @@
                 // ["vt 0.1 0.2", "0.1", "0.2"]
                 uvs.push([
                     parseFloat( result[ 1 ] ),
-                    parseFloat( 1 - result[ 2 ] ) // invert
+                    parseFloat( result[ 2 ] )
                 ]);
             } else if ( ( result = FACE_V_REGEX.exec( line ) ) !== null ) {
                 // face of positions
