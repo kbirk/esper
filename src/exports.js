@@ -27,6 +27,7 @@
         RenderPass: require('./render/RenderPass'),
         RenderTechnique: require('./render/RenderTechnique'),
         Skeleton: require('./render/Skeleton'),
+        Sprite: require('./render/Sprite'),
         // shapes
         Cube: require('./util/shapes/Cube'),
         Cylinder: require('./util/shapes/Cylinder'),

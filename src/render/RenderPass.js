@@ -9,21 +9,28 @@
      * @param {Entity} entity - The Entity object.
      * @param {Function} forEachEntity - The RenderPass forEachEntity function.
      * @param {Function} forEachMesh - The RenderPass forEachMesh function.
+     * @param {Function} forEachSprite - The RenderPass forEachSprite function.
      */
-    function forEachRecursive( entity, forEachEntity, forEachMesh ) {
+    function forEachRecursive( entity, forEachEntity, forEachMesh, forEachSprite ) {
         // for each entity
         if ( forEachEntity ) {
             forEachEntity( entity );
         }
-        // for each Mesh
-        if ( forEachMesh ) {
+        // for each mesh
+        if ( forEachMesh && entity.meshes ) {
             entity.meshes.forEach( function( mesh ) {
                 forEachMesh( mesh, entity );
             });
         }
+        // for each sprite
+        if ( forEachSprite && entity.sprites ) {
+            entity.sprites.forEach( function( sprite ) {
+                forEachSprite( sprite, entity );
+            });
+        }
         // depth first traversal
         entity.children.forEach( function( child ) {
-            forEachRecursive( child, forEachEntity, forEachMesh );
+            forEachRecursive( child, forEachEntity, forEachMesh, forEachSprite );
         });
     }
 
@@ -32,6 +39,7 @@
             this.before = spec.before || null;
             this.forEachEntity = spec.forEachEntity || null;
             this.forEachMesh = spec.forEachMesh || null;
+            this.forEachSprite = spec.forEachSprite || null;
             this.after = spec.after || null;
         } else if ( typeof spec === 'function' ) {
             this.before = spec;
@@ -43,6 +51,7 @@
         var before = this.before,
             forEachEntity = this.forEachEntity,
             forEachMesh = this.forEachMesh,
+            forEachSprite = this.forEachSprite,
             after = this.after;
         // setup function
         if ( before ) {
@@ -51,7 +60,11 @@
         // rendering functions
         entities.forEach( function( entity ) {
             if ( entity ) {
-                forEachRecursive( entity, forEachEntity, forEachMesh );
+                forEachRecursive(
+                    entity,
+                    forEachEntity,
+                    forEachMesh,
+                    forEachSprite );
             }
         });
         // teardown function

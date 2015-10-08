@@ -372,7 +372,7 @@
             value;
         // ensure that the uniform spec exists for the name
         if ( !uniformSpec ) {
-            console.warn( 'No uniform found under name"' + uniformName +
+            console.warn( 'No uniform found under name "' + uniformName +
                 '", command ignored' );
             return;
         }
