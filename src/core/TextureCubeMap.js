@@ -116,6 +116,7 @@
         this.id = this.gl.createTexture();
         this.wrap = spec.wrap || "CLAMP_TO_EDGE";
         this.filter = spec.filter || "LINEAR";
+        this.invertY = spec.invertY !== undefined ? spec.invertY : false;
         // create cube map based on input
         if ( spec.images ) {
             // multiple Image objects
@@ -147,7 +148,7 @@
             this.format = spec.format || "RGBA";
             this.internalFormat = this.format; // webgl requires format === internalFormat
             this.type = spec.type || "UNSIGNED_BYTE";
-            this.mipMap = spec.mipMap || false;
+            this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
             FACES.forEach( function( face ) {
                 var data = ( spec.data ? spec.data[face] : spec.data ) || null;
                 that.bufferFaceData( face, data, spec.width, spec.height );
@@ -219,8 +220,9 @@
         if ( data instanceof HTMLImageElement ) {
             this.images = this.images || {};
             this.images[ face ] = ensurePowerOfTwo( data );
-            this.filter = "LINEAR";
+            this.filter = "LINEAR"; // must be linear for mipmapping
             this.mipMap = true;
+            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             gl.texImage2D(
                 faceTarget,
                 0, // level

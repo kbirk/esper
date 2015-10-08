@@ -82,6 +82,7 @@
         this.id = this.gl.createTexture();
         this.wrap = spec.wrap || "REPEAT";
         this.filter = spec.filter || "LINEAR";
+        this.invertY = spec.invertY !== undefined ? spec.invertY : true;
         // buffer the texture based on arguments
         if ( spec.image ) {
             // use existing Image object
@@ -92,7 +93,7 @@
             var image = new Image();
             image.onload = function() {
                 that.bufferData( image );
-                that.setParameters( this );
+                that.setParameters( that );
                 callback( that );
             };
             image.src = spec.url;
@@ -123,7 +124,7 @@
                 this.type = spec.type || "UNSIGNED_BYTE";
             }
             this.internalFormat = this.format; // webgl requires format === internalFormat
-            this.mipMap = spec.mipMap || false;
+            this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
             this.bufferData( spec.data || null, spec.width, spec.height );
             this.setParameters( this );
         }
@@ -183,11 +184,14 @@
         var gl = this.gl;
         this.push();
         if ( data instanceof HTMLImageElement ) {
-            data = ensurePowerOfTwo( data );
-            this.image = data;
+            // set dimensions before resizing
             this.width = data.width;
             this.height = data.height;
+            data = ensurePowerOfTwo( data );
+            this.image = data;
+            //this.filter = "LINEAR"; // must be linear for mipmapping
             this.mipMap = true;
+            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             gl.texImage2D(
                 gl.TEXTURE_2D,
                 0, // level
@@ -247,7 +251,7 @@
             // set filter parameters
             this.filter = parameters.filter;
             var minFilter = this.filter.min || this.filter;
-            if ( this.minMap ) {
+            if ( this.mipMap ) {
                 // append min mpa suffix to min filter
                 minFilter += "_MIPMAP_LINEAR";
             }
