@@ -205,6 +205,10 @@
                     success: function( src ) {
                         var parsed = parseMTLSource( src );
                         generateMaterials( parsed, baseUrl, callback );
+                    },
+                    error: function(err) {
+                        console.error( err );
+                        callback( null );
                     }
                 });
         }

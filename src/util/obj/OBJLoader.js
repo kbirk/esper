@@ -406,6 +406,10 @@
                         var parsed = parseOBJSource( src ),
                             model = convertTrianglesToArrays( parsed );
                             callback( model );
+                    },
+                    error: function(err) {
+                        console.error( err );
+                        callback( null );
                     }
                 });
         }

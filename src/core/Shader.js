@@ -151,7 +151,11 @@
                 url,
                 {
                     responseType: "text",
-                    success: done
+                    success: done,
+                    error: function(err) {
+                        console.error( err );
+                        done( null );
+                    }
                 });
         };
     }
@@ -362,7 +366,10 @@
      */
     Shader.prototype.setUniform = function( uniformName, uniform ) {
         if ( !this.id ) {
-            console.warn("Attempting to use an incomplete shader, ignoring command.");
+            if ( !this.hasLoggedError ) {
+                console.warn("Attempting to use an incomplete shader, ignoring command.");
+                this.hasLoggedError = true;
+            }
             return;
         }
         var uniformSpec = this.uniforms[ uniformName ],
