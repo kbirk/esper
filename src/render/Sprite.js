@@ -4,8 +4,8 @@
 
     var Renderable = require('./Renderable'),
         Geometry = require('./Geometry'),
+        SpriteAnimation = require('./SpriteAnimation'),
         Quad = require('../util/shapes/Quad'),
-        Material = require('./Material'),
         _geometry,
         _renderable;
 
@@ -33,10 +33,32 @@
         spec = spec || {};
         this.renderable = getRenderable();
         this.geometry = getGeometry();
-        this.material = new Material( spec );
-        this.width = spec.width || this.material.diffuseTexture.width;
-        this.height = spec.height || this.material.diffuseTexture.height;
+        this.animations = {};
+        if ( spec.animations ) {
+            for ( var key in spec.animations ) {
+                if ( spec.animations.hasOwnProperty( key ) ) {
+                    this.addAnimation( key, spec.animations[ key ] );
+                }
+            }
+        }
     }
+
+    Sprite.prototype.addAnimation = function( animationId, animation ) {
+        if ( animation instanceof SpriteAnimation ) {
+            this.animations[ animationId ] = animation;
+        } else {
+            this.animations[ animationId ] = new SpriteAnimation( animation );
+        }
+    };
+
+    Sprite.prototype.getFrame = function( animationId, timestamp ) {
+        var animation = this.animations[ animationId ];
+        if ( !animation ) {
+            console.warn( 'Animation of id"' + animationId + '" does not exist, returning null.' );
+            return null;
+        }
+        return animation.getFrame( timestamp );
+    };
 
     Sprite.prototype.draw = function() {
         this.renderable.draw();
