@@ -124,6 +124,10 @@
                             responseType: "arraybuffer",
                             success: function( arrayBuffer ) {
                                 done( arrayBuffer );
+                            },
+                            error: function(err) {
+                                console.error( err );
+                                done( null );
                             }
                         });
                 };
