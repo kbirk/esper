@@ -78,17 +78,17 @@
      * Attempts to create a WebGLRenderingContext wrapped inside an object which
      * will also store the extension query results.
      *
-     * @param {HTMLCanvasElement} The Canvas element object to
-     *     create the context under.
+     * @param {HTMLCanvasElement} The Canvas element object to create the context under.
+     * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
      *
      * @returns {Object} contextWrapper - The context wrapper.
      */
-    function createContextWrapper( canvas ) {
+    function createContextWrapper( canvas, options ) {
         var contextWrapper,
             gl;
         try {
             // get WebGL context, fallback to experimental
-            gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+            gl = canvas.getContext( "webgl", options ) || canvas.getContext( "experimental-webgl", options );
             // wrap context
             contextWrapper = {
                 id: canvas.id,
@@ -108,7 +108,7 @@
             console.error( e.message );
         }
         if ( !gl ) {
-            alert( "Unable to initialize WebGL. Your browser may not " +
+            console.error( "Unable to initialize WebGL. Your browser may not " +
                 "support it." );
         }
         return contextWrapper;
@@ -128,7 +128,7 @@
             var canvas = getCanvas( arg );
             if ( !canvas ) {
                 console.error( "Context could not be bound for argument of " +
-                    "type '"+( typeof arg )+"', command ignored." );
+                    "type '" + ( typeof arg ) + "', command ignored." );
                 return this;
             }
             if ( !_contextsById[ canvas.id ] ) {
@@ -148,10 +148,11 @@
          * context. If no context is bound, it will return 'null'.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
          *
          * @returns {WebGLRenderingContext} The WebGLRenderingContext context object.
          */
-        get: function( arg ) {
+        get: function( arg, options ) {
             if ( !arg ) {
                 if ( !_boundContext ) {
                     // no bound context or argument
@@ -165,7 +166,7 @@
             // get canvas element
             var canvas = getCanvas( arg );
             // try to find or create context
-            if ( !canvas || ( !_contextsById[ canvas.id ] && !createContextWrapper( canvas ) ) ) {
+            if ( !canvas || ( !_contextsById[ canvas.id ] && !createContextWrapper( canvas, options ) ) ) {
                 console.error( "Context could not be found or created for " +
                     "argument of type'"+( typeof arg )+"', returning 'null'." );
                 return null;
