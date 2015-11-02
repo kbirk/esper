@@ -17,9 +17,10 @@
 
     function Viewport( spec ) {
         spec = spec || {};
-        this.width = spec.width || window.innerWidth;
-        this.height = spec.height || window.innerHeight;
         this.gl = WebGLContext.get();
+        this.resize(
+            spec.width || window.innerWidth,
+            spec.height || window.innerHeight );
     }
 
     /**
