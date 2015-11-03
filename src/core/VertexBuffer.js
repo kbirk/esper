@@ -115,6 +115,22 @@
         }
     };
 
+    VertexBuffer.prototype.draw = function( options ) {
+        options = options || {};
+        if ( !options.count ) {
+            console.warn('Count must be defined, ignoring command.');
+            return;
+        }
+        var gl = this.gl;
+        var mode = gl[ options.mode.toUpperCase() ] || gl.POINTS;
+        var offset = options.offset !== undefined ? options.offset : 0;    
+        var count = options.count;
+        gl.drawArrays(
+            mode, // primitive type
+            offset, // offset
+            count ); // count
+    };
+
     VertexBuffer.prototype.unbind = function() {
         // if no buffer is bound, exit early
         if ( _boundBuffer === null ) {

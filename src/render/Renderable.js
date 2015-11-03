@@ -35,15 +35,6 @@
         return attributes;
     }
 
-    function createIndices( n ) {
-        var indices = new Array( n ),
-            i;
-        for ( i=0; i<n; i++ ) {
-            indices[i] = i;
-        }
-        return indices;
-    }
-
     function Renderable( spec ) {
         spec = spec || {};
         if ( spec.vertexBuffer || spec.vertexBuffers ) {
@@ -56,23 +47,35 @@
             this.vertexBuffers = [ new VertexBuffer( vertexPackage ) ];
         }
         if ( spec.indexBuffer ) {
-            // use existing element array buffer
+            // use existing index buffer
             this.indexBuffer = spec.indexBuffer;
         } else {
-            // create element array buffer
-            this.indexBuffer = new IndexBuffer( spec.indices || createIndices( this.vertexPackage ), spec.options );
+            if ( spec.indices ) {
+                // create index buffer
+                this.indexBuffer = new IndexBuffer( spec.indices, spec.options );
+            }
         }
         return this;
     }
 
-    Renderable.prototype.draw = function() {
-        var vertexBuffers = this.vertexBuffers,
-            i;
-        for ( i=0; i<vertexBuffers.length; i++ ) {
-            vertexBuffers[i].bind();
+    Renderable.prototype.draw = function( options ) {
+        if ( this.indexBuffer ) {
+            // use index buffer to draw elements
+            this.vertexBuffers.forEach( function( vertexBuffer ) {
+                vertexBuffer.bind();
+                // no advantage to unbinding as there is no stack used
+            });
+            this.indexBuffer.bind();
+            this.indexBuffer.draw( options );
+            // no advantage to unbinding as there is no stack used
+        } else {
+            // no index buffer, use draw arrays
+            this.vertexBuffers.forEach( function( vertexBuffer ) {
+                vertexBuffer.bind();
+                vertexBuffer.draw( options.count, options );
+                // no advantage to unbinding as there is no stack used
+            });
         }
-        this.indexBuffer.bind();
-        this.indexBuffer.draw();
         return this;
     };
 

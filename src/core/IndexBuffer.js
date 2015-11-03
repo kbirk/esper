@@ -115,19 +115,25 @@
      * Execute the draw command for the bound buffer.
      * @memberof IndexBuffer
      *
+     * @param {Object} options - The options to pass to 'drawElements'. Optional.
+     *
      * @returns {IndexBuffer} Returns the index buffer object for chaining.
      */
-    IndexBuffer.prototype.draw = function() {
+    IndexBuffer.prototype.draw = function( options ) {
+        options = options || {};
         if ( _boundBuffer === null ) {
             console.warn( "No IndexBuffer is bound, command ignored." );
             return;
         }
         var gl = this.gl;
+        var mode = gl[ options.mode ] || gl[ this.mode ];
+        var offset = options.offset !== undefined ? options.offset : this.offset;
+        var count = options.count !== undefined ? options.count : this.count;
         gl.drawElements(
-            gl[ this.mode ],
-            this.count,
+            mode,
+            count,
             gl[ this.type ],
-            this.offset );
+            offset );
         return this;
     };
 
