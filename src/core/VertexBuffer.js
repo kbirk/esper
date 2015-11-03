@@ -17,10 +17,12 @@
         vertexBuffer.pointers = attributePointers;
     }
 
-    function VertexBuffer( array, attributePointers ) {
+    function VertexBuffer( array, attributePointers, options ) {
         this.id = 0;
         this.pointers = {};
         this.gl = WebGLContext.get();
+        this.offset = ( options.offset !== undefined ) ? options.offset : 0;
+        this.mode = options.mode || "TRIANGLES";
         if ( array ) {
             if ( array instanceof VertexPackage ) {
                 // VertexPackage argument
@@ -30,6 +32,7 @@
                 // WebGLBuffer argument
                 this.id = array;
                 setAttributePointers( this, attributePointers );
+                this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
                 // Array or ArrayBuffer argument
                this.bufferData( array );
@@ -117,14 +120,14 @@
 
     VertexBuffer.prototype.draw = function( options ) {
         options = options || {};
-        if ( !options.count ) {
-            console.warn('Count must be defined, ignoring command.');
+        if ( _boundBuffer === null ) {
+            console.warn( "No VertexBuffer is bound, command ignored." );
             return;
         }
         var gl = this.gl;
-        var mode = gl[ options.mode.toUpperCase() ] || gl.POINTS;
-        var offset = options.offset !== undefined ? options.offset : 0;    
-        var count = options.count;
+        var mode = gl[ options.mode ] || gl[ this.mode ] || gl.TRIANGLES;
+        var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
+        var count = ( options.count !== undefined ) ? options.count : this.count;
         gl.drawArrays(
             mode, // primitive type
             offset, // offset

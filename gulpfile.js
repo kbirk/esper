@@ -8,8 +8,9 @@
     function bundle( b, output ) {
         source = source || require('vinyl-source-stream');
         return b.bundle()
-            .on( 'error', function( e ) {
-                console.log( e );
+            .on( 'error', function( err ) {
+                console.log( err );
+                this.emit( 'end' );
             })
             .pipe( source( output ) )
             .pipe( gulp.dest( 'build' ) );
@@ -20,8 +21,9 @@
             uglify = require('gulp-uglify');
         source = source || require('vinyl-source-stream');
         return b.bundle()
-            .on( 'error', function( e ) {
-                console.log( e );
+            .on( 'error', function( err ) {
+                console.log( err );
+                this.emit( 'end' );
             })
             .pipe( source( output ) )
             .pipe( buffer() )
@@ -35,16 +37,15 @@
                 debug: !minify,
                 standalone: 'esper'
             });
-        if ( minify ) {
-            return bundleMin( b, output );
-        } else {
-            return bundle( b, output );
-        }
+        return ( minify ) ? bundleMin( b, output ) : bundle( b, output );
     }
 
     function handleError( err ) {
-        console.log( err.toString() );
-        process.exit(1);
+        console.error( err.toString() );
+        setTimeout( function() {
+            // set delay for full mocha error message
+            process.exit( 1 );
+        });
     }
 
     gulp.task('clean', function () {
@@ -68,7 +69,7 @@
             .on( 'finish', function () {
                 return gulp.src( [ './test/*.js' ] )
                     .pipe( mocha( { reporter: 'list' } )
-                        .on( 'error', handleError) ) // print mocha error message
+                        .on( 'error', handleError ) ) // print mocha error message
                     .pipe( istanbul.writeReports() ); // Creating the reports after tests runned
             });
     });
@@ -80,11 +81,11 @@
     });
 
     gulp.task('build-min-js', [ 'clean' ], function() {
-        return build( './src/exports.js', 'esper.min.js', true, false );
+        return build( './src/exports.js', 'esper.min.js', true );
     });
 
     gulp.task('build-js', [ 'clean' ], function() {
-        return build( './src/exports.js', 'esper.js', false, false );
+        return build( './src/exports.js', 'esper.js', false );
     });
 
     gulp.task('build', [ 'build-js', 'build-min-js' ], function() {

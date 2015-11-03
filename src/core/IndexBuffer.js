@@ -14,7 +14,6 @@
         options = options || {};
         this.gl = WebGLContext.get();
         this.id = 0;
-        this.count = 0;
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
         this.mode = options.mode || "TRIANGLES";
         if ( array instanceof WebGLBuffer ) {
@@ -126,9 +125,9 @@
             return;
         }
         var gl = this.gl;
-        var mode = gl[ options.mode ] || gl[ this.mode ];
-        var offset = options.offset !== undefined ? options.offset : this.offset;
-        var count = options.count !== undefined ? options.count : this.count;
+        var mode = gl[ options.mode ] || gl[ this.mode ] || gl.TRIANGLES;
+        var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
+        var count = ( options.count !== undefined ) ? options.count : this.count;
         gl.drawElements(
             mode,
             count,

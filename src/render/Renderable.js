@@ -35,7 +35,7 @@
         return attributes;
     }
 
-    function Renderable( spec ) {
+    function Renderable( spec, options ) {
         spec = spec || {};
         if ( spec.vertexBuffer || spec.vertexBuffers ) {
             // use existing vertex buffer
@@ -52,9 +52,15 @@
         } else {
             if ( spec.indices ) {
                 // create index buffer
-                this.indexBuffer = new IndexBuffer( spec.indices, spec.options );
+                this.indexBuffer = new IndexBuffer( spec.indices );
             }
         }
+        // store rendering options
+        this.options = {
+            mode: options.mode || null,
+            offset: options.offset !== undefined ? options.offset : null,
+            count: options.count !== undefined ? options.count : null
+        };
         return this;
     }
 
@@ -66,13 +72,13 @@
                 // no advantage to unbinding as there is no stack used
             });
             this.indexBuffer.bind();
-            this.indexBuffer.draw( options );
+            this.indexBuffer.draw( options || this.options );
             // no advantage to unbinding as there is no stack used
         } else {
             // no index buffer, use draw arrays
             this.vertexBuffers.forEach( function( vertexBuffer ) {
                 vertexBuffer.bind();
-                vertexBuffer.draw( options.count, options );
+                vertexBuffer.draw( options || this.options );
                 // no advantage to unbinding as there is no stack used
             });
         }
