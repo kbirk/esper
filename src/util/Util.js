@@ -94,52 +94,6 @@
         },
 
         /**
-         * Extend class a by class b. Does not recurse, simply overlays top
-         * attributes.
-         *
-         * @param {Object} a - Object a which is extended.
-         * @param {Object} b - Object b which extends a.
-         *
-         * @returns {Object} The extended object.
-         */
-        extend: function( a, b ) {
-            var key;
-            for( key in b ) {
-                if( b.hasOwnProperty( key ) ) {
-                    a[ key ] = b[ key ];
-                }
-            }
-            return a;
-        },
-
-        /**
-         * Deep copies the provided object. Object cannot be circular.
-         *
-         * @param {Object} json - The object to copy.
-         *
-         * @returns {Object} a deep copy of the provided object.
-         */
-        copy: function( json ) {
-            return JSON.parse( JSON.stringify( json ) );
-        },
-
-        /**
-         * Returns whether or not the object has no attributes.
-         *
-         * @param {Object} obj - The object to test.
-         *
-         * @returns {boolean} true if the object has keys, false if not.
-         */
-        isEmpty: function( obj ) {
-            for( var prop in obj ) {
-                if( obj.hasOwnProperty( prop ) ) {
-                    return false;
-                }
-            }
-            return true;
-        },
-
-        /**
          * Returns true if a provided array is a javscript TypedArray.
          *
          * @param {*} array - The variable to test.

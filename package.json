@@ -6,7 +6,6 @@
   "author": "Kevin Birk <birk.kevin@gmail.com>",
   "dependencies": {},
   "devDependencies": {
-    "alfador": "0.4.8",
     "browserify": "12.0.1",
     "del": "2.0.2",
     "gulp": "3.9.0",
