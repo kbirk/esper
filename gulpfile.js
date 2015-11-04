@@ -3,6 +3,7 @@
     "use strict";
 
     var gulp = require('gulp'),
+        runSequence = require('run-sequence'),
         source;
 
     function bundle( b, output ) {
@@ -64,10 +65,11 @@
     gulp.task('test', function() {
         var istanbul = require('gulp-istanbul'),
             mocha = require('gulp-mocha');
-        return gulp.src( './src/*.js' )
+        return gulp.src( './src/**/*.js' )
             .pipe( istanbul( { includeUntested: false } ) ) // Covering files
+            .pipe( istanbul.hookRequire() )
             .on( 'finish', function () {
-                return gulp.src( [ './test/*.js' ] )
+                return gulp.src( [ './test/**/*.js' ] )
                     .pipe( mocha( { reporter: 'list' } )
                         .on( 'error', handleError ) ) // print mocha error message
                     .pipe( istanbul.writeReports() ); // Creating the reports after tests runned
@@ -80,15 +82,19 @@
             .pipe( coveralls() );
     });
 
-    gulp.task('build-min-js', [ 'clean' ], function() {
+    gulp.task('build-min-js', function() {
         return build( './src/exports.js', 'esper.min.js', true );
     });
 
-    gulp.task('build-js', [ 'clean' ], function() {
+    gulp.task('build-js', function() {
         return build( './src/exports.js', 'esper.js', false );
     });
 
-    gulp.task('build', [ 'build-js', 'build-min-js' ], function() {
+    gulp.task('build', function( done ) {
+        runSequence(
+            [ 'clean', 'lint' ],
+            [ 'build-js', 'build-min-js' ],
+            done );
     });
 
     gulp.task('default', [ 'build' ], function() {
