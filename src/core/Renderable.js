@@ -67,9 +67,11 @@
 
     Renderable.prototype.draw = function( options ) {
         var overrides = options || {};
-        overrides.mode = options.mode || this.options.mode;
-        overrides.offset = ( options.offset !== undefined ) ? options.offset : this.options.offset;
-        overrides.count = ( options.count !== undefined ) ? options.count : this.options.count;
+        // override options if provided
+        overrides.mode = overrides.mode || this.options.mode;
+        overrides.offset = ( overrides.offset !== undefined ) ? overrides.offset : this.options.offset;
+        overrides.count = ( overrides.count !== undefined ) ? overrides.count : this.options.count;
+        // draw the renderable
         if ( this.indexBuffer ) {
             // use index buffer to draw elements
             this.vertexBuffers.forEach( function( vertexBuffer ) {
