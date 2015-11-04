@@ -67,9 +67,9 @@
             extension = EXTENSIONS[i];
             contextWrapper.extensions[ extension ] = gl.getExtension( extension );
             if ( contextWrapper.extensions[ extension ] ) {
-                console.log( extension + " extension loaded successfully" );
+                console.log( extension + " extension loaded successfully." );
             } else {
-                console.log( extension + " extension not supported" );
+                console.log( extension + " extension not supported." );
             }
         }
     }

@@ -367,7 +367,7 @@
     Shader.prototype.setUniform = function( uniformName, uniform ) {
         if ( !this.id ) {
             if ( !this.hasLoggedError ) {
-                console.warn("Attempting to use an incomplete shader, ignoring command.");
+                console.warn("Attempting to use an incomplete shader, command ignored." );
                 this.hasLoggedError = true;
             }
             return;
@@ -380,13 +380,13 @@
         // ensure that the uniform spec exists for the name
         if ( !uniformSpec ) {
             console.warn( 'No uniform found under name "' + uniformName +
-                '", command ignored' );
+                '", command ignored.' );
             return;
         }
         // ensure that the uniform argument is defined
         if ( uniform === undefined ) {
             console.warn( 'Argument passed for uniform "' + uniformName +
-                '" is undefined, command ignored' );
+                '" is undefined, command ignored.' );
             return;
         }
         // get the uniform location, type, and buffer function

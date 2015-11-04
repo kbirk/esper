@@ -37,6 +37,7 @@
 
     function Renderable( spec, options ) {
         spec = spec || {};
+        options = options || {};
         if ( spec.vertexBuffer || spec.vertexBuffers ) {
             // use existing vertex buffer
             this.vertexBuffers = spec.vertexBuffers || [ spec.vertexBuffer ];

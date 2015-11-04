@@ -14,17 +14,19 @@
         options = options || {};
         this.gl = WebGLContext.get();
         this.id = 0;
+        if ( array ) {
+            if ( array instanceof WebGLBuffer ) {
+                // if the argument is already a webglbuffer, simply wrap it
+                this.id = array;
+                this.type = options.type || "UNSIGNED_SHORT";
+                this.count = ( options.count !== undefined ) ? options.count : 0;
+            } else {
+                // otherwise, buffer it
+                this.bufferData( array );
+            }
+        }
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
         this.mode = options.mode || "TRIANGLES";
-        if ( array instanceof WebGLBuffer ) {
-            // if the argument is already a webglbuffer, simply wrap it
-            this.id = array;
-            this.type = options.type || "UNSIGNED_SHORT";
-            this.count = ( options.count !== undefined ) ? options.count : 0;
-        } else {
-            // otherwise, buffer it
-            this.bufferData( array );
-        }
     }
 
     /**
@@ -48,7 +50,7 @@
                 // if uint32, downgrade to uint16
                 console.warn( "Cannot create IndexBuffer of format " +
                     "gl.UNSIGNED_INT as OES_element_index_uint is not " +
-                    "supported, defaulting to gl.UNSIGNED_SHORT" );
+                    "supported, defaulting to gl.UNSIGNED_SHORT." );
                 array = new Uint16Array( array );
             }
         } else {
@@ -65,7 +67,7 @@
             this.type = "UNSIGNED_INT";
         } else {
             console.error( "IndexBuffer requires an Array or " +
-                "ArrayBuffer argument, command ignored" );
+                "ArrayBuffer argument, command ignored." );
             return;
         }
         // create buffer, store count

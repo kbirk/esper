@@ -185,7 +185,7 @@
         var top;
         if ( !_stack[ location ] ) {
             console.log("No texture was bound to texture unit '" + location +
-                "'. Command ignored.");
+                "', command ignored.");
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();
@@ -213,7 +213,7 @@
             faceTarget = gl[ FACE_TARGETS[ face ] ];
         if ( !faceTarget ) {
             console.log("Invalid face enumeration '"+ face +"' provided, " +
-                "ignoring command.");
+                "command ignored.");
         }
         // buffer face texture
         this.push();

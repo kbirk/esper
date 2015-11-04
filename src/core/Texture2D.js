@@ -158,7 +158,7 @@
         var top;
         if ( !_stack[ location ] ) {
             console.warn( "No texture was bound to texture unit '" + location +
-                "'. Command ignored." );
+                "', command ignored." );
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();

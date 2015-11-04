@@ -11,23 +11,24 @@
     function setAttributePointers( vertexBuffer, attributePointers ) {
         if ( !attributePointers ) {
             console.error( "VertexBuffer requires attribute pointers to be " +
-                "specified, command ignored" );
+                "specified, command ignored." );
             return;
         }
         vertexBuffer.pointers = attributePointers;
     }
 
     function VertexBuffer( array, attributePointers, options ) {
+        options = options || {};
         this.id = 0;
         this.pointers = {};
         this.gl = WebGLContext.get();
-        this.offset = ( options.offset !== undefined ) ? options.offset : 0;
-        this.mode = options.mode || "TRIANGLES";
         if ( array ) {
             if ( array instanceof VertexPackage ) {
                 // VertexPackage argument
                 this.bufferData( array.buffer() );
                 setAttributePointers( this, array.attributePointers() );
+                // shift arg since there will be no attrib pointers
+                options = attributePointers || options;
             } else if ( array instanceof WebGLBuffer ) {
                 // WebGLBuffer argument
                 this.id = array;
@@ -39,6 +40,8 @@
                setAttributePointers( this, attributePointers );
             }
         }
+        this.offset = ( options.offset !== undefined ) ? options.offset : 0;
+        this.mode = options.mode || "TRIANGLES";
     }
 
     VertexBuffer.prototype.bufferData = function( array ) {
@@ -48,7 +51,7 @@
             array = new Float32Array( array );
         } else if ( !Util.isTypedArray( array ) && typeof array !== "number" ) {
             console.error( "VertexBuffer requires an Array or ArrayBuffer, " +
-                "or a size argument, command ignored" );
+                "or a size argument, command ignored." );
             return;
         }
         if ( !this.id ) {
@@ -62,14 +65,14 @@
         var gl = this.gl;
         if ( !this.id ) {
             console.error( "VertexBuffer has not been initially buffered, " +
-                "command ignored" );
+                "command ignored." );
             return;
         }
         if ( array instanceof Array ) {
             array = new Float32Array( array );
         } else if ( !Util.isTypedArray( array ) ) {
             console.error( "VertexBuffer requires an Array or ArrayBuffer " +
-                "argument, command ignored" );
+                "argument, command ignored." );
             return;
         }
         offset = ( offset !== undefined ) ? offset : 0;

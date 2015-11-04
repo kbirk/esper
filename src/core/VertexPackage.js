@@ -22,7 +22,7 @@
                 goodAttributes.push( attribute );
             } else {
                 console.error( "Error parsing attribute of index " + i +
-                    ", attribute discarded" );
+                    ", attribute discarded." );
             }
         }
         return goodAttributes;
