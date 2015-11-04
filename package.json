@@ -1,6 +1,6 @@
 {
   "name": "esper",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A low-level WebGL rendering framework",
   "private": true,
   "author": "Kevin Birk <birk.kevin@gmail.com>",
