@@ -26,7 +26,7 @@
             }
         }
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
-        this.mode = options.mode || "TRIANGLES";
+        this.mode = ( options.mode !== undefined ) ? options.mode : "TRIANGLES";
     }
 
     /**
@@ -127,7 +127,7 @@
             return;
         }
         var gl = this.gl;
-        var mode = gl[ options.mode ] || gl[ this.mode ] || gl.TRIANGLES;
+        var mode = gl[ options.mode || this.mode || 'TRIANGLES' ];
         var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
         gl.drawElements(

@@ -58,14 +58,18 @@
         }
         // store rendering options
         this.options = {
-            mode: options.mode || null,
-            offset: options.offset !== undefined ? options.offset : null,
-            count: options.count !== undefined ? options.count : null
+            mode: options.mode,
+            offset: options.offset,
+            count: options.count
         };
         return this;
     }
 
     Renderable.prototype.draw = function( options ) {
+        var overrides = options || {};
+        overrides.mode = options.mode || this.options.mode;
+        overrides.offset = ( options.offset !== undefined ) ? options.offset : this.options.offset;
+        overrides.count = ( options.count !== undefined ) ? options.count : this.options.count;
         if ( this.indexBuffer ) {
             // use index buffer to draw elements
             this.vertexBuffers.forEach( function( vertexBuffer ) {
@@ -73,13 +77,13 @@
                 // no advantage to unbinding as there is no stack used
             });
             this.indexBuffer.bind();
-            this.indexBuffer.draw( options || this.options );
+            this.indexBuffer.draw( overrides );
             // no advantage to unbinding as there is no stack used
         } else {
             // no index buffer, use draw arrays
             this.vertexBuffers.forEach( function( vertexBuffer ) {
                 vertexBuffer.bind();
-                vertexBuffer.draw( options || this.options );
+                vertexBuffer.draw( overrides );
                 // no advantage to unbinding as there is no stack used
             });
         }
