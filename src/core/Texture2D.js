@@ -49,7 +49,7 @@
         var gl = texture.gl;
         location = gl[ 'TEXTURE' + location ] || gl.TEXTURE0;
         gl.activeTexture( location );
-        gl.bindTexture( gl.TEXTURE_2D, texture.id );
+        gl.bindTexture( gl.TEXTURE_2D, texture.texture );
         _boundTexture = texture;
     }
 
@@ -79,7 +79,7 @@
         spec = spec || {};
         this.gl = WebGLContext.get();
         // create texture object
-        this.id = this.gl.createTexture();
+        this.texture = this.gl.createTexture();
         this.wrap = spec.wrap || "REPEAT";
         this.filter = spec.filter || "LINEAR";
         this.invertY = spec.invertY !== undefined ? spec.invertY : true;

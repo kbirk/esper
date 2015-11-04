@@ -18,7 +18,7 @@
             return;
         }
         var gl = renderTarget.gl;
-        gl.bindFramebuffer( gl.FRAMEBUFFER, renderTarget.id );
+        gl.bindFramebuffer( gl.FRAMEBUFFER, renderTarget.framebuffer );
         _boundBuffer = renderTarget;
     }
 
@@ -44,7 +44,7 @@
      */
     function RenderTarget() {
         var gl = this.gl = WebGLContext.get();
-        this.id = gl.createFramebuffer();
+        this.framebuffer = gl.createFramebuffer();
         this.textures = {};
         return this;
     }
@@ -103,7 +103,7 @@
             gl.FRAMEBUFFER,
             gl[ 'COLOR_ATTACHMENT' + index ],
             gl[ target || "TEXTURE_2D" ],
-            texture.id,
+            texture.texture,
             0 );
         this.pop();
         return this;
@@ -125,7 +125,7 @@
             gl.FRAMEBUFFER,
             gl.DEPTH_ATTACHMENT,
             gl.TEXTURE_2D,
-            texture.id,
+            texture.texture,
             0 );
         this.pop();
         return this;

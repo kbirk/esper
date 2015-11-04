@@ -19,7 +19,7 @@
 
     function VertexBuffer( array, attributePointers, options ) {
         options = options || {};
-        this.id = 0;
+        this.buffer = 0;
         this.pointers = {};
         this.gl = WebGLContext.get();
         if ( array ) {
@@ -31,7 +31,7 @@
                 options = attributePointers || options;
             } else if ( array instanceof WebGLBuffer ) {
                 // WebGLBuffer argument
-                this.id = array;
+                this.buffer = array;
                 setAttributePointers( this, attributePointers );
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
@@ -54,16 +54,16 @@
                 "or a size argument, command ignored." );
             return;
         }
-        if ( !this.id ) {
-            this.id = gl.createBuffer();
+        if ( !this.buffer ) {
+            this.buffer = gl.createBuffer();
         }
-        gl.bindBuffer( gl.ARRAY_BUFFER, this.id );
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ARRAY_BUFFER, array, gl.STATIC_DRAW );
     };
 
     VertexBuffer.prototype.bufferSubData = function( array, offset ) {
         var gl = this.gl;
-        if ( !this.id ) {
+        if ( !this.buffer ) {
             console.error( "VertexBuffer has not been initially buffered, " +
                 "command ignored." );
             return;
@@ -76,7 +76,7 @@
             return;
         }
         offset = ( offset !== undefined ) ? offset : 0;
-        gl.bindBuffer( gl.ARRAY_BUFFER, this.id );
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferSubData( gl.ARRAY_BUFFER, offset, array );
     };
 
@@ -94,7 +94,7 @@
         _boundBuffer = this;
         _enabledAttributes = {};
         // bind buffer
-        gl.bindBuffer( gl.ARRAY_BUFFER, this.id );
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         for ( index in pointers ) {
             if ( pointers.hasOwnProperty( index ) ) {
                 pointer = this.pointers[ index ];

@@ -62,7 +62,7 @@
         var gl = texture.gl;
         location = gl[ 'TEXTURE' + location ] || gl.TEXTURE0;
         gl.activeTexture( location );
-        gl.bindTexture( gl.TEXTURE_CUBE_MAP, texture.id );
+        gl.bindTexture( gl.TEXTURE_CUBE_MAP, texture.texture );
         _boundTexture = texture;
     }
 
@@ -113,7 +113,7 @@
             jobs;
         // store gl context
         this.gl = WebGLContext.get();
-        this.id = this.gl.createTexture();
+        this.texture = this.gl.createTexture();
         this.wrap = spec.wrap || "CLAMP_TO_EDGE";
         this.filter = spec.filter || "LINEAR";
         this.invertY = spec.invertY !== undefined ? spec.invertY : false;

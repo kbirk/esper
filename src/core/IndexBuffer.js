@@ -13,11 +13,11 @@
     function IndexBuffer( array, options ) {
         options = options || {};
         this.gl = WebGLContext.get();
-        this.id = 0;
+        this.buffer = 0;
         if ( array ) {
             if ( array instanceof WebGLBuffer ) {
                 // if the argument is already a webglbuffer, simply wrap it
-                this.id = array;
+                this.buffer = array;
                 this.type = options.type || "UNSIGNED_SHORT";
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
@@ -71,9 +71,9 @@
             return;
         }
         // create buffer, store count
-        this.id = gl.createBuffer();
+        this.buffer = gl.createBuffer();
         this.count = array.length;
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.id );
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, array, gl.STATIC_DRAW );
         return this;
     };
@@ -90,7 +90,7 @@
             return;
         }
         var gl = this.gl;
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.id );
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         _boundBuffer = this;
         return this;
     };

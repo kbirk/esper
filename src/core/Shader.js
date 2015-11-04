@@ -104,7 +104,7 @@
             if ( attributes.hasOwnProperty( name ) ) {
                 // bind the attribute location
                 gl.bindAttribLocation(
-                    shader.id,
+                    shader.program,
                     attributes[ name ].index,
                     name );
                 /*
@@ -129,10 +129,10 @@
             if ( uniforms.hasOwnProperty( name ) ) {
                 uniform = uniforms[ name ];
                 // get the uniform location
-                uniform.location = gl.getUniformLocation( shader.id, name );
+                uniform.location = gl.getUniformLocation( shader.program, name );
                 /*
                 console.log( name + ", " +
-                    gl.getUniformLocation( shader.id, name ) + "," );
+                    gl.getUniformLocation( shader.program, name ) + "," );
                 */
             }
         }
@@ -205,7 +205,7 @@
         if ( _boundShader === shader ) {
             return;
         }
-        shader.gl.useProgram( shader.id );
+        shader.gl.useProgram( shader.program );
         _boundShader = shader;
     }
 
@@ -229,7 +229,7 @@
      * @param {Shader} shader - The Shader object.
      */
     function abortShader( shader ) {
-        shader.id = null;
+        shader.program = null;
         shader.attributes = null;
         shader.uniforms = null;
         return shader;
@@ -244,7 +244,7 @@
     function Shader( spec, callback ) {
         var that = this;
         spec = spec || {};
-        this.id = 0;
+        this.program = 0;
         this.gl = WebGLContext.get();
         this.version = spec.version || '1.00';
         // check source arguments
@@ -304,18 +304,18 @@
         this.attributes = attributesAndUniforms.attributes;
         this.uniforms = attributesAndUniforms.uniforms;
         // create the shader program
-        this.id = gl.createProgram();
+        this.program = gl.createProgram();
         // attach vertex and fragment shaders
-        gl.attachShader( this.id, vertexShader );
-        gl.attachShader( this.id, fragmentShader );
+        gl.attachShader( this.program, vertexShader );
+        gl.attachShader( this.program, fragmentShader );
         // bind vertex attribute locations BEFORE linking
         bindAttributeLocations( this );
         // link shader
-        gl.linkProgram( this.id );
+        gl.linkProgram( this.program );
         // If creating the shader program failed, alert
-        if ( !gl.getProgramParameter( this.id, gl.LINK_STATUS ) ) {
+        if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS ) ) {
             console.error( "An error occured linking the shader: " +
-                gl.getProgramInfoLog( this.id ) );
+                gl.getProgramInfoLog( this.program ) );
             console.error( "Aborting instantiation of shader due to linking errors." );
             return abortShader( this );
         }
@@ -365,7 +365,7 @@
      * @returns {Shader} The shader object, for chaining.
      */
     Shader.prototype.setUniform = function( uniformName, uniform ) {
-        if ( !this.id ) {
+        if ( !this.program ) {
             if ( !this.hasLoggedError ) {
                 console.warn("Attempting to use an incomplete shader, command ignored." );
                 this.hasLoggedError = true;
