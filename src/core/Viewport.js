@@ -6,21 +6,26 @@
         Stack = require('../util/Stack'),
         _stack = new Stack();
 
-    function set( viewport, width, height ) {
+    function set( viewport, x, y, width, height ) {
         var gl = viewport.gl;
-        if ( width && height ) {
-            gl.viewport( 0, 0, width, height );
-        } else {
-            gl.viewport( 0, 0, viewport.width, viewport.height );
-        }
+        x = ( x !== undefined ) ? x : viewport.x;
+        y = ( y !== undefined ) ? y : viewport.y;
+        width = ( width !== undefined ) ? width : viewport.width;
+        height = ( height !== undefined ) ? height : viewport.height;
+        gl.viewport( x, y, width, height );
     }
 
     function Viewport( spec ) {
         spec = spec || {};
         this.gl = WebGLContext.get();
+        // set size
         this.resize(
-            spec.width || window.innerWidth,
-            spec.height || window.innerHeight );
+            spec.width || this.gl.canvas.height,
+            spec.height || this.gl.canvas.width );
+        // set offset
+        this.offset(
+            spec.x,
+            spec.y );
     }
 
     /**
@@ -30,11 +35,25 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.resize = function( width, height ) {
-        if ( width && height ) {
+        if ( width !== undefined && height !== undefined ) {
             this.width = width;
             this.height = height;
             this.gl.canvas.height = height;
             this.gl.canvas.width = width;
+        }
+        return this;
+    };
+
+    /**
+     * Updates the viewport objects x and y offsets.
+     * @memberof Viewport
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+    Viewport.prototype.offset = function( x, y ) {
+        if ( x !== undefined && y !== undefined ) {
+            this.x = x;
+            this.y = y;
         }
         return this;
     };
@@ -45,13 +64,15 @@
      *
      * @returns {Viewport} The viewport object, for chaining.
      */
-     Viewport.prototype.push = function( width, height ) {
+     Viewport.prototype.push = function( x, y, width, height ) {
         _stack.push({
             viewport: this,
+            x: x,
+            y: y,
             width: width,
             height: height
         });
-        set( this, width, height );
+        set( this, x, y, width, height );
         return this;
     };
 
@@ -66,7 +87,7 @@
         _stack.pop();
         top = _stack.top();
         if ( top ) {
-            set( top.viewport, top.width, top.height );
+            set( top.viewport, top.x, top.y, top.width, top.height );
         } else {
             set( this );
         }
