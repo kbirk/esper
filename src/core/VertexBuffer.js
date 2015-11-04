@@ -14,7 +14,35 @@
                 "specified, command ignored." );
             return;
         }
-        vertexBuffer.pointers = attributePointers;
+        vertexBuffer.pointers = {};
+        // check attribute pointers
+        for ( var index in attributePointers ) {
+            if ( attributePointers.hasOwnProperty( index ) ) {
+                var pointer = attributePointers[ index ];
+                var size = pointer.size;
+                var type = pointer.type;
+                var stride = pointer.stride;
+                var offset = pointer.offset;
+                // check size
+                if ( !size || size < 1 || size > 4 ) {
+                    console.warn("Attribute pointer 'size' parameter is invalid, " +
+                        "defaulting to 3.");
+                    size = 3;
+                }
+                // check type
+                if ( !type || ( type !== 'FLOAT' && type !== 'FIXED' ) ) {
+                    console.warn("Attribute pointer 'type' parameter is invalid, " +
+                        "defaulting to 'FLOAT'.");
+                    type = 'FLOAT';
+                }
+                vertexBuffer.pointers[ index ] = {
+                    size: size,
+                    type: type,
+                    stride: ( stride !== undefined ) ? stride : 0,
+                    offset: ( offset !== undefined ) ? offset : 0
+                };
+            }
+        }
     }
 
     function VertexBuffer( array, attributePointers, options ) {
@@ -35,7 +63,7 @@
                 setAttributePointers( this, attributePointers );
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
-                // Array or ArrayBuffer argument
+                // Array or ArrayBuffer or number argument
                this.bufferData( array );
                setAttributePointers( this, attributePointers );
             }
