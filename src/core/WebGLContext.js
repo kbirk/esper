@@ -53,6 +53,29 @@
     }
 
     /**
+     * Attempts to retreive a wrapped WebGLRenderingContext.
+     *
+     * @param {HTMLCanvasElement} The Canvas element object to create the context under.
+     *
+     * @returns {Object} The context wrapper.
+     */
+    function getContextWrapper( arg ) {
+        if ( !arg ) {
+            if ( _boundContext ) {
+                // return last bound context
+                return _boundContext;
+            }
+        } else {
+            var canvas = getCanvas( arg );
+            if ( canvas ) {
+                return _contextsById[ canvas.id ];
+            }
+        }
+        // no bound context or argument
+        return null;
+    }
+
+    /**
      * Attempts to load all known extensions for a provided
      * WebGLRenderingContext. Stores the results in the context wrapper for
      * later queries.
@@ -66,11 +89,6 @@
         for ( i=0; i<EXTENSIONS.length; i++ ) {
             extension = EXTENSIONS[i];
             contextWrapper.extensions[ extension ] = gl.getExtension( extension );
-            if ( contextWrapper.extensions[ extension ] ) {
-                console.log( extension + " extension loaded successfully." );
-            } else {
-                console.log( extension + " extension not supported." );
-            }
         }
     }
 
@@ -81,7 +99,7 @@
      * @param {HTMLCanvasElement} The Canvas element object to create the context under.
      * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
      *
-     * @returns {Object} contextWrapper - The context wrapper.
+     * @returns {Object} The context wrapper.
      */
     function createContextWrapper( canvas, options ) {
         var contextWrapper,
@@ -99,13 +117,10 @@
             loadExtensions( contextWrapper );
             // add context wrapper to map
             _contextsById[ canvas.id ] = contextWrapper;
-            // check if a bound context exists
-            if ( !_boundContext ) {
-                // bind context if no other is bound
-                _boundContext = contextWrapper;
-            }
-        } catch( e ) {
-            console.error( e.message );
+            // bind the context
+            _boundContext = contextWrapper;
+        } catch( err ) {
+            console.error( err.message );
         }
         if ( !gl ) {
             console.error( "Unable to initialize WebGL. Your browser may not " +
@@ -125,18 +140,13 @@
          * @returns {WebGLContext} This namespace, used for chaining.
          */
         bind: function( arg ) {
-            var canvas = getCanvas( arg );
-            if ( !canvas ) {
-                console.error( "Context could not be bound for argument of " +
-                    "type '" + ( typeof arg ) + "', command ignored." );
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                _boundContext = wrapper;
                 return this;
             }
-            if ( !_contextsById[ canvas.id ] ) {
-                console.error( "No context exists for provided argument '" +
-                    arg + "', command ignored." );
-                return;
-            }
-            _boundContext = _contextsById[ canvas.id ];
+            console.error( "No context exists for provided argument '" + arg +
+                "', command ignored." );
             return this;
         },
 
@@ -153,26 +163,75 @@
          * @returns {WebGLRenderingContext} The WebGLRenderingContext context object.
          */
         get: function( arg, options ) {
-            if ( !arg ) {
-                if ( !_boundContext ) {
-                    // no bound context or argument
-                    console.error( "No context is currently bound or " +
-                        "provided, returning 'null'." );
-                    return null;
-                }
-                // return last bound context
-                return _boundContext.gl;
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                // return the native WebGLRenderingContext
+                return wrapper.gl;
             }
             // get canvas element
             var canvas = getCanvas( arg );
             // try to find or create context
-            if ( !canvas || ( !_contextsById[ canvas.id ] && !createContextWrapper( canvas, options ) ) ) {
+            if ( !canvas || !createContextWrapper( canvas, options ) ) {
                 console.error( "Context could not be found or created for " +
-                    "argument of type'"+( typeof arg )+"', returning 'null'." );
+                    "argument of type'" + ( typeof arg ) + "', returning 'null'." );
                 return null;
             }
             // return context
             return _contextsById[ canvas.id ].gl;
+        },
+
+        /**
+         * Returns an array of all supported extensions for the provided canvas
+         * object. If no argument is provided it will attempt to query the
+         * currently bound context. If no context is bound, it will return
+         * an empty array.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         *
+         * @returns {Array} All supported extensions.
+         */
+        supportedExtensions: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                var supported = [];
+                for ( var key in extensions ) {
+                    if ( extensions.hasOwnProperty( key ) && extensions[ key ] ) {
+                        supported.push( key );
+                    }
+                }
+                return supported;
+            }
+            console.error("No context is currently bound or was provided, " +
+                "returning an empty array.");
+            return [];
+        },
+
+        /**
+         * Returns an array of all unsupported extensions for the provided canvas
+         * object. If no argument is provided it will attempt to query the
+         * currently bound context. If no context is bound, it will return
+         * an empty array.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         *
+         * @returns {Array} All unsupported extensions.
+         */
+        unsupportedExtensions: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                var unsupported = [];
+                for ( var key in extensions ) {
+                    if ( extensions.hasOwnProperty( key ) && !extensions[ key ] ) {
+                        unsupported.push( key );
+                    }
+                }
+                return unsupported;
+            }
+            console.error("No context is currently bound or was provided, " +
+                "returning an empty array.");
+            return [];
         },
 
         /**
@@ -187,26 +246,19 @@
          * @returns {boolean} Whether or not the provided extension has been loaded successfully.
          */
         checkExtension: function( arg, extension ) {
-            var extensions,
-                context,
-                canvas;
             if ( !extension ) {
-                // can check extension without arg
+                // shift parameters if no canvas arg is provided
                 extension = arg;
-                context = _boundContext;
-            } else {
-                canvas = getCanvas( arg );
-                if ( canvas ) {
-                    context = _contextsById[ canvas.id ];
-                }
+                arg = null;
             }
-            if ( !context ) {
-                console.error("No context is currently bound or provided as " +
-                    "argument, returning false.");
-                return false;
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                return extensions[ extension ] ? extensions[ extension ] : false;
             }
-            extensions = context.extensions;
-            return extensions[ extension ] ? extensions[ extension ] : false;
+            console.error("No context is currently bound or provided as " +
+                "argument, returning false.");
+            return false;
         }
     };
 
