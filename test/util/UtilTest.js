@@ -26,7 +26,7 @@ describe('Util', function() {
                         done();
                     }, 50 );
                 }
-            ], function( results ) {
+            ], function() {
                 assert( asyncResults[0] === 2 );
                 assert( asyncResults[1] === 1 );
                 assert( asyncResults[2] === 0 );
@@ -79,18 +79,18 @@ describe('Util', function() {
             function Obj() {
                 this.a = function( done ) {
                     done( "a" );
-                },
+                };
                 this.b = function( done ) {
                     done( "b" );
-                },
+                };
                 this.c = function( done ) {
                     done( "c" );
-                }
+                };
             }
             Obj.prototype.d = function( done ) {
-                assert( false )
+                assert( false );
                 done( "d" );
-            }
+            };
             Util.async( new Obj(), function( results ) {
                 assert( results.a === "a" );
                 assert( results.b === "b" );

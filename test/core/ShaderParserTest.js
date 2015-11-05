@@ -48,12 +48,6 @@ describe('ShaderParser', function() {
             assert( declarations.length === 0 );
         });
         it('should return an empty array if no source strings are passed', function() {
-            var source = [
-                    'attribute highp vec3 A;',
-                    'uniform highp mat4 B;',
-                    'uniform highp mat4 C;',
-                    'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( [] );
             assert( declarations.length === 0 );
             declarations = ShaderParser.parseDeclarations();

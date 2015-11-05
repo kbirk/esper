@@ -100,22 +100,27 @@ When uploading uniforms to the GPU, arguments are automatically casted (within r
     shader.setUniform( 'uAlpha', 0.25 );
     shader.setUniform( 'uHasTexture', false ); // booleans are converted to float
 
-### Viewport
+### Viewports
 
 A viewport defines the rendering resolution and offset wihtin the canvas element. By default, the viewport will be set the size and resolution of the canvas element.
 
     // Create the viewport.
     var viewport = new esper.Viewport();
+
     // Push the viewport dimensions and offsets onto the stack.
     viewport.push();
+
     // Push a viewport override onto the stack, this will give a 10px border.
     viewport.push( 10, 10, canvas.height - 20, canvas.width - 20 );
+
     // Pop the override off the stack.
     viewport.pop();
+
     // Set the viewport to the window dimensions.
     window.addEventListener( 'resize', function() {
         viewport.resize( window.innerWidth, window.innerHeight );
     }
+
     // Set the x and y offset.
     viewport.offset( 100, 200 );
 
@@ -180,15 +185,18 @@ Drawing with vertex buffers is simple, simply bind it, and draw.
 
     // Bind vertex buffer.
     vertexBuffer.bind();
+
     // Draw triangles.
     vertexBuffer.draw({
         mode: TRIANGLES
     });
+
     // Draw points from an offsets.
     vertexBuffer.draw({
         mode: POINTS,
         offset: 100
     });
+
     // Draw only n lines.
     vertexBuffer.draw({
         mode: LINES,
@@ -221,17 +229,21 @@ Rendering with index buffers is also simple, simply bind the vertex buffers, the
 
     // Bind vertex buffer.
     vertexBuffer.bind();
+
     // Bind index buffer.
     indexBuffer.bind();
+
     // Draw triangles.
     indexBuffer.draw({
         mode: TRIANGLES
     });
+
     // Draw points from an offsets.
     indexBuffer.draw({
         mode: POINTS,
         offset: 100
     });
+
     // Draw only n lines.
     indexBuffer.draw({
         mode: LINES,
@@ -293,6 +305,7 @@ Binding textures for use is simple:
 
     // Bind to texture unit 0
     texture.push( 0 );
+
     // Bind texture sampler to the same unit.
     shader.setUniform( 'uTextureSampler', 0 );
 
@@ -321,7 +334,7 @@ Cubemap textures are a specific type of texture typically used for skyboxes or r
         cubeTextureDeferred.resolve();
     });
 
-    // create empty cube map to be written to.
+    // Create empty cube map to be written to.
     var cubeMapTexture = new TextureCubeMap({
         width: 512,
         height: 512
@@ -368,6 +381,7 @@ Drawing to the texture unit is simple:
 
     // Bind the render target.
     renderTarget.push();
+
     // Clear the bound color and depth textures.
     renderTarget.clear();
 
@@ -380,6 +394,7 @@ Drawing to the texture unit is simple:
 
     // Bind shadow map to texture unit 0.
     shadowMapTexture.push( 0 );
+
     // Bind texture sampler to the same unit.
     shader.setUniform( 'uShadowTextureSampler', 0 );
 
