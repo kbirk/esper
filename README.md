@@ -16,7 +16,7 @@ bower install esper
 
 ### WebGLContext
 
-In order to use WebGL you need a canvas element from which the WebGL rendering context can be created. The WebGLContext namespace wraps the typical process of instantiating one and keeps track of the all WebGL contexts created. The return value is a native WebGLRenderingContext object.
+In order to access the WebGL API you need a canvas element from which the WebGL rendering context can be created. The WebGLContext namespace wraps the typical process of instantiating a context and allows facilities for handling multiple contexts within a single application. The object returned is a native WebGLRenderingContext object.
 
     // Get WebGL context and load all available extensions.
     var gl = esper.WebGLContext.get( 'canvas-id' );
@@ -31,7 +31,7 @@ In order to use WebGL you need a canvas element from which the WebGL rendering c
         depth: false
     });
 
-Once a context has been created, it is bound internally and can be accessed anywhere by simply calling *esper.WebGLContext.get();*. It is important to note that all esper constructs will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL classes cannot be shared between contexts and result in redundant buffers and textures.
+Once a context has been created, it is bound internally and can be accessed throughout the application by  calling the *get* method. It is important to note that all esper constructs will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL classes cannot be shared between contexts and result in redundant buffers and textures.
 
     var gl = esper.WebGLContext.get();
 
@@ -40,27 +40,28 @@ The bind method can be used to manually bind a context. Once again, if only one 
     esper.WebGLContext.bind( 'canvas-id' );
     esper.WebGLContext.bind( canvasDOMElement );
 
-During the creation of the context, esper will attempt to load all known WebGL extensions. To check whether or not an extension has been successfully loaded.
+During the creation of the context, esper will automatically attempt to load all known WebGL extensions. To check whether or not an extension has been successfully loaded.
 
     // Check if the bound WebGL context supports depth textures.
     if ( esper.WebGLContext.checkExtension( 'WEBGL_depth_texture' ) ) {
         console.log( 'Depth textures are supported' );
     }
 
-All supported or unsupported extensions can be queried as well.
+All supported or unsupported extensions can also be queried in batch.
 
     esper.WebGLContext.supportedExtensions().forEach( function( extension ) {
         console.log( extensions + ' is supported.');
     });
+
     esper.WebGLContext.unsupportedExtensions().forEach( function( extension ) {
         console.log( extensions + ' is not supported.');
     });
 
 ### Shaders
 
-Shaders are programs that execute on the GPU. WebGL currently supports two types of shaders: vertex and fragment. Vertex shaders execute on each vertex of the primitive being rendered while fragment shaders execute for each rasterized fragment. Shaders accept both urls to source files and source code as strings.
+Shaders are programs that execute on the GPU and are essential to 3D programming. WebGL currently supports two types of shaders: vertex and fragment. Vertex shaders execute on each vertex of the primitive being rendered while fragment shaders execute for each rasterized fragment. Shaders accept both URLs to source files and source code as strings.
 
-    // Create shader object and using source urls (also supports source code strings).
+    // Create shader object and using source URLs (also supports source code strings).
     var shader = new esper.Shader({
         vert: 'shaders/phong.vert',
         frag: 'shaders/phong.frag'
@@ -69,9 +70,9 @@ Shaders are programs that execute on the GPU. WebGL currently supports two types
         console.log( 'Shader sources loaded and program instantiated' );
     });
 
-Multiple sources can be provided as arrays and are concatenated together in the provided order. Common code can also be shared between shaders and is appended at the top of the source.
+Multiple arguments can be provided as arrays and are concatenated together in the same order. Common code can also be shared between shaders and is appended at the top of the source.
 
-    // Create shader object and using source urls (also supports source code strings).
+    // Create shader object and using source URLs (also supports source code strings).
     var shader = new esper.Shader({
         common: 'uniform highp float uTime;'
         vert: [
@@ -91,7 +92,7 @@ Multiple sources can be provided as arrays and are concatenated together in the 
         console.log( 'Shader sources loaded and program instantiated' );
     });
 
-During shader initialization the shader source code is parsed and analyzed. All vertex attribute locations are bound in the order in which they are declared and all uniform types and locations are retrieved and stored based upon name.
+During shader initialization the shader source code is parsed and analyzed. All vertex attribute locations are bound in the order in which they are declared and all uniform types and locations are retrieved and stored based upon name. This is used to greatly simplify the process of uploading uniforms to the GPU.
 
 When uploading uniforms to the GPU, arguments are automatically casted (within reason) into the appropriate format.
 
@@ -102,7 +103,7 @@ When uploading uniforms to the GPU, arguments are automatically casted (within r
 
 ### Viewports
 
-A viewport defines the rendering resolution and offset wihtin the canvas element. By default, the viewport will be set the size and resolution of the canvas element.
+A viewport defines the rendering resolution and pixel offset within the canvas element. By default, the viewport will be set to the size and resolution of the canvas element with no offset.
 
     // Create the viewport.
     var viewport = new esper.Viewport();
@@ -124,7 +125,7 @@ A viewport defines the rendering resolution and offset wihtin the canvas element
     // Set the x and y offset.
     viewport.offset( 100, 200 );
 
-Using the viewport is the recommended way to mimic multiple rendering contexts as it requires no duplication of resources.
+Using the viewport is the recommended way to mimic multiple rendering contexts as it requires no duplication of resources. Here is an example of splitting the viewport vertically:
 
     var viewport = new esper.Viewport({
         width: 1000,
@@ -181,7 +182,7 @@ Vertex buffers store vertex attribute information. Common attributes include pos
         }
     );
 
-Drawing with vertex buffers is simple, simply bind it, and draw.
+Drawing with vertex buffers is easy, simply bind it, and draw.
 
     // Bind vertex buffer.
     vertexBuffer.bind();
@@ -191,7 +192,7 @@ Drawing with vertex buffers is simple, simply bind it, and draw.
         mode: TRIANGLES
     });
 
-    // Draw points from an offsets.
+    // Draw points from an offset.
     vertexBuffer.draw({
         mode: POINTS,
         offset: 100
@@ -205,7 +206,7 @@ Drawing with vertex buffers is simple, simply bind it, and draw.
 
 ### VertexPackages
 
-Interleaving vertex attributes and correctly defining the attribute pointers manually is tedious and prone to frustrating user errors. Vertex packages simplify this and coalesce multiple arrays into a single interleaved Float32Array while providing the correct attribute pointers.
+Interleaving vertex attributes and manually defining the attribute pointers is tedious and prone to frustrating user errors. Vertex packages simplify this and coalesce multiple arrays into a single interleaved Float32Array while determining the correct attribute pointers.
 
     // Create interleaved vertex buffers using vertex packages.
     var vertexPackage = new esper.VertexPackage([
@@ -220,12 +221,12 @@ Vertex packages can then be passed to the VertexBuffer constructor for simple in
 
 ### IndexBuffers
 
-Due to the nature of tessellation, single vertices may referenced by multiple geometric primitives. Using only vertex buffers results in a large amount of redundancy as these vertices must be repeated in the buffer. For example a simple cube is composed of 12 triangles, requiring 36 vertices if solely using a vertex buffer. With no shading this cube be represented with only 8 vertices when using an index buffer. Index buffers allow the user to specify the ordering of vertex attributes inside a vertex buffer, which allows re-use and smaller buffers.
+Due to the nature of tessellation, single vertices may referenced by multiple geometric primitives. Solely using vertex buffers can result in a large amount of redundancy as these vertices may be repeated within the buffer. For example a simple cube is composed of 12 triangles, requiring 36 vertices if only using a vertex buffer. With flat shading this cube be represented with only 8 vertices when using an index buffer. Index buffers allow the user to specify the ordering of vertex attributes inside a vertex buffer, which allows re-use of vertices and smaller buffers.
 
     // Create index buffer from an array of indices.
     var indexBuffer = new esper.IndexBuffer( indices );
 
-Rendering with index buffers is also simple, simply bind the vertex buffers, then bind the index buffer and draw.
+Rendering with index buffers is as easy as vertex buffers, simply bind the vertex buffers, then bind the index buffer and draw.
 
     // Bind vertex buffer.
     vertexBuffer.bind();
@@ -238,7 +239,7 @@ Rendering with index buffers is also simple, simply bind the vertex buffers, the
         mode: TRIANGLES
     });
 
-    // Draw points from an offsets.
+    // Draw points from an offset.
     indexBuffer.draw({
         mode: POINTS,
         offset: 100
@@ -262,6 +263,13 @@ While working at the level of vertex buffers and index buffers can give you low 
         indices: indicesArray
     });
 
+    // Create a renderable without an index buffer
+    var renderable = new esper.Renderable({
+        positions: positionsArray,
+        normals: normalsArray,
+        uvs: uvsArray
+    });
+
     // Draw the renderable.
     renderable.draw({
         mode: 'LINES', // render lines instead of triangles
@@ -271,9 +279,9 @@ While working at the level of vertex buffers and index buffers can give you low 
 
 ### Textures
 
-Textures can store many different types of information. Typically a texture stores image RGB or RGBA values, however they can also be used to store depth values or any other types of encoded information. Textures can be created from existing HTMLImageElements, urls containing HTMLImageElement supported image formats, or no data at all.
+Textures can be used to store and sample many different types of information. Typically a texture stores color values but they can also be used to store depth values or any other types of encoded information. Textures can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, or buffered with no data at all.
 
-    // Create texture from image url.
+    // Create texture from image URL.
     var texture = new esper.Texture2D({
         url: 'images/checkerboard.png',    
         wrap: 'REPEAT',
@@ -290,7 +298,7 @@ Textures can store many different types of information. Typically a texture stor
         format: 'RGBA',
         type: 'UNSIGNED_BYTE'
     }, function( texture ) {
-        console.log( 'Texture2D image successfully created.' );
+        console.log( 'Empty Texture2D successfully created.' );
     });
 
     // Create a depth texture. (Only works if depth texture extension is supported).
@@ -318,9 +326,9 @@ All images or image dimensions that are not a power of two are resized to the ne
 
 ### TextureCubeMaps
 
-Cubemap textures are a specific type of texture typically used for skyboxes or reflections. The faces of the cubes are specified during instantiation. Cubemap textures can be created from existing HTMLImageElements, urls containing HTMLImageElement supported image formats, or no data at all.
+Cubemap textures are a specific type of texture typically used for skyboxes or reflections. Cubemap textures can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, buffered with no data at all. The faces of the cube are specified during instantiation.
 
-    // Create cube map from image urls.
+    // Create cube map from image URLs.
     var cubeMapTexture = new esper.TextureCubeMap({
         urls: {
             '+x': 'images/sky/posx.png',
@@ -331,7 +339,7 @@ Cubemap textures are a specific type of texture typically used for skyboxes or r
             '-z': 'images/sky/negz.png'
         }
     }, function() {
-        cubeTextureDeferred.resolve();
+        console.log( 'TextureCubeMap successfully created.' );
     });
 
     // Create empty cube map to be written to.
@@ -366,8 +374,8 @@ When compositing more complex scenes, intermediate render states may need to be 
 
     // Create a depth texture for the render target.
     var depthTexture = new esper.Texture2D({
-        width: SHADOW_MAP_SIZE,
-        height: SHADOW_MAP_SIZE,
+        width: 512,
+        height: 512,
         format: 'DEPTH_COMPONENT',
         type: 'UNSIGNED_INT'
     });
