@@ -1,22 +1,26 @@
 # esper.js
 
-[![Bower version](https://badge.fury.io/bo/esper.svg)](http://badge.fury.io/bo/esper) [![Dependency Status](https://david-dm.org/kbirk/esper.svg)](https://david-dm.org/kbirk/esper)
+[![npm version](https://badge.fury.io/js/esper.svg)](http://badge.fury.io/js/esper) [![Bower version](https://badge.fury.io/bo/esper.svg)](http://badge.fury.io/bo/esper) [![Dependency Status](https://david-dm.org/kbirk/esper.svg)](https://david-dm.org/kbirk/esper)
 
 A low-level WebGL rendering framework.
 
 ## Installation
 
-Requires [bower](http://bower.io/).
+Requires [bower](http://bower.io/) or [node](http://nodejs.org/).
 
 ```bash
 bower install esper
+```
+or
+```bash
+npm install esper
 ```
 
 ## Documentation
 
 ### WebGLContext
 
-In order to access the WebGL API you need a canvas element from which the WebGL rendering context can be created. The WebGLContext namespace wraps the typical process of instantiating a context and allows facilities for handling multiple contexts within a single application. The object returned is a native WebGLRenderingContext object.
+In order to access the WebGL API you need a canvas element from which a WebGL rendering context can be created. The WebGLContext namespace wraps the typical process of instantiating a context and allows facilities for handling multiple contexts within a single application. The object returned is a native WebGLRenderingContext object.
 
     // Get WebGL context and load all available extensions.
     var gl = esper.WebGLContext.get( 'canvas-id' );
