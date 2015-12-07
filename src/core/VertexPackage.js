@@ -2,29 +2,46 @@
 
     "use strict";
 
+    var COMPONENT_TYPE = 'FLOAT';
+    var BYTES_PER_COMPONENT = 4;
+
     /**
      * Removes invalid attribute arguments. A valid argument
-     * must be an Array of length > 0.
+     * must be an Array of length > 0 key by a string representing an int.
      *
-     * @param {Array} attributes - The array of vertex attributes.
+     * @param {Object} attributes - The map of vertex attributes.
      *
      * @returns {Array} The valid array of arguments.
      */
-    function removeBadArguments( attributes ) {
-        var goodAttributes = [],
-            attribute,
-            i;
-        for ( i=0; i<attributes.length; i++ ) {
-            attribute = attributes[i];
-            if ( attribute &&
-                 attribute instanceof Array &&
-                 attribute.length > 0 ) {
-                goodAttributes.push( attribute );
-            } else {
-                console.error( "Error parsing attribute of index " + i +
-                    ", attribute discarded." );
+    function parseAttributeMap( attributes ) {
+        var goodAttributes = [];
+        Object.keys( attributes ).forEach( function( key ) {
+            var index = parseInt( key, 10 );
+            // check that key is an valid integer
+            if ( isNaN( index ) ) {
+                console.warn("Attribute index '" + key + "' does not " +
+                    "represent an integer, discarding attribute pointer.");
+                return;
             }
-        }
+            var vertices = attributes[key];
+            // ensure attribute is valid
+            if ( vertices &&
+                vertices instanceof Array &&
+                vertices.length > 0 ) {
+                // add attribute data and index
+                goodAttributes.push({
+                    index: index,
+                    data: vertices
+                });
+            } else {
+                console.warn( "Error parsing attribute of index '" + key +
+                    "', attribute discarded." );
+            }
+        });
+        // sort attributes ascending by index
+        goodAttributes.sort(function(a,b) {
+            return a.index - b.index;
+        });
         return goodAttributes;
     }
 
@@ -68,93 +85,90 @@
      * @param {Array} attributes - The array of vertex attributes.
      */
     function setPointersAndStride( vertexPackage, attributes ) {
-        var shortestArray = Number.MAX_VALUE,
-            offset = 0,
-            attribute,
-            size,
-            i;
+        var shortestArray = Number.MAX_VALUE;
+        var offset = 0;
+        // clear pointers
         vertexPackage.pointers = {};
-        for ( i=0; i<attributes.length; i++ ) {
-            attribute = attributes[i];
+        // for each attribute
+        attributes.forEach( function( vertices ) {
             // set size to number of components in the attribute
-            size = getComponentSize( attribute[0] );
+            var size = getComponentSize( vertices.data[0] );
             // length of the package will be the shortest attribute array length
-            shortestArray = Math.min( shortestArray, attribute.length );
+            shortestArray = Math.min( shortestArray, vertices.data.length );
             // store pointer under index
-            vertexPackage.pointers[ i ] = {
-                type : "FLOAT",
+            vertexPackage.pointers[ vertices.index ] = {
+                type : COMPONENT_TYPE,
                 size : size,
-                offset : offset
+                offset : offset * BYTES_PER_COMPONENT
             };
             // accumulate attribute offset
             offset += size;
-        }
+        });
         // set stride to total offset
-        vertexPackage.stride = offset;
-        // set size of package to the shortest attribute array length
-        vertexPackage.size = shortestArray;
+        vertexPackage.stride = offset * BYTES_PER_COMPONENT;
+        // set length of package to the shortest attribute array length
+        vertexPackage.length = shortestArray;
     }
 
     function VertexPackage( attributes ) {
-        // ensure attributes is an array of arrays
-        if ( !( attributes[0] instanceof Array ) ) {
-            attributes = [ attributes ];
+        if ( attributes !== undefined ) {
+            return this.set( attributes );
+        } else {
+            this.data = new Float32Array(0);
+            this.pointers = {};
         }
-        return this.set( attributes );
     }
 
-    VertexPackage.prototype.set = function( attributes ) {
-        var BYTES_PER_COMPONENT = 4,
-            attribute,
-            pointer,
-            vertex,
-            offset,
-            i, j, k;
+    VertexPackage.prototype.set = function( attributeMap ) {
+        var that = this;
         // remove bad attributes
-        attributes = removeBadArguments( attributes );
+        var attributes = parseAttributeMap( attributeMap );
         // set attribute pointers and stride
         setPointersAndStride( this, attributes );
         // set size of data vector
-        this.data = new Float32Array( this.size * this.stride );
+        this.data = new Float32Array( this.length * ( this.stride / BYTES_PER_COMPONENT ) );
         // for each vertex attribute array
-        for ( i=0; i<attributes.length; i++ ) {
-            attribute = attributes[i];
+        attributes.forEach( function( vertices ) {
             // get the pointer
-            pointer = this.pointers[i];
+            var pointer = that.pointers[ vertices.index ];
             // get the pointers offset
-            offset = pointer.offset;
-            // for each vertex attribute
-            for ( j=0; j<this.size; j++ ) {
-                vertex = attribute[j];
-                // get the index in the buffer to the particular attribute
-                k = offset + ( this.stride * j );
+            var offset = pointer.offset / BYTES_PER_COMPONENT;
+            // get the package stride
+            var stride = that.stride / BYTES_PER_COMPONENT;
+            // for each vertex
+            var vertex, i, j;
+            for ( i=0; i<that.length; i++ ) {
+                vertex = vertices.data[i];
+                // get the index in the buffer to the particular vertex
+                j = offset + ( stride * i );
                 switch ( pointer.size ) {
                     case 2:
-                        this.data[k] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-                        this.data[k+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+                        that.data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+                        that.data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
                         break;
                     case 3:
-                        this.data[k] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-                        this.data[k+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-                        this.data[k+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+                        that.data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+                        that.data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+                        that.data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
                         break;
                     case 4:
-                        this.data[k] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-                        this.data[k+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-                        this.data[k+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
-                        this.data[k+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
+                        that.data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+                        that.data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+                        that.data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+                        that.data[j+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
                         break;
                     default:
-                        this.data[k] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+                        if ( vertex.x !== undefined ) {
+                            that.data[j] = vertex.x;
+                        } else if ( vertex[0] !== undefined ) {
+                            that.data[j] = vertex[0];
+                        } else {
+                            that.data[j] = vertex;
+                        }
                         break;
                 }
             }
-            // scale offset and stride by bytes per attribute
-            // it is done here as above logic uses stride and offset
-            // as component counts rather than number of byte
-            pointer.stride = this.stride * BYTES_PER_COMPONENT;
-            pointer.offset = pointer.offset * BYTES_PER_COMPONENT;
-        }
+        });
         return this;
     };
 

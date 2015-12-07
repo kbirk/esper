@@ -6,35 +6,6 @@
         VertexBuffer = require('../core/VertexBuffer'),
         IndexBuffer = require('../core/IndexBuffer');
 
-    function parseVertexAttributes( spec ) {
-        var attributes = [];
-        if ( spec.positions ) {
-            attributes.push( spec.positions );
-        }
-        if ( spec.normals ) {
-            attributes.push( spec.normals );
-        }
-        if ( spec.uvs ) {
-            attributes.push( spec.uvs );
-        }
-        if ( spec.tangents ) {
-            attributes.push( spec.tangents );
-        }
-        if ( spec.bitangents ) {
-            attributes.push( spec.bitangents );
-        }
-        if ( spec.colors ) {
-            attributes.push( spec.colors );
-        }
-        if ( spec.joints ) {
-            attributes.push( spec.joints );
-        }
-        if ( spec.weights ) {
-            attributes.push( spec.weights );
-        }
-        return attributes;
-    }
-
     function Renderable( spec, options ) {
         spec = spec || {};
         options = options || {};
@@ -43,7 +14,7 @@
             this.vertexBuffers = spec.vertexBuffers || [ spec.vertexBuffer ];
         } else {
             // create vertex package
-            var vertexPackage = new VertexPackage( parseVertexAttributes( spec ) );
+            var vertexPackage = new VertexPackage( spec.vertices );
             // create vertex buffer
             this.vertexBuffers = [ new VertexBuffer( vertexPackage ) ];
         }

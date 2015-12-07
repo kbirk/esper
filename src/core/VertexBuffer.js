@@ -8,66 +8,89 @@
         _boundBuffer = null,
         _enabledAttributes = null;
 
-    function setAttributePointers( vertexBuffer, attributePointers ) {
-        if ( !attributePointers ) {
-            console.error( "VertexBuffer requires attribute pointers to be " +
-                "specified, command ignored." );
-            return;
-        }
-        vertexBuffer.pointers = {};
-        // check attribute pointers
-        for ( var index in attributePointers ) {
-            if ( attributePointers.hasOwnProperty( index ) ) {
-                var pointer = attributePointers[ index ];
-                var size = pointer.size;
-                var type = pointer.type;
-                var stride = pointer.stride;
-                var offset = pointer.offset;
-                // check size
-                if ( !size || size < 1 || size > 4 ) {
-                    console.warn("Attribute pointer 'size' parameter is invalid, " +
-                        "defaulting to 3.");
-                    size = 3;
-                }
-                // check type
-                if ( !type || ( type !== 'FLOAT' && type !== 'FIXED' ) ) {
-                    console.warn("Attribute pointer 'type' parameter is invalid, " +
-                        "defaulting to 'FLOAT'.");
-                    type = 'FLOAT';
-                }
-                vertexBuffer.pointers[ index ] = {
-                    size: size,
-                    type: type,
-                    stride: ( stride !== undefined ) ? stride : 0,
-                    offset: ( offset !== undefined ) ? offset : 0
-                };
+    function getStride( attributePointers ) {
+        var BYTES_PER_COMPONENT = 4;
+        var maxOffset = 0;
+        var stride = 0;
+        Object.keys( attributePointers ).forEach( function( key ) {
+            // track the largest offset to determine the stride of the buffer
+            var pointer = attributePointers[ key ];
+            var offset = pointer.offset;
+            if ( offset > maxOffset ) {
+                maxOffset = offset;
+                stride = offset + ( pointer.size * BYTES_PER_COMPONENT );
             }
+        });
+        return stride;
+    }
+
+    function getAttributePointers( attributePointers ) {
+        // ensure there are pointers provided
+        if ( !attributePointers || Object.keys( attributePointers ).length === 0 ) {
+            console.warning( "VertexBuffer requires attribute pointers to be " +
+                "specified upon instantiation, this buffer will not draw correctly." );
+            return {};
         }
+        // parse pointers to ensure they are valid
+        var pointers = {};
+        Object.keys( attributePointers ).forEach( function( key ) {
+            var index = parseInt( key, 10 );
+            // check that key is an valid integer
+            if ( isNaN( index ) ) {
+                console.warn("Attribute index '" + key + "' does not represent an integer, discarding attribute pointer.");
+                return;
+            }
+            var pointer = attributePointers[key];
+            var size = pointer.size;
+            var type = pointer.type;
+            var offset = pointer.offset;
+            // check size
+            if ( !size || size < 1 || size > 4 ) {
+                console.warn("Attribute pointer 'size' parameter is invalid, " +
+                    "defaulting to 4.");
+                size = 4;
+            }
+            // check type
+            if ( !type || type !== 'FLOAT' ) {
+                console.warn("Attribute pointer 'type' parameter is invalid, " +
+                    "defaulting to 'FLOAT'.");
+                type = 'FLOAT';
+            }
+            pointers[ index ] = {
+                size: size,
+                type: type,
+                offset: ( offset !== undefined ) ? offset : 0
+            };
+        });
+        return pointers;
     }
 
     function VertexBuffer( array, attributePointers, options ) {
         options = options || {};
         this.buffer = 0;
-        this.pointers = {};
         this.gl = WebGLContext.get();
         if ( array ) {
             if ( array instanceof VertexPackage ) {
                 // VertexPackage argument
                 this.bufferData( array.buffer() );
-                setAttributePointers( this, array.attributePointers() );
                 // shift arg since there will be no attrib pointers
-                options = attributePointers || options;
+                options = attributePointers || {};
+                // get attribute pointers from vertex package
+                attributePointers = array.attributePointers();
             } else if ( array instanceof WebGLBuffer ) {
                 // WebGLBuffer argument
                 this.buffer = array;
-                setAttributePointers( this, attributePointers );
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
                 // Array or ArrayBuffer or number argument
-               this.bufferData( array );
-               setAttributePointers( this, attributePointers );
+                this.bufferData( array );
             }
         }
+        // set attribute pointers
+        this.pointers = getAttributePointers( attributePointers );
+        // set stride
+        this.stride = getStride( this.pointers );
+        // set draw offset and mode
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
         this.mode = ( options.mode !== undefined ) ? options.mode : "TRIANGLES";
     }
@@ -131,7 +154,7 @@
                     pointer.size,
                     gl[ pointer.type ],
                     false,
-                    pointer.stride,
+                    this.stride,
                     pointer.offset );
                 // enabled attribute array
                 gl.enableVertexAttribArray( index );
