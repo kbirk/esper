@@ -79,6 +79,8 @@
         "require"   : false,
         "module"    : false,
         "describe"  : false,
-        "it"        : false
+        "it"        : false,
+        "beforeEach": false,
+        "afterEach" : false
     }
 }

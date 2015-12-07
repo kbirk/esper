@@ -11,7 +11,6 @@ describe('ShaderParser', function() {
                     'attribute highp vec3 B;',
                     'attribute highp vec3 C;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source, "attribute" );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -23,13 +22,11 @@ describe('ShaderParser', function() {
                     'attribute highp vec3 A;',
                     'uniform highp mat4 B;',
                     'void main() { ... }'].join('\n');
-
             var sourceB = [
                     'attribute highp vec3 A;',
                     'uniform highp mat4 B;',
                     'uniform highp mat4 C;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( [ sourceA, sourceB ], [ "uniform", "attribute" ] );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -41,7 +38,6 @@ describe('ShaderParser', function() {
                     'uniform highp mat4 B;',
                     'uniform highp mat4 C;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source );
             assert( declarations.length === 0 );
             declarations = ShaderParser.parseDeclarations( source, [] );
@@ -67,7 +63,6 @@ describe('ShaderParser', function() {
                     'uniform highp mat4 B;',
                     'uniform highp mat4 C;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -85,7 +80,6 @@ describe('ShaderParser', function() {
                     ' C',
                     ';',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -100,7 +94,6 @@ describe('ShaderParser', function() {
                     '   ,  ',
                     ' F;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -118,7 +111,6 @@ describe('ShaderParser', function() {
                     'attribute highp vec3 C;',
                     'uniform highp mat4 D;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( [ sourceAB, sourceCD ], [ "uniform", "attribute" ] );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -136,7 +128,6 @@ describe('ShaderParser', function() {
                     'uniform highp mat4 B;',
                     'uniform sampler2D C;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
             assert( declarations[0].name === 'A' );
             assert( declarations[1].name === 'B' );
@@ -151,7 +142,6 @@ describe('ShaderParser', function() {
                     'uniform highp mat4 A[10], B, C[2];',
                     'uniform highp mat4 D;',
                     'void main() { ... }'].join('\n');
-
             var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
             assert( declarations[0].count === 10 );
             assert( declarations[1].count === 1 );
