@@ -20,8 +20,8 @@
         this.gl = WebGLContext.get();
         // set size
         this.resize(
-            spec.width || this.gl.canvas.height,
-            spec.height || this.gl.canvas.width );
+            spec.width || this.gl.canvas.width,
+            spec.height || this.gl.canvas.height );
         // set offset
         this.offset(
             spec.x,
