@@ -139,14 +139,33 @@ describe('ShaderParser', function() {
         });
         it('should parse the count from array and non-array declarations', function() {
             var source = [
-                    'uniform highp mat4 A[10], B, C[2];',
+                    'uniform highp mat4 A[ 10], B, C [2];',
                     'uniform highp mat4 D;',
+                    'uniform highp mat4 E ,',
+                    'F ',
+                    '[11 ] ;',
                     'void main() { ... }'].join('\n');
             var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
             assert( declarations[0].count === 10 );
             assert( declarations[1].count === 1 );
             assert( declarations[2].count === 2 );
             assert( declarations[3].count === 1 );
+            assert( declarations[4].count === 1 );
+            assert( declarations[5].count === 11 );
+        });
+        it('should parse precision statements', function() {
+            var source = [
+                    'precision highp float;',
+                    ' uniform float A;',
+                    ' precision',
+                    'mediump    ',
+                    ' int;',
+                    ' uniform uint B;',
+                    ' mediump;',
+                    'void main() { ... }'].join('\n');
+            var declarations = ShaderParser.parseDeclarations( source, [ "uniform", "attribute" ] );
+            assert( declarations[0].precision === 'highp' );
+            assert( declarations[1].precision === 'mediump' );
         });
     });
     describe('#isGLSL()', function() {

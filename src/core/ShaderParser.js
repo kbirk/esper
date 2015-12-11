@@ -8,6 +8,28 @@
         lowp: true
     };
 
+    var PRECISION_TYPES = {
+        float: "float",
+        vec2: "float",
+        vec3: "float",
+        vec4: "float",
+        ivec2: "int",
+        ivec3: "int",
+        ivec4: "int",
+        int: "int",
+        uint: "int",
+        sampler2D: "sampler2D",
+        samplerCube: "samplerCube",
+    };
+
+    var COMMENTS_REGEXP = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
+    var ENDLINE_REGEXP = /(\r\n|\n|\r)/gm;
+    var WHITESPACE_REGEXP = /\s{2,}/g;
+    var BRACKET_WHITESPACE_REGEXP = /(\s*)(\[)(\s*)(\d+)(\s*)(\])(\s*)/g;
+    var NAME_COUNT_REGEXP = /([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?/;
+    var PRECISION_REGEX = /\b(precision)\s+(\w+)\s+(\w+)/;
+    var GLSL_REGEXP =  /void\s+main\s*\(\s*\)\s*/gmi;
+
     /**
      * Removes standard comments from the provided string.
      *
@@ -17,7 +39,7 @@
      */
     function stripComments( str ) {
         // regex source: https://github.com/moagrius/stripcomments
-        return str.replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '');
+        return str.replace( COMMENTS_REGEXP, '' );
     }
 
     /**
@@ -28,8 +50,32 @@
      * @return {String} The normalized string.
      */
     function normalizeWhitespace( str ) {
-        // remove all end lines, replace all whitespace with a single ' ' space
-        return str.replace(/(\r\n|\n|\r)/gm,"").replace(/\s{2,}/g, ' ');
+        return str.replace( ENDLINE_REGEXP, ' ' ) // remove line endings
+            .replace( WHITESPACE_REGEXP, ' ' ) // normalize whitespace to single ' '
+            .replace( BRACKET_WHITESPACE_REGEXP, '$2$4$6' ); // remove whitespace in brackets
+    }
+
+    /**
+     * Parses the name and count out of a name statement, returning the
+     * declaration object.
+     *
+     * @param {String} qualifier - The qualifier string.
+     * @param {String} precision - The precision string.
+     * @param {String} type - The type string.
+     * @param {String} entry - The variable declaration string.
+     */
+    function parseNameAndCount( qualifier, precision, type, entry ) {
+        // determine name and size of variable
+        var matches = entry.match( NAME_COUNT_REGEXP );
+        var name = matches[1];
+        var count = ( matches[2] === undefined ) ? 1 : parseInt( matches[2], 10 );
+        return {
+            qualifier: qualifier,
+            precision: precision,
+            type: type,
+            name: name,
+            count: count
+        };
     }
 
     /**
@@ -39,56 +85,55 @@
      * all resulting declarations.
      *
      * @param {String} statement - The statement to parse.
+     * @param {Object} precisions - The current state of global precisions.
      *
      * @returns {Array} The array of parsed declaration objects.
      */
-    function parseStatement( statement ) {
-
-        function parseNameAndCount( entry ) {
-            // split on '[]' and trim whitespce to check for arrays
-            var split = entry.split(/[\[\]]/).map( function( elem ) {
-                return elem.trim();
-            });
-            return {
-                qualifier: qualifier,
-                precision: precision,
-                type: type,
-                name: split[0],
-                count: ( split[1] === undefined ) ? 1 : parseInt( split[1], 10 )
-            };
-        }
-
-        var results = [],
-            commaSplit,
-            header,
-            qualifier,
-            precision,
-            type,
-            names,
-            i;
+    function parseStatement( statement, precisions ) {
         // split statement on commas
-        commaSplit = statement.split(',').map( function( elem ) {
+        //
+        // [ "uniform highp mat4 A[10]", "B", "C[2]" ]
+        //
+        var commaSplit = statement.split(',').map( function( elem ) {
             return elem.trim();
         });
+
         // split declaration header from statement
-        header = commaSplit.shift().split(' ');
+        //
+        // [ "uniform", "highp", "mat4", "A[10]" ]
+        //
+        var header = commaSplit.shift().split(' ');
+
         // qualifier is always first element
-        qualifier = header.shift();
+        //
+        // "uniform"
+        //
+        var qualifier = header.shift();
+
         // precision may or may not be declared
-        precision = header.shift();
+        //
+        // "highp" || (if it was omited) "mat4"
+        //
+        var precision = header.shift();
+        var type;
         // if not a precision keyword it is the type instead
         if ( !PRECISION_QUALIFIERS[ precision ] ) {
             type = precision;
-            precision = null;
+            precision = precisions[ PRECISION_TYPES[ type ] ];
         } else {
             type = header.shift();
         }
-        // split remaining names by commas and trim whitespace
-        names = header.concat( commaSplit );
+
+        // last part of header will be the first, and possible only variable name
+        //
+        // [ "A[10]", "B", "C[2]" ]
+        //
+        var names = header.concat( commaSplit );
         // if there are other names after a ',' add them as well
-        for ( i=0; i<names.length; i++ ) {
-            results.push( parseNameAndCount( names[i] ) );
-        }
+        var results = [];
+        names.forEach( function( name ) {
+            results.push( parseNameAndCount( qualifier, precision, type, name ) );
+        });
         return results;
     }
 
@@ -97,29 +142,44 @@
      * declaration objects based on the provided qualifier keywords.
      *
      * @param {String} source - The shader source string.
-     * @param {String|Array} keyword - The qualifier declaration keyword.
+     * @param {String|Array} keywords - The qualifier declaration keywords.
      *
      * @returns {Array} The array of qualifier declaration objects.
      */
-    function parseSource( source, keyword ) {
-        // get statements ( any sequence ending in ; ) containing any
-        // of the given keywords
-        var keywordStr = ( keyword instanceof Array ) ? keyword.join('|') : keyword,
-            keywordRegex = new RegExp( "^.*\\b("+keywordStr+")\\b.*", 'gm' ),
-            commentlessSource = stripComments( source ),
-            normalized = normalizeWhitespace( commentlessSource ),
-            statements = normalized.split(';'),
-            matched = [],
-            match, i;
+    function parseSource( source, keywords ) {
+        // remove all comments from source
+        var commentlessSource = stripComments( source );
+        // normalize all whitespace in the source
+        var normalized = normalizeWhitespace( commentlessSource );
+        // get individual statements ( any sequence ending in ; )
+        var statements = normalized.split(';');
+        // build regex for parsing statements with targetted keywords
+        var keywordStr = keywords.join('|');
+        var keywordRegex = new RegExp( '.*\\b(' + keywordStr + ')\\b.*' );
+        // parse and store global precision statements and any declarations
+        var precisions = {};
+        var matched = [];
         // for each statement
-        for ( i=0; i<statements.length; i++ ) {
-            // look for keywords
-            match = statements[i].trim().match( keywordRegex );
-            if ( match ) {
-                // parse statement and add to array
-                matched = matched.concat( parseStatement( match[0] ) );
+        statements.forEach( function( statement ) {
+            // check if precision statement
+            //
+            // [ "precision highp float", "precision", "highp", "float" ]
+            //
+            var pmatch = statement.match( PRECISION_REGEX );
+            if ( pmatch ) {
+                precisions[ pmatch[3] ] = pmatch[2];
+                return;
             }
-        }
+            // check for keywords
+            //
+            // [ "uniform float time" ]
+            //
+            var kmatch = statement.match( keywordRegex );
+            if ( kmatch ) {
+                // parse statement and add to array
+                matched = matched.concat( parseStatement( kmatch[0], precisions ) );
+            }
+        });
         return matched;
     }
 
@@ -163,22 +223,24 @@
          *         count: 1
          *     }
          * </pre>
-         * @param {String|Array} source - The shader sources.
+         * @param {String|Array} sources - The shader sources.
          * @param {String|Array} qualifiers - The qualifiers to extract.
          *
          * @returns {Array} The array of qualifier declaration statements.
          */
-        parseDeclarations: function( source, qualifiers ) {
-            // if no qualifiers are provided, return empty array
-            if ( !qualifiers || qualifiers.length === 0 ) {
+        parseDeclarations: function( sources, qualifiers ) {
+            // if no sources or qualifiers are provided, return empty array
+            if ( !qualifiers || qualifiers.length === 0 ||
+                !sources || sources.length === 0 ) {
                 return [];
             }
-            var sources = ( source instanceof Array ) ? source : [ source ],
-                declarations = [],
-                i;
-            for ( i=0; i<sources.length; i++ ) {
-                declarations = declarations.concat( parseSource( sources[i], qualifiers ) );
-            }
+            sources = ( sources instanceof Array ) ? sources : [ sources ];
+            qualifiers = ( qualifiers instanceof Array ) ? qualifiers : [ qualifiers ];
+            // parse out targetted declarations
+            var declarations = [];
+            sources.forEach( function( source ) {
+                declarations = declarations.concat( parseSource( source, qualifiers ) );
+            });
             // remove duplicates and return
             return filterDuplicatesByName( declarations );
         },
@@ -192,7 +254,7 @@
          * @returns {boolean} - True if the string is glsl code.
          */
         isGLSL: function( str ) {
-            return /void\s+main\s*\(\s*\)\s*/.test( str );
+            return GLSL_REGEXP.test( str );
         }
 
     };
