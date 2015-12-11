@@ -9,18 +9,31 @@
         Stack = require('../util/Stack'),
         UNIFORM_FUNCTIONS = {
             'bool': 'uniform1i',
+            'bool[]': 'uniform1iv',
             'float': 'uniform1f',
+            'float[]': 'uniform1fv',
             'int': 'uniform1i',
-            'uint': 'unfirom1i',
+            'int[]': 'uniform1iv',
+            'uint': 'uniform1i',
+            'uint[]': 'uniform1iv',
             'vec2': 'uniform2fv',
+            'vec2[]': 'uniform2fv',
             'ivec2': 'uniform2iv',
+            'ivec2[]': 'uniform2iv',
             'vec3': 'uniform3fv',
+            'vec3[]': 'uniform3fv',
             'ivec3': 'uniform3iv',
+            'ivec3[]': 'uniform3iv',
             'vec4': 'uniform4fv',
+            'vec4[]': 'uniform4fv',
             'ivec4': 'uniform4iv',
+            'ivec4[]': 'uniform4iv',
             'mat2': 'uniformMatrix2fv',
+            'mat2[]': 'uniformMatrix2fv',
             'mat3': 'uniformMatrix3fv',
+            'mat3[]': 'uniformMatrix3fv',
             'mat4': 'uniformMatrix4fv',
+            'mat4[]': 'uniformMatrix4fv',
             'sampler2D': 'uniform1i',
             'samplerCube': 'uniform1i'
         },
@@ -59,7 +72,7 @@
                 // if uniform, store type and buffer function name
                 uniforms[ declaration.name ] = {
                     type: declaration.type,
-                    func: UNIFORM_FUNCTIONS[ declaration.type ]
+                    func: UNIFORM_FUNCTIONS[ declaration.type + (declaration.count > 1 ? '[]' : '') ]
                 };
             }
         }
