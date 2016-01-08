@@ -83,6 +83,7 @@
         this.wrap = spec.wrap || "REPEAT";
         this.filter = spec.filter || "LINEAR";
         this.invertY = spec.invertY !== undefined ? spec.invertY : true;
+        this.mipMap = spec.mipMap !== undefined ? spec.mipMap : true;
         // buffer the texture based on arguments
         if ( spec.image ) {
             // use existing Image object
@@ -124,7 +125,7 @@
                 this.type = spec.type || "UNSIGNED_BYTE";
             }
             this.internalFormat = this.format; // webgl requires format === internalFormat
-            this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
+            //this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
             this.bufferData( spec.data || null, spec.width, spec.height );
             this.setParameters( this );
         }
@@ -189,8 +190,6 @@
             this.height = data.height;
             data = ensurePowerOfTwo( data );
             this.image = data;
-            //this.filter = "LINEAR"; // must be linear for mipmapping
-            this.mipMap = true;
             gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             gl.texImage2D(
                 gl.TEXTURE_2D,
@@ -203,6 +202,7 @@
             this.data = data;
             this.width = width || this.width;
             this.height = height || this.height;
+            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             gl.texImage2D(
                 gl.TEXTURE_2D,
                 0, // level
@@ -252,7 +252,7 @@
             this.filter = parameters.filter;
             var minFilter = this.filter.min || this.filter;
             if ( this.mipMap ) {
-                // append min mpa suffix to min filter
+                // append mipmap suffix to min filter
                 minFilter += "_MIPMAP_LINEAR";
             }
             gl.texParameteri(

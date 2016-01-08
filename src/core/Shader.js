@@ -380,9 +380,14 @@
     Shader.prototype.setUniform = function( uniformName, uniform ) {
         if ( !this.program ) {
             if ( !this.hasLoggedError ) {
-                console.warn("Attempting to use an incomplete shader, command ignored." );
+                console.warn( "Attempting to use an incomplete shader, command ignored." );
                 this.hasLoggedError = true;
             }
+            return;
+        }
+        if ( this !== _boundShader ) {
+            console.warn( "Attempting to set uniform '" + uniformName +
+                "' for an unbound shader, command ignored." );
             return;
         }
         var uniformSpec = this.uniforms[ uniformName ],
