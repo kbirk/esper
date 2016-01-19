@@ -65,29 +65,44 @@
         return pointers;
     }
 
-    function VertexBuffer( array, attributePointers, options ) {
+    function getNumComponents(pointers) {
+        var size = 0;
+        var index;
+        for ( index in pointers ) {
+            if ( pointers.hasOwnProperty( index ) ) {
+                size += pointers[ index ].size;
+            }
+        }
+        return size;
+    }
+
+    function VertexBuffer( arg, attributePointers, options ) {
         options = options || {};
         this.buffer = 0;
         this.gl = WebGLContext.get();
-        if ( array ) {
-            if ( array instanceof VertexPackage ) {
+        // first, set the attribute pointers
+        if ( arg instanceof VertexPackage ) {
+            // VertexPackage argument, use its attribute pointers
+            this.pointers = arg.attributePointers();
+            // shift options arg since there will be no attrib pointers arg
+            options = attributePointers || {};
+        } else {
+            this.pointers = getAttributePointers( attributePointers );
+        }
+        // then buffer the data
+        if ( arg ) {
+            if ( arg instanceof VertexPackage ) {
                 // VertexPackage argument
-                this.bufferData( array.buffer() );
-                // shift arg since there will be no attrib pointers
-                options = attributePointers || {};
-                // get attribute pointers from vertex package
-                attributePointers = array.attributePointers();
-            } else if ( array instanceof WebGLBuffer ) {
+                this.bufferData( arg.buffer() );
+            } else if ( arg instanceof WebGLBuffer ) {
                 // WebGLBuffer argument
-                this.buffer = array;
+                this.buffer = arg;
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
                 // Array or ArrayBuffer or number argument
-                this.bufferData( array );
+                this.bufferData( arg );
             }
         }
-        // set attribute pointers
-        this.pointers = getAttributePointers( attributePointers );
         // set stride
         this.stride = getStride( this.pointers );
         // set draw offset and mode
@@ -95,12 +110,12 @@
         this.mode = ( options.mode !== undefined ) ? options.mode : "TRIANGLES";
     }
 
-    VertexBuffer.prototype.bufferData = function( array ) {
+    VertexBuffer.prototype.bufferData = function( arg ) {
         var gl = this.gl;
-        if ( array instanceof Array ) {
+        if ( arg instanceof Array ) {
             // cast arrays into bufferview
-            array = new Float32Array( array );
-        } else if ( !Util.isTypedArray( array ) && typeof array !== "number" ) {
+            arg = new Float32Array( arg );
+        } else if ( !Util.isTypedArray( arg ) && typeof arg !== "number" ) {
             console.error( "VertexBuffer requires an Array or ArrayBuffer, " +
                 "or a size argument, command ignored." );
             return;
@@ -108,8 +123,16 @@
         if ( !this.buffer ) {
             this.buffer = gl.createBuffer();
         }
+        // get the total number of attribute components from pointers
+        var numComponents = getNumComponents(this.pointers);
+        // set count based on size of buffer and number of components
+        if (typeof arg === "number") {
+            this.count = arg / numComponents;
+        } else {
+            this.count = arg.length / numComponents;
+        }
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-        gl.bufferData( gl.ARRAY_BUFFER, array, gl.STATIC_DRAW );
+        gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
     };
 
     VertexBuffer.prototype.bufferSubData = function( array, offset ) {

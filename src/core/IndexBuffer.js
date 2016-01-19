@@ -10,19 +10,19 @@
      * @class IndexBuffer
      * @classdesc An index buffer object.
      */
-    function IndexBuffer( array, options ) {
+    function IndexBuffer( arg, options ) {
         options = options || {};
         this.gl = WebGLContext.get();
         this.buffer = 0;
-        if ( array ) {
-            if ( array instanceof WebGLBuffer ) {
+        if ( arg ) {
+            if ( arg instanceof WebGLBuffer ) {
                 // if the argument is already a webglbuffer, simply wrap it
-                this.buffer = array;
+                this.buffer = arg;
                 this.type = options.type || "UNSIGNED_SHORT";
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
                 // otherwise, buffer it
-                this.bufferData( array );
+                this.bufferData( arg );
             }
         }
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
@@ -33,37 +33,37 @@
      * Upload index data to the GPU.
      * @memberof IndexBuffer
      *
-     * @param {Array|Uint16Array|Uint32Array} array - The array of data to buffer.
+     * @param {Array|Uint16Array|Uint32Array} arg - The array of data to buffer.
      *
      * @returns {IndexBuffer} The index buffer object for chaining.
      */
-    IndexBuffer.prototype.bufferData = function( array ) {
+    IndexBuffer.prototype.bufferData = function( arg ) {
         var gl = this.gl;
         // check for type support
         var uint32support = WebGLContext.checkExtension( "OES_element_index_uint" );
         if( !uint32support ) {
             // no support for uint32
-            if ( array instanceof Array ) {
+            if ( arg instanceof Array ) {
                 // if array, buffer to uint16
-                array = new Uint16Array( array );
-            } else if ( array instanceof Uint32Array ) {
+                arg = new Uint16Array( arg );
+            } else if ( arg instanceof Uint32Array ) {
                 // if uint32, downgrade to uint16
                 console.warn( "Cannot create IndexBuffer of format " +
                     "gl.UNSIGNED_INT as OES_element_index_uint is not " +
                     "supported, defaulting to gl.UNSIGNED_SHORT." );
-                array = new Uint16Array( array );
+                arg = new Uint16Array( arg );
             }
         } else {
             // uint32 is supported
-            if ( array instanceof Array ) {
+            if ( arg instanceof Array ) {
                 // if array, buffer to uint32
-                array = new Uint32Array( array );
+                arg = new Uint32Array( arg );
             }
         }
         // set data type based on array
-        if ( array instanceof Uint16Array ) {
+        if ( arg instanceof Uint16Array ) {
             this.type = "UNSIGNED_SHORT";
-        } else if ( array instanceof Uint32Array ) {
+        } else if ( arg instanceof Uint32Array ) {
             this.type = "UNSIGNED_INT";
         } else {
             console.error( "IndexBuffer requires an Array or " +
@@ -71,10 +71,12 @@
             return;
         }
         // create buffer, store count
-        this.buffer = gl.createBuffer();
-        this.count = array.length;
+        if ( !this.buffer ) {
+            this.buffer = gl.createBuffer();
+        }
+        this.count = arg.length;
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
-        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, array, gl.STATIC_DRAW );
+        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, arg, gl.STATIC_DRAW );
         return this;
     };
 
