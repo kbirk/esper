@@ -24,8 +24,8 @@
             spec.height || this.gl.canvas.height );
         // set offset
         this.offset(
-            spec.x,
-            spec.y );
+            spec.x !== undefined ? spec.x : 0,
+            spec.y !== undefined ? spec.y : 0);
     }
 
     /**
