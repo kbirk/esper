@@ -119,13 +119,14 @@
                         spec.type + "', defaulting to 'UNSIGNED_SHORT'.");
                     this.type = "UNSIGNED_SHORT";
                 }
+                // disable mip mapping for depth texture
+                this.mipMap = false;
             } else {
                 // other
                 this.format = spec.format || "RGBA";
                 this.type = spec.type || "UNSIGNED_BYTE";
             }
             this.internalFormat = this.format; // webgl requires format === internalFormat
-            //this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
             this.bufferData( spec.data || null, spec.width, spec.height );
             this.setParameters( this );
         }
