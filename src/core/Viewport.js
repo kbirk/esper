@@ -38,8 +38,8 @@
         if ( width !== undefined && height !== undefined ) {
             this.width = width;
             this.height = height;
-            this.gl.canvas.height = height;
-            this.gl.canvas.width = width;
+            this.gl.canvas.width = width + this.x;
+            this.gl.canvas.height = height + this.y;
         }
         return this;
     };
@@ -54,6 +54,8 @@
         if ( x !== undefined && y !== undefined ) {
             this.x = x;
             this.y = y;
+            this.gl.canvas.width = this.width + x;
+            this.gl.canvas.height = this.height + y;
         }
         return this;
     };
