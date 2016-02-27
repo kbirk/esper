@@ -1,6 +1,6 @@
 (function() {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         Stack = require('../util/Stack'),

@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     function Stack() {
         this.data = [];

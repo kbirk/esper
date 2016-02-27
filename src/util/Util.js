@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var simplyDeferred = require('simply-deferred'),
         Deferred = simplyDeferred.Deferred,

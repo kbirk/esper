@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         Stack = require('../util/Stack'),
@@ -92,7 +92,7 @@
      */
     RenderTarget.prototype.setColorTarget = function( texture, index, target ) {
         var gl = this.gl;
-        if ( typeof index === "string" ) {
+        if ( typeof index === 'string' ) {
             target = index;
             index = undefined;
         }
@@ -102,7 +102,7 @@
         gl.framebufferTexture2D(
             gl.FRAMEBUFFER,
             gl[ 'COLOR_ATTACHMENT' + index ],
-            gl[ target || "TEXTURE_2D" ],
+            gl[ target || 'TEXTURE_2D' ],
             texture.texture,
             0 );
         this.pop();
@@ -225,7 +225,7 @@
     RenderTarget.prototype.resize = function( width, height ) {
         var key;
         if ( !width || !height ) {
-            console.warn( "Width or height arguments missing, command ignored." );
+            console.warn( 'Width or height arguments missing, command ignored.' );
             return this;
         }
         for ( key in this.textures ) {

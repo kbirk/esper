@@ -1,6 +1,6 @@
 (function() {
 
-    "use strict";
+    'use strict';
 
     var _boundContext = null,
         _contextsById = {},
@@ -46,7 +46,7 @@
         if ( arg instanceof HTMLImageElement ||
              arg instanceof HTMLCanvasElement ) {
             return arg;
-        } else if ( typeof arg === "string" ) {
+        } else if ( typeof arg === 'string' ) {
             return document.getElementById( arg );
         }
         return null;
@@ -106,7 +106,7 @@
             gl;
         try {
             // get WebGL context, fallback to experimental
-            gl = canvas.getContext( "webgl", options ) || canvas.getContext( "experimental-webgl", options );
+            gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
             // wrap context
             contextWrapper = {
                 id: canvas.id,
@@ -123,8 +123,8 @@
             console.error( err.message );
         }
         if ( !gl ) {
-            console.error( "Unable to initialize WebGL. Your browser may not " +
-                "support it." );
+            console.error( 'Unable to initialize WebGL. Your browser may not ' +
+                'support it.' );
         }
         return contextWrapper;
     }
@@ -145,8 +145,8 @@
                 _boundContext = wrapper;
                 return this;
             }
-            console.error( "No context exists for provided argument '" + arg +
-                "', command ignored." );
+            console.error( 'No context exists for provided argument `' + arg +
+                '`, command ignored.' );
             return this;
         },
 
@@ -172,8 +172,8 @@
             var canvas = getCanvas( arg );
             // try to find or create context
             if ( !canvas || !createContextWrapper( canvas, options ) ) {
-                console.error( "Context could not be found or created for " +
-                    "argument of type'" + ( typeof arg ) + "', returning 'null'." );
+                console.error( 'Context could not be found or created for ' +
+                    'argument of type`' + ( typeof arg ) + '`, returning `null`.' );
                 return null;
             }
             // return context
@@ -202,8 +202,8 @@
                 }
                 return supported;
             }
-            console.error("No context is currently bound or was provided, " +
-                "returning an empty array.");
+            console.error('No context is currently bound or was provided, ' +
+                'returning an empty array.');
             return [];
         },
 
@@ -229,8 +229,8 @@
                 }
                 return unsupported;
             }
-            console.error("No context is currently bound or was provided, " +
-                "returning an empty array.");
+            console.error('No context is currently bound or was provided, ' +
+                'returning an empty array.');
             return [];
         },
 
@@ -256,8 +256,8 @@
                 var extensions = wrapper.extensions;
                 return extensions[ extension ] ? extensions[ extension ] : false;
             }
-            console.error("No context is currently bound or provided as " +
-                "argument, returning false.");
+            console.error('No context is currently bound or provided as ' +
+                'argument, returning false.');
             return false;
         }
     };

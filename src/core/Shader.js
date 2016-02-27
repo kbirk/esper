@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         ShaderParser = require('./ShaderParser'),
@@ -97,7 +97,7 @@
         gl.shaderSource( shader, shaderSource );
         gl.compileShader( shader );
         if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
-            console.error( "An error occurred compiling the shaders: " +
+            console.error( 'An error occurred compiling the shaders: ' +
                 gl.getShaderInfoLog( shader ) );
             return null;
         }
@@ -121,7 +121,7 @@
                     attributes[ name ].index,
                     name );
                 /*
-                console.log( 'Bound vertex attribute \'' + name +
+                console.log( 'Bound vertex attribute \`' + name +
                     '\' to location ' + attributes[ name ].index );
                 */
             }
@@ -144,8 +144,8 @@
                 // get the uniform location
                 uniform.location = gl.getUniformLocation( shader.program, name );
                 /*
-                console.log( name + ", " +
-                    gl.getUniformLocation( shader.program, name ) + "," );
+                console.log( name + ', ' +
+                    gl.getUniformLocation( shader.program, name ) + ',' );
                 */
             }
         }
@@ -163,7 +163,7 @@
             XHRLoader.load(
                 url,
                 {
-                    responseType: "text",
+                    responseType: 'text',
                     success: done,
                     error: function(err) {
                         console.error( err );
@@ -262,12 +262,12 @@
         this.version = spec.version || '1.00';
         // check source arguments
         if ( !spec.vert ) {
-            console.error( "Vertex shader argument has not been provided, " +
-                "shader initialization aborted." );
+            console.error( 'Vertex shader argument has not been provided, ' +
+                'shader initialization aborted.' );
         }
         if ( !spec.frag ) {
-            console.error( "Fragment shader argument has not been provided, " +
-                "shader initialization aborted." );
+            console.error( 'Fragment shader argument has not been provided, ' +
+                'shader initialization aborted.' );
         }
         // create the shader
         Util.async({
@@ -298,17 +298,17 @@
     Shader.prototype.create = function( shaders ) {
         // once all shader sources are loaded
         var gl = this.gl,
-            common = shaders.common.join( "" ),
-            vert = shaders.vert.join( "" ),
-            frag = shaders.frag.join( "" ),
+            common = shaders.common.join( '' ),
+            vert = shaders.vert.join( '' ),
+            frag = shaders.frag.join( '' ),
             vertexShader,
             fragmentShader,
             attributesAndUniforms;
         // compile shaders
-        vertexShader = compileShader( gl, common + vert, "VERTEX_SHADER" );
-        fragmentShader = compileShader( gl, common + frag, "FRAGMENT_SHADER" );
+        vertexShader = compileShader( gl, common + vert, 'VERTEX_SHADER' );
+        fragmentShader = compileShader( gl, common + frag, 'FRAGMENT_SHADER' );
         if ( !vertexShader || !fragmentShader ) {
-            console.error( "Aborting instantiation of shader due to compilation errors." );
+            console.error( 'Aborting instantiation of shader due to compilation errors.' );
             return abortShader( this );
         }
         // parse source for attribute and uniforms
@@ -327,9 +327,9 @@
         gl.linkProgram( this.program );
         // If creating the shader program failed, alert
         if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS ) ) {
-            console.error( "An error occured linking the shader: " +
+            console.error( 'An error occured linking the shader: ' +
                 gl.getProgramInfoLog( this.program ) );
-            console.error( "Aborting instantiation of shader due to linking errors." );
+            console.error( 'Aborting instantiation of shader due to linking errors.' );
             return abortShader( this );
         }
         // get shader uniform locations
@@ -380,14 +380,14 @@
     Shader.prototype.setUniform = function( uniformName, uniform ) {
         if ( !this.program ) {
             if ( !this.hasLoggedError ) {
-                console.warn( "Attempting to use an incomplete shader, command ignored." );
+                console.warn( 'Attempting to use an incomplete shader, command ignored.' );
                 this.hasLoggedError = true;
             }
             return;
         }
         if ( this !== _boundShader ) {
-            console.warn( "Attempting to set uniform '" + uniformName +
-                "' for an unbound shader, command ignored." );
+            console.warn( 'Attempting to set uniform `' + uniformName +
+                '` for an unbound shader, command ignored.' );
             return;
         }
         var uniformSpec = this.uniforms[ uniformName ],
@@ -397,14 +397,14 @@
             value;
         // ensure that the uniform spec exists for the name
         if ( !uniformSpec ) {
-            console.warn( 'No uniform found under name "' + uniformName +
-                '", command ignored.' );
+            console.warn( 'No uniform found under name `' + uniformName +
+                '`, command ignored.' );
             return;
         }
         // ensure that the uniform argument is defined
         if ( uniform === undefined ) {
-            console.warn( 'Argument passed for uniform "' + uniformName +
-                '" is undefined, command ignored.' );
+            console.warn( 'Argument passed for uniform `' + uniformName +
+                '` is undefined, command ignored.' );
             return;
         }
         // get the uniform location, type, and buffer function
@@ -414,7 +414,7 @@
         value = uniform.toArray ? uniform.toArray() : uniform;
         value = ( value instanceof Array ) ? new Float32Array( value ) : value;
         // convert boolean's to 0 or 1
-        value = ( typeof value === "boolean" ) ? ( value ? 1 : 0 ) : value;
+        value = ( typeof value === 'boolean' ) ? ( value ? 1 : 0 ) : value;
         // pass the arguments depending on the type
         switch ( type ) {
             case 'mat2':

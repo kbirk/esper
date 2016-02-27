@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         Util = require('../util/Util'),
@@ -19,10 +19,10 @@
     function ensurePowerOfTwo( image ) {
         if ( !Util.isPowerOfTwo( image.width ) ||
             !Util.isPowerOfTwo( image.height ) ) {
-            var canvas = document.createElement( "canvas" );
+            var canvas = document.createElement( 'canvas' );
             canvas.width = Util.nextHighestPowerOfTwo( image.width );
             canvas.height = Util.nextHighestPowerOfTwo( image.height );
-            var ctx = canvas.getContext("2d");
+            var ctx = canvas.getContext('2d');
             ctx.drawImage(
                 image,
                 0, 0,
@@ -80,8 +80,8 @@
         this.gl = WebGLContext.get();
         // create texture object
         this.texture = this.gl.createTexture();
-        this.wrap = spec.wrap || "REPEAT";
-        this.filter = spec.filter || "LINEAR";
+        this.wrap = spec.wrap || 'REPEAT';
+        this.filter = spec.filter || 'LINEAR';
         this.invertY = spec.invertY !== undefined ? spec.invertY : true;
         this.mipMap = spec.mipMap !== undefined ? spec.mipMap : true;
         this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : true;
@@ -106,13 +106,13 @@
             // certain angles / distances to the mipmapped (empty) portions.
             this.mipMap = false;
             // buffer data
-            if ( spec.format === "DEPTH_COMPONENT" ) {
+            if ( spec.format === 'DEPTH_COMPONENT' ) {
                 // depth texture
-                var depthTextureExt = WebGLContext.checkExtension( "WEBGL_depth_texture" );
+                var depthTextureExt = WebGLContext.checkExtension( 'WEBGL_depth_texture' );
                 if( !depthTextureExt ) {
-                    console.warn( "Cannot create Texture2D of format " +
-                        "gl.DEPTH_COMPONENT as WEBGL_depth_texture is " +
-                        "unsupported by this browser, command ignored" );
+                    console.warn( 'Cannot create Texture2D of format ' +
+                        'gl.DEPTH_COMPONENT as WEBGL_depth_texture is ' +
+                        'unsupported by this browser, command ignored' );
                     return;
                 }
                 // set format
@@ -120,22 +120,22 @@
                 // set type
                 if ( !spec.type ) {
                     // default to unsigned int for higher precision
-                    this.type = "UNSIGNED_INT";
-                } else if ( spec.type === "UNSIGNED_SHORT" || spec.type === "UNSIGNED_INT" ) {
+                    this.type = 'UNSIGNED_INT';
+                } else if ( spec.type === 'UNSIGNED_SHORT' || spec.type === 'UNSIGNED_INT' ) {
                     // set to accept types
                     this.type = spec.type;
                 } else {
                     // error
-                    console.warn( "Depth textures do not support type'" +
-                        spec.type + "', defaulting to 'UNSIGNED_INT'.");
+                    console.warn( 'Depth textures do not support type`' +
+                        spec.type + '`, defaulting to `UNSIGNED_INT`.');
                     // default
-                    this.type = "UNSIGNED_INT";
+                    this.type = 'UNSIGNED_INT';
                 }
                 // always disable mip mapping for depth texture
             } else {
                 // other
-                this.format = spec.format || "RGBA";
-                this.type = spec.type || "UNSIGNED_BYTE";
+                this.format = spec.format || 'RGBA';
+                this.type = spec.type || 'UNSIGNED_BYTE';
             }
             this.internalFormat = this.format; // webgl requires format === internalFormat
             this.bufferData( spec.data || null, spec.width, spec.height );
@@ -170,8 +170,8 @@
     Texture2D.prototype.pop = function( location ) {
         var top;
         if ( !_stack[ location ] ) {
-            console.warn( "No texture was bound to texture unit '" + location +
-                "', command ignored." );
+            console.warn( 'No texture was bound to texture unit `' + location +
+                '`, command ignored.' );
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();
@@ -268,7 +268,7 @@
             var minFilter = this.filter.min || this.filter;
             if ( this.mipMap ) {
                 // append mipmap suffix to min filter
-                minFilter += "_MIPMAP_LINEAR";
+                minFilter += '_MIPMAP_LINEAR';
             }
             gl.texParameteri(
                 gl.TEXTURE_2D,
@@ -296,11 +296,11 @@
         if ( this.image ) {
             // there is no need to ever resize a texture that is based
             // of an actual image. That is what sampling is for.
-            console.error( "Cannot resize image based Texture2D" );
+            console.error( 'Cannot resize image based Texture2D' );
             return;
         }
         if ( !width || !height ) {
-            console.warn( "Width or height arguments missing, command ignored." );
+            console.warn( 'Width or height arguments missing, command ignored.' );
             return;
         }
         this.bufferData( this.data, width, height );

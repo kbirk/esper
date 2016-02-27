@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         _boundBuffer = null;
@@ -18,7 +18,7 @@
             if ( arg instanceof WebGLBuffer ) {
                 // if the argument is already a webglbuffer, simply wrap it
                 this.buffer = arg;
-                this.type = options.type || "UNSIGNED_SHORT";
+                this.type = options.type || 'UNSIGNED_SHORT';
                 this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
                 // otherwise, buffer it
@@ -26,7 +26,7 @@
             }
         }
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
-        this.mode = ( options.mode !== undefined ) ? options.mode : "TRIANGLES";
+        this.mode = ( options.mode !== undefined ) ? options.mode : 'TRIANGLES';
     }
 
     /**
@@ -40,7 +40,7 @@
     IndexBuffer.prototype.bufferData = function( arg ) {
         var gl = this.gl;
         // check for type support
-        var uint32support = WebGLContext.checkExtension( "OES_element_index_uint" );
+        var uint32support = WebGLContext.checkExtension( 'OES_element_index_uint' );
         if( !uint32support ) {
             // no support for uint32
             if ( arg instanceof Array ) {
@@ -48,9 +48,9 @@
                 arg = new Uint16Array( arg );
             } else if ( arg instanceof Uint32Array ) {
                 // if uint32, downgrade to uint16
-                console.warn( "Cannot create IndexBuffer of format " +
-                    "gl.UNSIGNED_INT as OES_element_index_uint is not " +
-                    "supported, defaulting to gl.UNSIGNED_SHORT." );
+                console.warn( 'Cannot create IndexBuffer of format ' +
+                    'gl.UNSIGNED_INT as OES_element_index_uint is not ' +
+                    'supported, defaulting to gl.UNSIGNED_SHORT.' );
                 arg = new Uint16Array( arg );
             }
         } else {
@@ -62,12 +62,12 @@
         }
         // set data type based on array
         if ( arg instanceof Uint16Array ) {
-            this.type = "UNSIGNED_SHORT";
+            this.type = 'UNSIGNED_SHORT';
         } else if ( arg instanceof Uint32Array ) {
-            this.type = "UNSIGNED_INT";
+            this.type = 'UNSIGNED_INT';
         } else {
-            console.error( "IndexBuffer requires an Array or " +
-                "ArrayBuffer argument, command ignored." );
+            console.error( 'IndexBuffer requires an Array or ' +
+                'ArrayBuffer argument, command ignored.' );
             return;
         }
         // create buffer, store count
@@ -125,7 +125,7 @@
     IndexBuffer.prototype.draw = function( options ) {
         options = options || {};
         if ( _boundBuffer === null ) {
-            console.warn( "No IndexBuffer is bound, command ignored." );
+            console.warn( 'No IndexBuffer is bound, command ignored.' );
             return;
         }
         var gl = this.gl;

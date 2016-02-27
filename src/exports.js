@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     module.exports = {
         IndexBuffer: require('./core/IndexBuffer'),

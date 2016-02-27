@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var PRECISION_QUALIFIERS = {
         highp: true,
@@ -9,17 +9,17 @@
     };
 
     var PRECISION_TYPES = {
-        float: "float",
-        vec2: "float",
-        vec3: "float",
-        vec4: "float",
-        ivec2: "int",
-        ivec3: "int",
-        ivec4: "int",
-        int: "int",
-        uint: "int",
-        sampler2D: "sampler2D",
-        samplerCube: "samplerCube",
+        float: 'float',
+        vec2: 'float',
+        vec3: 'float',
+        vec4: 'float',
+        ivec2: 'int',
+        ivec3: 'int',
+        ivec4: 'int',
+        int: 'int',
+        uint: 'int',
+        sampler2D: 'sampler2D',
+        samplerCube: 'samplerCube',
     };
 
     var COMMENTS_REGEXP = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
@@ -92,7 +92,7 @@
     function parseStatement( statement, precisions ) {
         // split statement on commas
         //
-        // [ "uniform highp mat4 A[10]", "B", "C[2]" ]
+        // [ 'uniform highp mat4 A[10]', 'B', 'C[2]' ]
         //
         var commaSplit = statement.split(',').map( function( elem ) {
             return elem.trim();
@@ -100,19 +100,19 @@
 
         // split declaration header from statement
         //
-        // [ "uniform", "highp", "mat4", "A[10]" ]
+        // [ 'uniform', 'highp', 'mat4', 'A[10]' ]
         //
         var header = commaSplit.shift().split(' ');
 
         // qualifier is always first element
         //
-        // "uniform"
+        // 'uniform'
         //
         var qualifier = header.shift();
 
         // precision may or may not be declared
         //
-        // "highp" || (if it was omited) "mat4"
+        // 'highp' || (if it was omited) 'mat4'
         //
         var precision = header.shift();
         var type;
@@ -126,7 +126,7 @@
 
         // last part of header will be the first, and possible only variable name
         //
-        // [ "A[10]", "B", "C[2]" ]
+        // [ 'A[10]', 'B', 'C[2]' ]
         //
         var names = header.concat( commaSplit );
         // if there are other names after a ',' add them as well
@@ -163,7 +163,7 @@
         statements.forEach( function( statement ) {
             // check if precision statement
             //
-            // [ "precision highp float", "precision", "highp", "float" ]
+            // [ 'precision highp float', 'precision', 'highp', 'float' ]
             //
             var pmatch = statement.match( PRECISION_REGEX );
             if ( pmatch ) {
@@ -172,7 +172,7 @@
             }
             // check for keywords
             //
-            // [ "uniform float time" ]
+            // [ 'uniform float time' ]
             //
             var kmatch = statement.match( keywordRegex );
             if ( kmatch ) {
@@ -210,16 +210,16 @@
          * that contain the provided qualifier type. This can be used to extract
          * all attributes and uniform names and types from a shader.
          *
-         * For example, when provided a "uniform" qualifiers, the declaration:
+         * For example, when provided a 'uniform' qualifiers, the declaration:
          * <pre>
-         *     "uniform highp vec3 uSpecularColor;"
+         *     'uniform highp vec3 uSpecularColor;'
          * </pre>
          * Would be parsed to:
          * <pre>
          *     {
-         *         qualifier: "uniform",
-         *         type: "vec3",
-         *         name: "uSpecularColor",
+         *         qualifier: 'uniform',
+         *         type: 'vec3',
+         *         name: 'uSpecularColor',
          *         count: 1
          *     }
          * </pre>

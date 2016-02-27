@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         Util = require('../util/Util'),
@@ -11,12 +11,12 @@
             '-z', '+z'
         ],
         FACE_TARGETS = {
-            '+z': "TEXTURE_CUBE_MAP_POSITIVE_Z",
-            '-z': "TEXTURE_CUBE_MAP_NEGATIVE_Z",
-            '+x': "TEXTURE_CUBE_MAP_POSITIVE_X",
-            '-x': "TEXTURE_CUBE_MAP_NEGATIVE_X",
-            '+y': "TEXTURE_CUBE_MAP_POSITIVE_Y",
-            '-y': "TEXTURE_CUBE_MAP_NEGATIVE_Y"
+            '+z': 'TEXTURE_CUBE_MAP_POSITIVE_Z',
+            '-z': 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
+            '+x': 'TEXTURE_CUBE_MAP_POSITIVE_X',
+            '-x': 'TEXTURE_CUBE_MAP_NEGATIVE_X',
+            '+y': 'TEXTURE_CUBE_MAP_POSITIVE_Y',
+            '-y': 'TEXTURE_CUBE_MAP_NEGATIVE_Y'
         },
         _stack = {},
         _boundTexture = null;
@@ -32,10 +32,10 @@
     function ensurePowerOfTwo( image ) {
         if ( !Util.isPowerOfTwo( image.width ) ||
             !Util.isPowerOfTwo( image.height ) ) {
-            var canvas = document.createElement( "canvas" );
+            var canvas = document.createElement( 'canvas' );
             canvas.width = Util.nextHighestPowerOfTwo( image.width );
             canvas.height = Util.nextHighestPowerOfTwo( image.height );
-            var ctx = canvas.getContext("2d");
+            var ctx = canvas.getContext('2d');
             ctx.drawImage(
                 image,
                 0, 0,
@@ -114,8 +114,8 @@
         // store gl context
         this.gl = WebGLContext.get();
         this.texture = this.gl.createTexture();
-        this.wrap = spec.wrap || "CLAMP_TO_EDGE";
-        this.filter = spec.filter || "LINEAR";
+        this.wrap = spec.wrap || 'CLAMP_TO_EDGE';
+        this.filter = spec.filter || 'LINEAR';
         this.invertY = spec.invertY !== undefined ? spec.invertY : false;
         // create cube map based on input
         if ( spec.images ) {
@@ -145,9 +145,9 @@
             });
         } else {
             // empty cube map
-            this.format = spec.format || "RGBA";
+            this.format = spec.format || 'RGBA';
             this.internalFormat = this.format; // webgl requires format === internalFormat
-            this.type = spec.type || "UNSIGNED_BYTE";
+            this.type = spec.type || 'UNSIGNED_BYTE';
             this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
             FACES.forEach( function( face ) {
                 var data = ( spec.data ? spec.data[face] : spec.data ) || null;
@@ -184,8 +184,8 @@
      TextureCubeMap.prototype.pop = function( location ) {
         var top;
         if ( !_stack[ location ] ) {
-            console.log("No texture was bound to texture unit '" + location +
-                "', command ignored.");
+            console.log('No texture was bound to texture unit `' + location +
+                '`, command ignored.');
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();
@@ -212,15 +212,15 @@
         var gl = this.gl,
             faceTarget = gl[ FACE_TARGETS[ face ] ];
         if ( !faceTarget ) {
-            console.log("Invalid face enumeration '"+ face +"' provided, " +
-                "command ignored.");
+            console.log('Invalid face enumeration `' + face + '` provided, ' +
+                'command ignored.');
         }
         // buffer face texture
         this.push();
         if ( data instanceof HTMLImageElement ) {
             this.images = this.images || {};
             this.images[ face ] = ensurePowerOfTwo( data );
-            this.filter = "LINEAR"; // must be linear for mipmapping
+            this.filter = 'LINEAR'; // must be linear for mipmapping
             this.mipMap = true;
             gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             gl.texImage2D(
@@ -299,7 +299,7 @@
             var minFilter = this.filter.min || this.filter;
             if ( this.minMap ) {
                 // append min mpa suffix to min filter
-                minFilter += "_MIPMAP_LINEAR";
+                minFilter += '_MIPMAP_LINEAR';
             }
             gl.texParameteri(
                 gl.TEXTURE_CUBE_MAP,

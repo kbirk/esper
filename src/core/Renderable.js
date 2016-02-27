@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var VertexPackage = require('../core/VertexPackage'),
         VertexBuffer = require('../core/VertexBuffer'),

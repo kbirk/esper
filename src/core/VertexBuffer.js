@@ -1,6 +1,6 @@
 (function () {
 
-    "use strict";
+    'use strict';
 
     var WebGLContext = require('./WebGLContext'),
         VertexPackage = require('./VertexPackage'),
@@ -27,8 +27,8 @@
     function getAttributePointers( attributePointers ) {
         // ensure there are pointers provided
         if ( !attributePointers || Object.keys( attributePointers ).length === 0 ) {
-            console.warning( "VertexBuffer requires attribute pointers to be " +
-                "specified upon instantiation, this buffer will not draw correctly." );
+            console.warning( 'VertexBuffer requires attribute pointers to be ' +
+                'specified upon instantiation, this buffer will not draw correctly.' );
             return {};
         }
         // parse pointers to ensure they are valid
@@ -37,7 +37,7 @@
             var index = parseInt( key, 10 );
             // check that key is an valid integer
             if ( isNaN( index ) ) {
-                console.warn("Attribute index '" + key + "' does not represent an integer, discarding attribute pointer.");
+                console.warn('Attribute index `' + key + '` does not represent an integer, discarding attribute pointer.');
                 return;
             }
             var pointer = attributePointers[key];
@@ -46,14 +46,14 @@
             var offset = pointer.offset;
             // check size
             if ( !size || size < 1 || size > 4 ) {
-                console.warn("Attribute pointer 'size' parameter is invalid, " +
-                    "defaulting to 4.");
+                console.warn('Attribute pointer `size` parameter is invalid, ' +
+                    'defaulting to 4.');
                 size = 4;
             }
             // check type
             if ( !type || type !== 'FLOAT' ) {
-                console.warn("Attribute pointer 'type' parameter is invalid, " +
-                    "defaulting to 'FLOAT'.");
+                console.warn('Attribute pointer `type` parameter is invalid, ' +
+                    'defaulting to `FLOAT`.');
                 type = 'FLOAT';
             }
             pointers[ index ] = {
@@ -107,7 +107,7 @@
         this.stride = getStride( this.pointers );
         // set draw offset and mode
         this.offset = ( options.offset !== undefined ) ? options.offset : 0;
-        this.mode = ( options.mode !== undefined ) ? options.mode : "TRIANGLES";
+        this.mode = ( options.mode !== undefined ) ? options.mode : 'TRIANGLES';
     }
 
     VertexBuffer.prototype.bufferData = function( arg ) {
@@ -115,9 +115,9 @@
         if ( arg instanceof Array ) {
             // cast arrays into bufferview
             arg = new Float32Array( arg );
-        } else if ( !Util.isTypedArray( arg ) && typeof arg !== "number" ) {
-            console.error( "VertexBuffer requires an Array or ArrayBuffer, " +
-                "or a size argument, command ignored." );
+        } else if ( !Util.isTypedArray( arg ) && typeof arg !== 'number' ) {
+            console.error( 'VertexBuffer requires an Array or ArrayBuffer, ' +
+                'or a size argument, command ignored.' );
             return;
         }
         if ( !this.buffer ) {
@@ -126,7 +126,7 @@
         // get the total number of attribute components from pointers
         var numComponents = getNumComponents(this.pointers);
         // set count based on size of buffer and number of components
-        if (typeof arg === "number") {
+        if (typeof arg === 'number') {
             this.count = arg / numComponents;
         } else {
             this.count = arg.length / numComponents;
@@ -138,15 +138,15 @@
     VertexBuffer.prototype.bufferSubData = function( array, offset ) {
         var gl = this.gl;
         if ( !this.buffer ) {
-            console.error( "VertexBuffer has not been initially buffered, " +
-                "command ignored." );
+            console.error( 'VertexBuffer has not been initially buffered, ' +
+                'command ignored.' );
             return;
         }
         if ( array instanceof Array ) {
             array = new Float32Array( array );
         } else if ( !Util.isTypedArray( array ) ) {
-            console.error( "VertexBuffer requires an Array or ArrayBuffer " +
-                "argument, command ignored." );
+            console.error( 'VertexBuffer requires an Array or ArrayBuffer ' +
+                'argument, command ignored.' );
             return;
         }
         offset = ( offset !== undefined ) ? offset : 0;
@@ -198,7 +198,7 @@
     VertexBuffer.prototype.draw = function( options ) {
         options = options || {};
         if ( _boundBuffer === null ) {
-            console.warn( "No VertexBuffer is bound, command ignored." );
+            console.warn( 'No VertexBuffer is bound, command ignored.' );
             return;
         }
         var gl = this.gl;
