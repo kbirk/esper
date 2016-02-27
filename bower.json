@@ -1,11 +1,12 @@
 {
   "name": "esper",
-  "version": "0.6.13",
+  "version": "0.6.14",
+  "description": "A low-level WebGL rendering framework",
   "homepage": "https://github.com/kbirk/esper",
   "authors": [
     "kbirk <birk.kevin@gmail.com>"
   ],
-  "description": "A low-level WebGL rendering framework",
+  "license": "MIT",
   "main": "build/esper.min.js",
   "moduleType": [
     "globals"
@@ -16,7 +17,6 @@
     "3d",
     "rendering"
   ],
-  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
