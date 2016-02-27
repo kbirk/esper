@@ -1,6 +1,6 @@
 # esper.js
 
-[![npm version](https://badge.fury.io/js/esper.svg)](http://badge.fury.io/js/esper) [![Bower version](https://badge.fury.io/bo/esper.svg)](http://badge.fury.io/bo/esper) [![Dependency Status](https://david-dm.org/kbirk/esper.svg)](https://david-dm.org/kbirk/esper)
+[![npm version](https://badge.fury.io/js/esper.svg)](http://badge.fury.io/js/esper) [![Bower version](https://badge.fury.io/bo/esper.svg)](http://badge.fury.io/bo/esper) [![Build Status](https://travis-ci.org/kbirk/esper.svg?branch=master)](https://travis-ci.org/kbirk/esper) [![Coverage Status](https://coveralls.io/repos/kbirk/esper/badge.svg)](https://coveralls.io/r/kbirk/esper)  [![Dependency Status](https://david-dm.org/kbirk/esper.svg)](https://david-dm.org/kbirk/esper)
 
 A low-level WebGL rendering framework.
 
