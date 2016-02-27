@@ -223,16 +223,14 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.resize = function( width, height ) {
-        var key;
         if ( !width || !height ) {
             console.warn( 'Width or height arguments missing, command ignored.' );
             return this;
         }
-        for ( key in this.textures ) {
-            if ( this.textures.hasOwnProperty( key ) ) {
-                this.textures[ key ].resize( width, height );
-            }
-        }
+        var textures = this.textures;
+        Object.keys( textures ).forEach( function( key ) {
+            textures[ key ].resize( width, height );
+        });
         return this;
     };
 

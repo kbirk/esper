@@ -108,9 +108,7 @@
      * @classdesc A texture class to represent a cube map texture.
      */
     function TextureCubeMap( spec, callback ) {
-        var that = this,
-            face,
-            jobs;
+        var that = this;
         // store gl context
         this.gl = WebGLContext.get();
         this.texture = this.gl.createTexture();
@@ -120,25 +118,18 @@
         // create cube map based on input
         if ( spec.images ) {
             // multiple Image objects
-            for ( face in spec.images ) {
-                if ( spec.images.hasOwnProperty( face ) ) {
-                    // buffer face texture
-                    this.bufferFaceData( face, spec.images[ face ] );
-                }
-            }
+            Object.keys( spec.images ).forEach( function( key ) {
+                // buffer face texture
+                that.bufferFaceData( key, spec.images[ key ] );
+            });
             this.setParameters( this );
         } else if ( spec.urls ) {
             // multiple urls
-            jobs = {};
-            for ( face in spec.urls ) {
-                if ( spec.urls.hasOwnProperty( face ) ) {
-                    // add job to map
-                    jobs[ face ] = loadAndBufferImage(
-                        this,
-                        spec.urls[ face ],
-                        face );
-                }
-            }
+            var jobs = {};
+            Object.keys( spec.urls ).forEach( function( key ) {
+                // add job to map
+                jobs[ key ] = loadAndBufferImage( that, spec.urls[ key ], key );
+            });
             Util.async( jobs, function() {
                 that.setParameters( that );
                 callback( that );

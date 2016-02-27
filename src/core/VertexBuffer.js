@@ -65,14 +65,11 @@
         return pointers;
     }
 
-    function getNumComponents(pointers) {
+    function getNumComponents( pointers ) {
         var size = 0;
-        var index;
-        for ( index in pointers ) {
-            if ( pointers.hasOwnProperty( index ) ) {
-                size += pointers[ index ].size;
-            }
-        }
+        Object.keys( pointers ).forEach( function( index ) {
+            size += pointers[ index ].size;
+        });
         return size;
     }
 
@@ -159,40 +156,36 @@
         if ( _boundBuffer === this ) {
             return;
         }
-        var gl = this.gl,
-            pointers = this.pointers,
-            previouslyEnabledAttributes = _enabledAttributes || {},
-            pointer,
-            index;
+        var gl = this.gl;
+        var pointers = this.pointers;
+        var stride = this.stride;
+        var previouslyEnabledAttributes = _enabledAttributes || {};
         // cache this vertex buffer
         _boundBuffer = this;
         _enabledAttributes = {};
         // bind buffer
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-        for ( index in pointers ) {
-            if ( pointers.hasOwnProperty( index ) ) {
-                pointer = this.pointers[ index ];
-                // set attribute pointer
-                gl.vertexAttribPointer( index,
-                    pointer.size,
-                    gl[ pointer.type ],
-                    false,
-                    this.stride,
-                    pointer.offset );
-                // enabled attribute array
-                gl.enableVertexAttribArray( index );
-                // cache attribute
-                _enabledAttributes[ index ] = true;
-                // remove from previous list
-                delete previouslyEnabledAttributes[ index ];
-            }
-        }
+        Object.keys( pointers ).forEach( function( index ) {
+            var pointer = pointers[ index ];
+            // set attribute pointer
+            gl.vertexAttribPointer(
+                index,
+                pointer.size,
+                gl[ pointer.type ],
+                false,
+                stride,
+                pointer.offset );
+            // enabled attribute array
+            gl.enableVertexAttribArray( index );
+            // cache attribute
+            _enabledAttributes[ index ] = true;
+            // remove from previous list
+            delete previouslyEnabledAttributes[ index ];
+        });
         // ensure leaked attribute arrays are disabled
-        for ( index in previouslyEnabledAttributes ) {
-            if ( previouslyEnabledAttributes.hasOwnProperty( index ) ) {
-                gl.disableVertexAttribArray( index );
-            }
-        }
+        Object.keys( previouslyEnabledAttributes ).forEach( function( index ) {
+            gl.disableVertexAttribArray( index );
+        });
     };
 
     VertexBuffer.prototype.draw = function( options ) {
@@ -216,14 +209,11 @@
         if ( _boundBuffer === null ) {
             return;
         }
-        var gl = this.gl,
-            pointers = this.pointers,
-            index;
-        for ( index in pointers ) {
-            if ( pointers.hasOwnProperty( index ) ) {
-                gl.disableVertexAttribArray( index );
-            }
-        }
+        var gl = this.gl;
+        var pointers = this.pointers;
+        Object.keys( pointers ).forEach( function( index ) {
+            gl.disableVertexAttribArray( index );
+        });
         gl.bindBuffer( gl.ARRAY_BUFFER, null );
         _boundBuffer = null;
         _enabledAttributes = {};

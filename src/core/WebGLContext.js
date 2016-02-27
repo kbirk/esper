@@ -195,11 +195,11 @@
             if ( wrapper ) {
                 var extensions = wrapper.extensions;
                 var supported = [];
-                for ( var key in extensions ) {
-                    if ( extensions.hasOwnProperty( key ) && extensions[ key ] ) {
+                Object.keys( extensions ).forEach( function( key ) {
+                    if ( extensions[ key ] ) {
                         supported.push( key );
                     }
-                }
+                });
                 return supported;
             }
             console.error('No context is currently bound or was provided, ' +
@@ -222,11 +222,11 @@
             if ( wrapper ) {
                 var extensions = wrapper.extensions;
                 var unsupported = [];
-                for ( var key in extensions ) {
-                    if ( extensions.hasOwnProperty( key ) && !extensions[ key ] ) {
+                Object.keys( extensions ).forEach( function( key ) {
+                    if ( !extensions[ key ] ) {
                         unsupported.push( key );
                     }
-                }
+                });
                 return unsupported;
             }
             console.error('No context is currently bound or was provided, ' +

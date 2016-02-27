@@ -50,18 +50,14 @@
      * @param {Function} callback - The callback function.
      */
      function asyncObj( jobs, callback ) {
-        var jobsByIndex = [],
-            deferreds = [],
-            deferred,
-            key;
-        for ( key in jobs ) {
-            if ( jobs.hasOwnProperty( key ) ) {
-                deferred = new Deferred();
-                deferreds.push( deferred );
-                jobsByIndex.push( key );
-                jobs[ key ]( resolveDeferred( deferred ) );
-            }
-        }
+        var jobsByIndex = [];
+        var deferreds = [];
+        Object.keys( jobs ).forEach( function( key ) {
+            var deferred = new Deferred();
+            deferreds.push( deferred );
+            jobsByIndex.push( key );
+            jobs[ key ]( resolveDeferred( deferred ) );
+        });
         when.apply( when, deferreds ).done( function() {
             var results = Array.prototype.slice.call( arguments, 0 ),
                 resultsByKey = {},

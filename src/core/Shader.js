@@ -110,22 +110,15 @@
      * @param {Shader} shader - The Shader object.
      */
     function bindAttributeLocations( shader ) {
-        var gl = shader.gl,
-            attributes = shader.attributes,
-            name;
-        for ( name in attributes ) {
-            if ( attributes.hasOwnProperty( name ) ) {
-                // bind the attribute location
-                gl.bindAttribLocation(
-                    shader.program,
-                    attributes[ name ].index,
-                    name );
-                /*
-                console.log( 'Bound vertex attribute \`' + name +
-                    '\' to location ' + attributes[ name ].index );
-                */
-            }
-        }
+        var gl = shader.gl;
+        var attributes = shader.attributes;
+        Object.keys( attributes ).forEach( function( key ) {
+            // bind the attribute location
+            gl.bindAttribLocation(
+                shader.program,
+                attributes[ key ].index,
+                key );
+        });
     }
 
     /**
@@ -134,21 +127,12 @@
      * @param {Shader} shader - The Shader object.
      */
     function getUniformLocations( shader ) {
-        var gl = shader.gl,
-            uniforms = shader.uniforms,
-            uniform,
-            name;
-        for ( name in uniforms ) {
-            if ( uniforms.hasOwnProperty( name ) ) {
-                uniform = uniforms[ name ];
-                // get the uniform location
-                uniform.location = gl.getUniformLocation( shader.program, name );
-                /*
-                console.log( name + ', ' +
-                    gl.getUniformLocation( shader.program, name ) + ',' );
-                */
-            }
-        }
+        var gl = shader.gl;
+        var uniforms = shader.uniforms;
+        Object.keys( uniforms ).forEach( function( key ) {
+            // get the uniform location
+            uniforms[ key ].location = gl.getUniformLocation( shader.program, key );
+        });
     }
 
     /**
