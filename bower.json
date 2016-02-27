@@ -6,7 +6,7 @@
     "kbirk <birk.kevin@gmail.com>"
   ],
   "description": "A low-level WebGL rendering framework",
-  "main": "./build/esper.min.js",
+  "main": "build/esper.min.js",
   "moduleType": [
     "globals"
   ],
