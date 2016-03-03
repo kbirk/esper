@@ -2,36 +2,37 @@
 
     'use strict';
 
-    var _boundContext = null,
-        _contextsById = {},
-        EXTENSIONS = [
-            // ratified
-            'OES_texture_float',
-            'OES_texture_half_float',
-            'WEBGL_lose_context',
-            'OES_standard_derivatives',
-            'OES_vertex_array_object',
-            'WEBGL_debug_renderer_info',
-            'WEBGL_debug_shaders',
-            'WEBGL_compressed_texture_s3tc',
-            'WEBGL_depth_texture',
-            'OES_element_index_uint',
-            'EXT_texture_filter_anisotropic',
-            'WEBGL_draw_buffers',
-            'ANGLE_instanced_arrays',
-            'OES_texture_float_linear',
-            'OES_texture_half_float_linear',
-            // community
-            'WEBGL_compressed_texture_atc',
-            'WEBGL_compressed_texture_pvrtc',
-            'EXT_color_buffer_half_float',
-            'WEBGL_color_buffer_float',
-            'EXT_frag_depth',
-            'EXT_sRGB',
-            'WEBGL_compressed_texture_etc1',
-            'EXT_blend_minmax',
-            'EXT_shader_texture_lod'
-        ];
+    var _boundContext = null;
+    var _contextsById = {};
+    var EXTENSIONS = [
+        // ratified
+        'OES_texture_float',
+        'OES_texture_half_float',
+        'WEBGL_lose_context',
+        'OES_standard_derivatives',
+        'OES_vertex_array_object',
+        'WEBGL_debug_renderer_info',
+        'WEBGL_debug_shaders',
+        'WEBGL_compressed_texture_s3tc',
+        'WEBGL_depth_texture',
+        'OES_element_index_uint',
+        'EXT_texture_filter_anisotropic',
+        'EXT_frag_depth',
+        'WEBGL_draw_buffers',
+        'ANGLE_instanced_arrays',
+        'OES_texture_float_linear',
+        'OES_texture_half_float_linear',
+        'EXT_blend_minmax',
+        'EXT_shader_texture_lod',
+        // community
+        'WEBGL_compressed_texture_atc',
+        'WEBGL_compressed_texture_pvrtc',
+        'EXT_color_buffer_half_float',
+        'WEBGL_color_buffer_float',
+        'EXT_frag_depth',
+        'EXT_sRGB',
+        'WEBGL_compressed_texture_etc1'
+    ];
 
     /**
      * Returns a Canvas element object from either an existing object, or
@@ -102,8 +103,8 @@
      * @returns {Object} The context wrapper.
      */
     function createContextWrapper( canvas, options ) {
-        var contextWrapper,
-            gl;
+        var contextWrapper;
+        var gl;
         try {
             // get WebGL context, fallback to experimental
             gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
@@ -123,8 +124,7 @@
             console.error( err.message );
         }
         if ( !gl ) {
-            console.error( 'Unable to initialize WebGL. Your browser may not ' +
-                'support it.' );
+            console.error( 'Unable to initialize WebGL. Your browser may not support it.' );
         }
         return contextWrapper;
     }
@@ -145,8 +145,7 @@
                 _boundContext = wrapper;
                 return this;
             }
-            console.error( 'No context exists for provided argument `' + arg +
-                '`, command ignored.' );
+            console.error( 'No context exists for provided argument `' + arg + '`, command ignored.' );
             return this;
         },
 
@@ -172,8 +171,7 @@
             var canvas = getCanvas( arg );
             // try to find or create context
             if ( !canvas || !createContextWrapper( canvas, options ) ) {
-                console.error( 'Context could not be found or created for ' +
-                    'argument of type`' + ( typeof arg ) + '`, returning `null`.' );
+                console.error( 'Context could not be found or created for argument of type`' + ( typeof arg ) + '`, returning `null`.' );
                 return null;
             }
             // return context
@@ -202,8 +200,7 @@
                 });
                 return supported;
             }
-            console.error('No context is currently bound or was provided, ' +
-                'returning an empty array.');
+            console.error('No context is currently bound or was provided, returning an empty array.');
             return [];
         },
 
@@ -229,8 +226,7 @@
                 });
                 return unsupported;
             }
-            console.error('No context is currently bound or was provided, ' +
-                'returning an empty array.');
+            console.error('No context is currently bound or was provided, returning an empty array.');
             return [];
         },
 
@@ -256,8 +252,7 @@
                 var extensions = wrapper.extensions;
                 return extensions[ extension ] ? extensions[ extension ] : false;
             }
-            console.error('No context is currently bound or provided as ' +
-                'argument, returning false.');
+            console.error('No context is currently bound or provided as argument, returning false.');
             return false;
         }
     };
