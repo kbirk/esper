@@ -200,7 +200,7 @@
                 });
                 return supported;
             }
-            console.error('No context is currently bound or was provided, returning an empty array.');
+            console.error( 'No context is currently bound or was provided, returning an empty array.' );
             return [];
         },
 
@@ -226,7 +226,7 @@
                 });
                 return unsupported;
             }
-            console.error('No context is currently bound or was provided, returning an empty array.');
+            console.error( 'No context is currently bound or was provided, returning an empty array.' );
             return [];
         },
 
@@ -252,7 +252,7 @@
                 var extensions = wrapper.extensions;
                 return extensions[ extension ] ? extensions[ extension ] : false;
             }
-            console.error('No context is currently bound or provided as argument, returning false.');
+            console.error( 'No context is currently bound or provided as argument, returning false.' );
             return false;
         }
     };

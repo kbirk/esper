@@ -2,9 +2,9 @@
 
     'use strict';
 
-    var VertexPackage = require('../core/VertexPackage'),
-        VertexBuffer = require('../core/VertexBuffer'),
-        IndexBuffer = require('../core/IndexBuffer');
+    var VertexPackage = require('../core/VertexPackage');
+    var VertexBuffer = require('../core/VertexBuffer');
+    var IndexBuffer = require('../core/IndexBuffer');
 
     function Renderable( spec, options ) {
         spec = spec || {};
@@ -33,7 +33,6 @@
             offset: options.offset,
             count: options.count
         };
-        return this;
     }
 
     Renderable.prototype.draw = function( options ) {

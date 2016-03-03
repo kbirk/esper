@@ -19,8 +19,7 @@
             var index = parseInt( key, 10 );
             // check that key is an valid integer
             if ( isNaN( index ) ) {
-                console.warn('Attribute index `' + key + '` does not ' +
-                    'represent an integer, discarding attribute pointer.');
+                console.warn( 'Attribute index `' + key + '` does not represent an integer, discarding attribute.' );
                 return;
             }
             var vertices = attributes[key];
@@ -34,8 +33,7 @@
                     data: vertices
                 });
             } else {
-                console.warn( 'Error parsing attribute of index `' + key +
-                    '`, attribute discarded.' );
+                console.warn( 'Error parsing attribute of index `' + key + '`, attribute discarded.' );
             }
         });
         // sort attributes ascending by index
@@ -74,6 +72,7 @@
         if ( component instanceof Array ) {
             return component.length;
         }
+        // default to 1 otherwise
         return 1;
     }
 
@@ -110,9 +109,97 @@
         vertexPackage.length = shortestArray;
     }
 
+    /**
+     * Fill the arraybuffer with a single component attribute.
+     *
+     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set1ComponentAttr( data, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i<length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            if ( vertex.x !== undefined ) {
+                data[j] = vertex.x;
+            } else if ( vertex[0] !== undefined ) {
+                data[j] = vertex[0];
+            } else {
+                data[j] = vertex;
+            }
+        }
+    }
+
+    /**
+     * Fill the arraybuffer with a double component attribute.
+     *
+     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set2ComponentAttr( data, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i<length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+        }
+    }
+
+    /**
+     * Fill the arraybuffer with a triple component attribute.
+     *
+     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set3ComponentAttr( data, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i<length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+        }
+    }
+
+    /**
+     * Fill the arraybuffer with a quadruple component attribute.
+     *
+     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set4ComponentAttr( data, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i<length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+            data[j+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
+        }
+    }
+
     function VertexPackage( attributes ) {
         if ( attributes !== undefined ) {
-            return this.set( attributes );
+            this.set( attributes );
         } else {
             this.data = new Float32Array(0);
             this.pointers = {};
@@ -120,53 +207,35 @@
     }
 
     VertexPackage.prototype.set = function( attributeMap ) {
-        var that = this;
         // remove bad attributes
         var attributes = parseAttributeMap( attributeMap );
         // set attribute pointers and stride
         setPointersAndStride( this, attributes );
         // set size of data vector
-        this.data = new Float32Array( this.length * ( this.stride / BYTES_PER_COMPONENT ) );
+        var length = this.length;
+        var stride = this.stride / BYTES_PER_COMPONENT;
+        var pointers = this.pointers;
+        var data = this.data = new Float32Array( length * stride );
         // for each vertex attribute array
         attributes.forEach( function( vertices ) {
             // get the pointer
-            var pointer = that.pointers[ vertices.index ];
+            var pointer = pointers[ vertices.index ];
             // get the pointers offset
             var offset = pointer.offset / BYTES_PER_COMPONENT;
-            // get the package stride
-            var stride = that.stride / BYTES_PER_COMPONENT;
-            // for each vertex
-            var vertex, i, j;
-            for ( i=0; i<that.length; i++ ) {
-                vertex = vertices.data[i];
-                // get the index in the buffer to the particular vertex
-                j = offset + ( stride * i );
-                switch ( pointer.size ) {
-                    case 2:
-                        that.data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-                        that.data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-                        break;
-                    case 3:
-                        that.data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-                        that.data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-                        that.data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
-                        break;
-                    case 4:
-                        that.data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-                        that.data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-                        that.data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
-                        that.data[j+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
-                        break;
-                    default:
-                        if ( vertex.x !== undefined ) {
-                            that.data[j] = vertex.x;
-                        } else if ( vertex[0] !== undefined ) {
-                            that.data[j] = vertex[0];
-                        } else {
-                            that.data[j] = vertex;
-                        }
-                        break;
-                }
+            // copy vertex data into arraybuffer
+            switch ( pointer.size ) {
+                case 2:
+                    set2ComponentAttr( data, vertices.data, length, offset, stride );
+                    break;
+                case 3:
+                    set3ComponentAttr( data, vertices.data, length, offset, stride );
+                    break;
+                case 4:
+                    set4ComponentAttr( data, vertices.data, length, offset, stride );
+                    break;
+                default:
+                    set1ComponentAttr( data, vertices.data, length, offset, stride );
+                    break;
             }
         });
         return this;

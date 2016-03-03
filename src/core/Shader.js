@@ -2,84 +2,77 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext'),
-        ShaderParser = require('./ShaderParser'),
-        Util = require('../util/Util'),
-        XHRLoader = require('../util/XHRLoader'),
-        Stack = require('../util/Stack'),
-        UNIFORM_FUNCTIONS = {
-            'bool': 'uniform1i',
-            'bool[]': 'uniform1iv',
-            'float': 'uniform1f',
-            'float[]': 'uniform1fv',
-            'int': 'uniform1i',
-            'int[]': 'uniform1iv',
-            'uint': 'uniform1i',
-            'uint[]': 'uniform1iv',
-            'vec2': 'uniform2fv',
-            'vec2[]': 'uniform2fv',
-            'ivec2': 'uniform2iv',
-            'ivec2[]': 'uniform2iv',
-            'vec3': 'uniform3fv',
-            'vec3[]': 'uniform3fv',
-            'ivec3': 'uniform3iv',
-            'ivec3[]': 'uniform3iv',
-            'vec4': 'uniform4fv',
-            'vec4[]': 'uniform4fv',
-            'ivec4': 'uniform4iv',
-            'ivec4[]': 'uniform4iv',
-            'mat2': 'uniformMatrix2fv',
-            'mat2[]': 'uniformMatrix2fv',
-            'mat3': 'uniformMatrix3fv',
-            'mat3[]': 'uniformMatrix3fv',
-            'mat4': 'uniformMatrix4fv',
-            'mat4[]': 'uniformMatrix4fv',
-            'sampler2D': 'uniform1i',
-            'samplerCube': 'uniform1i'
-        },
-        _stack = new Stack(),
-        _boundShader = null;
+    var WebGLContext = require('./WebGLContext');
+    var ShaderParser = require('./ShaderParser');
+    var Util = require('../util/Util');
+    var XHRLoader = require('../util/XHRLoader');
+    var Stack = require('../util/Stack');
+    var UNIFORM_FUNCTIONS = {
+        'bool': 'uniform1i',
+        'bool[]': 'uniform1iv',
+        'float': 'uniform1f',
+        'float[]': 'uniform1fv',
+        'int': 'uniform1i',
+        'int[]': 'uniform1iv',
+        'uint': 'uniform1i',
+        'uint[]': 'uniform1iv',
+        'vec2': 'uniform2fv',
+        'vec2[]': 'uniform2fv',
+        'ivec2': 'uniform2iv',
+        'ivec2[]': 'uniform2iv',
+        'vec3': 'uniform3fv',
+        'vec3[]': 'uniform3fv',
+        'ivec3': 'uniform3iv',
+        'ivec3[]': 'uniform3iv',
+        'vec4': 'uniform4fv',
+        'vec4[]': 'uniform4fv',
+        'ivec4': 'uniform4iv',
+        'ivec4[]': 'uniform4iv',
+        'mat2': 'uniformMatrix2fv',
+        'mat2[]': 'uniformMatrix2fv',
+        'mat3': 'uniformMatrix3fv',
+        'mat3[]': 'uniformMatrix3fv',
+        'mat4': 'uniformMatrix4fv',
+        'mat4[]': 'uniformMatrix4fv',
+        'sampler2D': 'uniform1i',
+        'samplerCube': 'uniform1i'
+    };
+    var _stack = new Stack();
+    var _boundShader = null;
 
     /**
-     * Given vertex and fragment shader source, returns an object containing
-     * information pertaining to the uniforms and attribtues declared.
+     * Given vertex and fragment shader source, parses the declarations and
+     * appends information pertaining to the uniforms and attribtues declared.
      *
+     * @param {Shader} shader - The shader object.
      * @param {String} vertSource - The vertex shader source.
      * @param {String} fragSource - The fragment shader source.
      *
      * @returns {Object} The attribute and uniform information.
      */
-    function getAttributesAndUniformsFromSource( vertSource, fragSource ) {
+    function setAttributesAndUniforms( shader, vertSource, fragSource ) {
         var declarations = ShaderParser.parseDeclarations(
-                [ vertSource, fragSource ],
-                [ 'uniform', 'attribute' ]),
-            attributes = {},
-            uniforms = {},
-            attrCount = 0,
-            declaration,
-            i;
+            [ vertSource, fragSource ],
+            [ 'uniform', 'attribute' ]
+        );
+        var attrCount = 0;
         // for each declaration in the shader
-        for ( i=0; i<declarations.length; i++ ) {
-            declaration = declarations[i];
+        declarations.forEach( function( declaration ) {
             // check if its an attribute or uniform
             if ( declaration.qualifier === 'attribute' ) {
                 // if attribute, store type and index
-                attributes[ declaration.name ] = {
+                shader.attributes[ declaration.name ] = {
                     type: declaration.type,
                     index: attrCount++
                 };
             } else if ( declaration.qualifier === 'uniform' ) {
                 // if uniform, store type and buffer function name
-                uniforms[ declaration.name ] = {
+                shader.uniforms[ declaration.name ] = {
                     type: declaration.type,
                     func: UNIFORM_FUNCTIONS[ declaration.type + (declaration.count > 1 ? '[]' : '') ]
                 };
             }
-        }
-        return {
-            attributes: attributes,
-            uniforms: uniforms
-        };
+        });
     }
 
     /*
@@ -97,8 +90,7 @@
         gl.shaderSource( shader, shaderSource );
         gl.compileShader( shader );
         if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
-            console.error( 'An error occurred compiling the shaders: ' +
-                gl.getShaderInfoLog( shader ) );
+            console.error( 'An error occurred compiling the shaders:', gl.getShaderInfoLog( shader ) );
             return null;
         }
         return shader;
@@ -244,14 +236,15 @@
         this.program = 0;
         this.gl = WebGLContext.get();
         this.version = spec.version || '1.00';
+        this.attributes = {};
+        this.uniforms = {};
+        this.hasLoggedError = false;
         // check source arguments
         if ( !spec.vert ) {
-            console.error( 'Vertex shader argument has not been provided, ' +
-                'shader initialization aborted.' );
+            console.error( 'Vertex shader argument has not been provided, shader initialization aborted.' );
         }
         if ( !spec.frag ) {
-            console.error( 'Fragment shader argument has not been provided, ' +
-                'shader initialization aborted.' );
+            console.error( 'Fragment shader argument has not been provided, shader initialization aborted.' );
         }
         // create the shader
         Util.async({
@@ -281,25 +274,19 @@
      */
     Shader.prototype.create = function( shaders ) {
         // once all shader sources are loaded
-        var gl = this.gl,
-            common = shaders.common.join( '' ),
-            vert = shaders.vert.join( '' ),
-            frag = shaders.frag.join( '' ),
-            vertexShader,
-            fragmentShader,
-            attributesAndUniforms;
+        var gl = this.gl;
+        var common = shaders.common.join( '' );
+        var vert = shaders.vert.join( '' );
+        var frag = shaders.frag.join( '' );
         // compile shaders
-        vertexShader = compileShader( gl, common + vert, 'VERTEX_SHADER' );
-        fragmentShader = compileShader( gl, common + frag, 'FRAGMENT_SHADER' );
+        var vertexShader = compileShader( gl, common + vert, 'VERTEX_SHADER' );
+        var fragmentShader = compileShader( gl, common + frag, 'FRAGMENT_SHADER' );
         if ( !vertexShader || !fragmentShader ) {
             console.error( 'Aborting instantiation of shader due to compilation errors.' );
             return abortShader( this );
         }
         // parse source for attribute and uniforms
-        attributesAndUniforms = getAttributesAndUniformsFromSource( vert, frag );
-        // set member attributes
-        this.attributes = attributesAndUniforms.attributes;
-        this.uniforms = attributesAndUniforms.uniforms;
+        setAttributesAndUniforms( this, vert, frag );
         // create the shader program
         this.program = gl.createProgram();
         // attach vertex and fragment shaders
@@ -311,8 +298,7 @@
         gl.linkProgram( this.program );
         // If creating the shader program failed, alert
         if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS ) ) {
-            console.error( 'An error occured linking the shader: ' +
-                gl.getProgramInfoLog( this.program ) );
+            console.error( 'An error occured linking the shader:', gl.getProgramInfoLog( this.program ) );
             console.error( 'Aborting instantiation of shader due to linking errors.' );
             return abortShader( this );
         }
@@ -356,12 +342,13 @@
      * Buffer a uniform value by name.
      * @memberof Shader
      *
-     * @param {String} uniformName - The uniform name in the shader source.
-     * @param {*} uniform - The uniform value to buffer.
+     * @param {String} name - The uniform name in the shader source.
+     * @param {*} value - The uniform value to buffer.
      *
      * @returns {Shader} The shader object, for chaining.
      */
-    Shader.prototype.setUniform = function( uniformName, uniform ) {
+    Shader.prototype.setUniform = function( name, value ) {
+        // ensure shader program exists
         if ( !this.program ) {
             if ( !this.hasLoggedError ) {
                 console.warn( 'Attempting to use an incomplete shader, command ignored.' );
@@ -369,45 +356,43 @@
             }
             return;
         }
+        // ensure shader is bound
         if ( this !== _boundShader ) {
-            console.warn( 'Attempting to set uniform `' + uniformName +
-                '` for an unbound shader, command ignored.' );
+            console.warn( 'Attempting to set uniform `' + name + '` for an unbound shader, command ignored.' );
             return;
         }
-        var uniformSpec = this.uniforms[ uniformName ],
-            func,
-            type,
-            location,
-            value;
+        var uniform = this.uniforms[ name ];
         // ensure that the uniform spec exists for the name
-        if ( !uniformSpec ) {
-            console.warn( 'No uniform found under name `' + uniformName +
-                '`, command ignored.' );
+        if ( !uniform ) {
+            console.warn( 'No uniform found under name `' + name + '`, command ignored.' );
             return;
         }
         // ensure that the uniform argument is defined
-        if ( uniform === undefined ) {
-            console.warn( 'Argument passed for uniform `' + uniformName +
-                '` is undefined, command ignored.' );
+        if ( value === undefined ) {
+            console.warn( 'Argument passed for uniform `' + name + '` is undefined, command ignored.' );
             return;
         }
-        // get the uniform location, type, and buffer function
-        func = uniformSpec.func;
-        type = uniformSpec.type;
-        location = uniformSpec.location;
-        value = uniform.toArray ? uniform.toArray() : uniform;
-        value = ( value instanceof Array ) ? new Float32Array( value ) : value;
+        // if toArray function is present, convert to array
+        if ( value.toArray ) {
+            value = value.toArray();
+        }
+        // convert Array to Float32Array
+        if ( value instanceof Array ) {
+            value = new Float32Array( value );
+        }
         // convert boolean's to 0 or 1
-        value = ( typeof value === 'boolean' ) ? ( value ? 1 : 0 ) : value;
+        if ( typeof value === 'boolean' ) {
+            value = value ? 1 : 0;
+        }
         // pass the arguments depending on the type
-        switch ( type ) {
+        switch ( uniform.type ) {
             case 'mat2':
             case 'mat3':
             case 'mat4':
-                this.gl[ func ]( location, false, value );
+                this.gl[ uniform.func ]( uniform.location, false, value );
                 break;
             default:
-                this.gl[ func ]( location, value );
+                this.gl[ uniform.func ]( uniform.location, value );
                 break;
         }
         return this;

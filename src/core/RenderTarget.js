@@ -46,7 +46,6 @@
         var gl = this.gl = WebGLContext.get();
         this.framebuffer = gl.createFramebuffer();
         this.textures = {};
-        return this;
     }
 
     /**

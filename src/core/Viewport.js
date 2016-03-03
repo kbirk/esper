@@ -2,9 +2,9 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext'),
-        Stack = require('../util/Stack'),
-        _stack = new Stack();
+    var WebGLContext = require('./WebGLContext');
+    var Stack = require('../util/Stack');
+    var _stack = new Stack();
 
     function set( viewport, x, y, width, height ) {
         var gl = viewport.gl;
@@ -25,7 +25,7 @@
         // set offset
         this.offset(
             spec.x !== undefined ? spec.x : 0,
-            spec.y !== undefined ? spec.y : 0);
+            spec.y !== undefined ? spec.y : 0 );
     }
 
     /**

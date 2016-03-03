@@ -2,9 +2,9 @@
 
     'use strict';
 
-    var simplyDeferred = require('simply-deferred'),
-        Deferred = simplyDeferred.Deferred,
-        when = simplyDeferred.when;
+    var simplyDeferred = require('simply-deferred');
+    var Deferred = simplyDeferred.Deferred;
+    var when = simplyDeferred.when;
 
     /**
      * Returns a function that resolves the provided deferred.

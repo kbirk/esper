@@ -2,8 +2,25 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext'),
-        _boundBuffer = null;
+    var WebGLContext = require('./WebGLContext');
+    var TYPES = {
+        UNSIGNED_SHORT: true,
+        UNSIGNED_INT: true
+    };
+    var MODES = {
+        POINTS: true,
+        LINES: true,
+        LINE_STRIP: true,
+        LINE_LOOP: true,
+        TRIANGLES: true,
+        TRIANGLE_STRIP: true,
+        TRIANGLE_FAN: true
+    };
+    var DEFAULT_TYPE = 'UNSIGNED_SHORT';
+    var DEFAULT_MODE = 'TRIANGLES';
+    var DEFAULT_OFFSET = 0;
+    var DEFAULT_COUNT = 0;
+    var _boundBuffer = null;
 
     /**
      * Instantiates an IndexBuffer object.
@@ -14,19 +31,19 @@
         options = options || {};
         this.gl = WebGLContext.get();
         this.buffer = 0;
+        this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
+        this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
+        this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
+        this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
         if ( arg ) {
             if ( arg instanceof WebGLBuffer ) {
                 // if the argument is already a webglbuffer, simply wrap it
                 this.buffer = arg;
-                this.type = options.type || 'UNSIGNED_SHORT';
-                this.count = ( options.count !== undefined ) ? options.count : 0;
             } else {
                 // otherwise, buffer it
                 this.bufferData( arg );
             }
         }
-        this.offset = ( options.offset !== undefined ) ? options.offset : 0;
-        this.mode = ( options.mode !== undefined ) ? options.mode : 'TRIANGLES';
     }
 
     /**
@@ -48,9 +65,7 @@
                 arg = new Uint16Array( arg );
             } else if ( arg instanceof Uint32Array ) {
                 // if uint32, downgrade to uint16
-                console.warn( 'Cannot create IndexBuffer of format ' +
-                    'gl.UNSIGNED_INT as OES_element_index_uint is not ' +
-                    'supported, defaulting to gl.UNSIGNED_SHORT.' );
+                console.warn( 'Cannot create IndexBuffer of format gl.UNSIGNED_INT as OES_element_index_uint is not supported, defaulting to gl.UNSIGNED_SHORT.' );
                 arg = new Uint16Array( arg );
             }
         } else {
@@ -66,15 +81,17 @@
         } else if ( arg instanceof Uint32Array ) {
             this.type = 'UNSIGNED_INT';
         } else {
-            console.error( 'IndexBuffer requires an Array or ' +
-                'ArrayBuffer argument, command ignored.' );
+            console.error( 'IndexBuffer requires an Array or ArrayBuffer argument, command ignored.' );
             return;
         }
         // create buffer, store count
         if ( !this.buffer ) {
             this.buffer = gl.createBuffer();
         }
-        this.count = arg.length;
+        // don't overwrite the count if it is already set
+        if ( this.count === DEFAULT_COUNT ) {
+            this.count = arg.length;
+        }
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, arg, gl.STATIC_DRAW );
         return this;
@@ -129,14 +146,19 @@
             return;
         }
         var gl = this.gl;
-        var mode = gl[ options.mode || this.mode || 'TRIANGLES' ];
+        var mode = gl[ options.mode || this.mode ];
+        var type = gl[ this.type ];
         var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
-        gl.drawElements(
-            mode,
-            count,
-            gl[ this.type ],
-            offset );
+        if ( count === 0 ) {
+            console.warn( 'Attempting to draw an IndexBuffer with a count of 0, command ignored.' );
+            return;
+        }
+        if ( offset + count > this.count ) {
+            console.warn( 'Attempting to draw with (offset + count) greater than the size of the IndexBuffer, command ignored.' );
+            return;
+        }
+        gl.drawElements( mode, count, type, offset );
         return this;
     };
 
