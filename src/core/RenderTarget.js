@@ -9,6 +9,7 @@
 
     /**
      * Binds the renderTarget object, caching it to prevent unnecessary rebinds.
+     * @private
      *
      * @param {RenderTarget} renderTarget - The RenderTarget object to bind.
      */
@@ -24,6 +25,7 @@
 
     /**
      * Unbinds the renderTarget object. Prevents unnecessary unbinding.
+     * @private
      *
      * @param {RenderTarget} renderTarget - The RenderTarget object to unbind.
      */
