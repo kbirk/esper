@@ -2,37 +2,41 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext'),
-        Util = require('../util/Util'),
-        Stack = require('../util/Stack'),
-        _stack = {},
-        _boundTexture = null;
-
-    /**
-     * If the provided image dimensions are not powers of two, it will redraw
-     * the image to the next highest power of two.
-     *
-     * @param {HTMLImageElement} image - The image object.
-     *
-     * @returns {HTMLImageElement} The new image object.
-     */
-    function ensurePowerOfTwo( image ) {
-        if ( !Util.isPowerOfTwo( image.width ) ||
-            !Util.isPowerOfTwo( image.height ) ) {
-            var canvas = document.createElement( 'canvas' );
-            canvas.width = Util.nextHighestPowerOfTwo( image.width );
-            canvas.height = Util.nextHighestPowerOfTwo( image.height );
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(
-                image,
-                0, 0,
-                image.width, image.height,
-                0, 0,
-                canvas.width, canvas.height );
-            return canvas;
-        }
-        return image;
-    }
+    var WebGLContext = require('./WebGLContext');
+    var Stack = require('../util/Stack');
+    var MAG_FILTERS = {
+        NEAREST: true,
+        LINEAR: true
+    };
+    var MIN_FILTERS = {
+        NEAREST: true,
+        LINEAR: true,
+        NEAREST_MIPMAP_NEAREST: true,
+        LINEAR_MIPMAP_NEAREST: true,
+        NEAREST_MIPMAP_LINEAR: true,
+        LINEAR_MIPMAP_LINEAR: true
+    };
+    var NON_MIPMAP_MIN_FILTERS = {
+        NEAREST: true,
+        LINEAR: true,
+    };
+    var MIPMAP_MIN_FILTERS = {
+        NEAREST_MIPMAP_NEAREST: true,
+        LINEAR_MIPMAP_NEAREST: true,
+        NEAREST_MIPMAP_LINEAR: true,
+        LINEAR_MIPMAP_LINEAR: true
+    };
+    var WRAP_MODES = {
+        REPEAT: true,
+        MIRRORED_REPEAT: true,
+        CLAMP_TO_EDGE: true
+    };
+    var DEFAULT_MIPMAP_MIN_FILTER = 'LINEAR_MIPMAP_LINEAR';
+    var DEFAULT_PREMULTIPLY_ALPHA = true;
+    var DEFAULT_MIPMAP = true;
+    var DEFAULT_INVERT_Y = true;
+    var _stack = {};
+    var _boundTexture = null;
 
     /**
      * Binds the texture object to a location and activates the texture unit
@@ -73,73 +77,28 @@
      * @class Texture2D
      * @classdesc A texture class to represent a 2D texture.
      */
-    function Texture2D( spec, callback ) {
-        var that = this;
-        // default
-        spec = spec || {};
+    function Texture2D( spec ) {
         this.gl = WebGLContext.get();
         // create texture object
         this.texture = this.gl.createTexture();
-        this.wrap = spec.wrap || 'REPEAT';
-        this.filter = spec.filter || 'LINEAR';
-        this.invertY = spec.invertY !== undefined ? spec.invertY : true;
-        this.mipMap = spec.mipMap !== undefined ? spec.mipMap : true;
-        this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : true;
-        // buffer the texture based on arguments
-        if ( spec.image ) {
-            // use existing Image object
-            this.bufferData( spec.image );
-            this.setParameters( this );
-        } else if ( spec.url ) {
-            // request image source from url
-            var image = new Image();
-            image.onload = function() {
-                that.bufferData( image );
-                that.setParameters( that );
-                callback( that );
-            };
-            image.src = spec.url;
-        } else {
-            // assume this texture will be  rendered to. In this case disable
-            // mipmapping, there is no need and it will only introduce very
-            // peculiar rendering bugs in which the texture 'transforms' at
-            // certain angles / distances to the mipmapped (empty) portions.
-            this.mipMap = false;
-            // buffer data
-            if ( spec.format === 'DEPTH_COMPONENT' ) {
-                // depth texture
-                var depthTextureExt = WebGLContext.checkExtension( 'WEBGL_depth_texture' );
-                if( !depthTextureExt ) {
-                    console.warn( 'Cannot create Texture2D of format ' +
-                        'gl.DEPTH_COMPONENT as WEBGL_depth_texture is ' +
-                        'unsupported by this browser, command ignored' );
-                    return;
-                }
-                // set format
-                this.format = spec.format;
-                // set type
-                if ( !spec.type ) {
-                    // default to unsigned int for higher precision
-                    this.type = 'UNSIGNED_INT';
-                } else if ( spec.type === 'UNSIGNED_SHORT' || spec.type === 'UNSIGNED_INT' ) {
-                    // set to accept types
-                    this.type = spec.type;
-                } else {
-                    // error
-                    console.warn( 'Depth textures do not support type`' +
-                        spec.type + '`, defaulting to `UNSIGNED_INT`.');
-                    // default
-                    this.type = 'UNSIGNED_INT';
-                }
-                // always disable mip mapping for depth texture
-            } else {
-                // other
-                this.format = spec.format || 'RGBA';
-                this.type = spec.type || 'UNSIGNED_BYTE';
-            }
-            this.internalFormat = this.format; // webgl requires format === internalFormat
-            this.bufferData( spec.data || null, spec.width, spec.height );
-            this.setParameters( this );
+        // set texture params
+        this.wrapS = spec.wrapS;
+        this.wrapT = spec.wrapT;
+        this.minFilter = spec.minFilter;
+        this.magFilter = spec.magFilter;
+        // set other properties
+        this.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
+        this.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
+        this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
+        // set format and type
+        this.format = spec.format;
+        this.type = spec.type;
+        // buffer the data
+        this.bufferData( spec.data || null, spec.width, spec.height );
+        this.setParameters( this );
+        // if callback is provided, execute it
+        if ( spec.callback ) {
+            spec.callback( this );
         }
     }
 
@@ -170,8 +129,8 @@
     Texture2D.prototype.pop = function( location ) {
         var top;
         if ( !_stack[ location ] ) {
-            console.warn( 'No texture was bound to texture unit `' + location +
-                '`, command ignored.' );
+            console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
+            return;
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();
@@ -187,7 +146,7 @@
      * Buffer data into the texture.
      * @memberof Texture2D
      *
-     * @param {ImageData|ArrayBufferView|HTMLImageElement} data - The data.
+     * @param {ArrayBufferView} data - The data array to buffer.
      * @param {number} width - The width of the data.
      * @param {number} height - The height of the data.
      *
@@ -198,37 +157,24 @@
         this.push();
         // invert y if specified
         gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
-        // premultiple alpha if specified
+        // premultiply alpha if specified
         gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha );
-        // buffer texture based on type of data
-        if ( data instanceof HTMLImageElement ) {
-            // set dimensions of original image before resizing
-            this.width = data.width;
-            this.height = data.height;
-            data = ensurePowerOfTwo( data );
-            this.image = data;
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                0, // level
-                gl.RGBA,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                data );
-        } else {
-            this.data = data;
-            this.width = width || this.width;
-            this.height = height || this.height;
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                0, // level
-                gl[ this.internalFormat ],
-                this.width,
-                this.height,
-                0, // border, must be 0
-                gl[ this.format ],
-                gl[ this.type ],
-                this.data );
-        }
+        // store data description
+        this.data = data;
+        this.width = width || this.width;
+        this.height = height || this.height;
+        // buffer the texture data
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0, // mip-map level
+            gl[ this.format ], // webgl requires format === internalFormat
+            this.width,
+            this.height,
+            0, // border, must be 0
+            gl[ this.format ],
+            gl[ this.type ],
+            this.data );
+        // generate mip maps
         if ( this.mipMap ) {
             gl.generateMipmap( gl.TEXTURE_2D );
         }
@@ -240,44 +186,72 @@
      * Set the texture parameters.
      * @memberof Texture2D
      *
-     * @param {Object} parameters - The parameters by name.
+     * @param {Object} params - The parameters by name.
      * <pre>
-     *     wrap | wrap.s | wrap.t - The wrapping type.
-     *     filter | filter.min | filter.mag - The filter type.
+     *     wrap - The wrapping type over both S and T dimension.
+     *     wrapS - The wrapping type over the S dimension.
+     *     wrapT - The wrapping type over the T dimension.
+     *     filter - The min / mag filter used during scaling.
+     *     minFilter - The minification filter used during scaling.
+     *     magFilter - The magnification filter used during scaling.
      * </pre>
      * @returns {Texture2D} The texture object, for chaining.
      */
-    Texture2D.prototype.setParameters = function( parameters ) {
+    Texture2D.prototype.setParameters = function( params ) {
         var gl = this.gl;
         this.push();
-        if ( parameters.wrap ) {
-            // set wrap parameters
-            this.wrap = parameters.wrap;
-            gl.texParameteri(
-                gl.TEXTURE_2D,
-                gl.TEXTURE_WRAP_S,
-                gl[ this.wrap.s || this.wrap ] );
-            gl.texParameteri(
-                gl.TEXTURE_2D,
-                gl.TEXTURE_WRAP_T,
-                gl[ this.wrap.t || this.wrap ] );
-        }
-        if ( parameters.filter ) {
-            // set filter parameters
-            this.filter = parameters.filter;
-            var minFilter = this.filter.min || this.filter;
-            if ( this.mipMap ) {
-                // append mipmap suffix to min filter
-                minFilter += '_MIPMAP_LINEAR';
+        // set wrap S parameter
+        var param = params.wrapS || params.wrap;
+        if ( param ) {
+            if ( WRAP_MODES[ param ] ) {
+                this.wrapS = param;
+                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl[ this.wrapS ] );
+            } else {
+                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_S`, command ignored.' );
             }
-            gl.texParameteri(
-                gl.TEXTURE_2D,
-                gl.TEXTURE_MAG_FILTER,
-                gl[ this.filter.mag || this.filter ] );
-            gl.texParameteri(
-                gl.TEXTURE_2D,
-                gl.TEXTURE_MIN_FILTER,
-                gl[ minFilter] );
+        }
+        // set wrap T parameter
+        param = params.wrapT || params.wrap;
+        if ( param ) {
+            if ( WRAP_MODES[ param ] ) {
+                this.wrapT = param;
+                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl[ this.wrapT ] );
+            } else {
+                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_T`, command ignored.' );
+            }
+        }
+        // set mag filter parameter
+        param = params.magFilter || params.filter;
+        if ( param ) {
+            if ( MAG_FILTERS[ param ] ) {
+                this.magFilter = param;
+                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl[ this.magFilter ] );
+            } else {
+                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MAG_FILTER`, command ignored.' );
+            }
+        }
+        // set min filter parameter
+        param = params.minFilter || params.filter;
+        if ( param ) {
+            if ( this.mipMap ) {
+                if ( NON_MIPMAP_MIN_FILTERS[ param ] ) {
+                    // upgrade to mip-map min filter
+                    param = DEFAULT_MIPMAP_MIN_FILTER;
+                }
+                if ( MIPMAP_MIN_FILTERS[ param ] ) {
+                    this.minFilter = param;
+                    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
+                } else  {
+                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                }
+            } else {
+                if ( MIN_FILTERS[ param ] ) {
+                    this.minFilter = param;
+                    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
+                } else {
+                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                }
+            }
         }
         this.pop();
         return this;
@@ -293,12 +267,6 @@
      * @returns {Texture2D} The texture object, for chaining.
      */
     Texture2D.prototype.resize = function( width, height ) {
-        if ( this.image ) {
-            // there is no need to ever resize a texture that is based
-            // of an actual image. That is what sampling is for.
-            console.error( 'Cannot resize image based Texture2D' );
-            return;
-        }
         if ( !width || !height ) {
             console.warn( 'Width or height arguments missing, command ignored.' );
             return;
