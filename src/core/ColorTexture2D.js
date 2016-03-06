@@ -30,12 +30,40 @@
         RGB: true,
         RGBA: true
     };
+
+    /**
+     * The default type for color textures.
+     */
     var DEFAULT_TYPE = 'UNSIGNED_BYTE';
+
+    /**
+     * The default format for color textures.
+     */
     var DEFAULT_FORMAT = 'RGBA';
+
+    /**
+     * The default wrap mode for color textures.
+     */
     var DEFAULT_WRAP = 'REPEAT';
+
+    /**
+     * The default min / mag filter for color textures.
+     */
     var DEFAULT_FILTER = 'LINEAR';
+
+    /**
+     * The default for whether alpha premultiplying is enabled.
+     */
     var DEFAULT_PREMULTIPLY_ALPHA = true;
+
+    /**
+     * The default for whether mipmapping is enabled.
+     */
     var DEFAULT_MIPMAP = true;
+
+    /**
+     * The default for whether invert-y is enabled.
+     */
     var DEFAULT_INVERT_Y = true;
 
     function mustBePowerOfTwo( spec ) {
@@ -72,6 +100,26 @@
      * Instantiates a ColorRexture2D object.
      * @class ColorRexture2D
      * @classdesc A texture class to represent a 2D color texture.
+     *
+     * @param {Object} spec - The specification arguments:
+     * <pre>
+     *     image - The HTMLImageElement to buffer.
+     *     url - The HTMLImageElement URL to load and buffer.
+     *     data - The Uint8Array / Float32Array to buffer.
+     *     wrap - The wrapping type over both S and T dimension.
+     *     wrapS - The wrapping type over the S dimension.
+     *     wrapT - The wrapping type over the T dimension.
+     *     filter - The min / mag filter used during scaling.
+     *     minFilter - The minification filter used during scaling.
+     *     magFilter - The magnification filter used during scaling.
+     *     mipMap - Whether or not mip-mapping is enabled.
+     *     invertY - Whether or not invert-y is enabled.
+     *     preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+     *     format - The texture pixel format.
+     *     type - The texture pixel component type.
+     * </pre>
+     * @param {Function} callback - The callback to be executed if the data is
+     *      loaded asynchronously via a URL.
      */
     function ColorRexture2D( spec, callback ) {
         spec = spec || {};

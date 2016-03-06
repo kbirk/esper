@@ -6,8 +6,9 @@
     var BYTES_PER_COMPONENT = 4;
 
     /**
-     * Removes invalid attribute arguments. A valid argument
-     * must be an Array of length > 0 key by a string representing an int.
+     * Removes invalid attribute arguments. A valid argument must be an Array
+     * of length > 0 key by a string representing an int.
+     * @private
      *
      * @param {Object} attributes - The map of vertex attributes.
      *
@@ -45,6 +46,7 @@
 
     /**
      * Returns a component's byte size.
+     * @private
      *
      * @param {Object|Array} component - The component to measure.
      *
@@ -79,6 +81,7 @@
     /**
      * Calculates the type, size, and offset for each attribute in the
      * attribute array along with the length and stride of the package.
+     * @private
      *
      * @param {VertexPackage} vertexPackage - The VertexPackage object.
      * @param {Array} attributes - The array of vertex attributes.
@@ -111,6 +114,7 @@
 
     /**
      * Fill the arraybuffer with a single component attribute.
+     * @private
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
@@ -136,6 +140,7 @@
 
     /**
      * Fill the arraybuffer with a double component attribute.
+     * @private
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
@@ -156,6 +161,7 @@
 
     /**
      * Fill the arraybuffer with a triple component attribute.
+     * @private
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
@@ -177,6 +183,7 @@
 
     /**
      * Fill the arraybuffer with a quadruple component attribute.
+     * @private
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
@@ -201,6 +208,8 @@
      * Instantiates an VertexPackage object.
      * @class VertexPackage
      * @classdesc A vertex package object.
+     *
+     * @param {Object} attributes - The attributes to interleave.
      */
     function VertexPackage( attributes ) {
         if ( attributes !== undefined ) {

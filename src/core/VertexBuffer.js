@@ -29,6 +29,14 @@
     var _boundBuffer = null;
     var _enabledAttributes = {};
 
+    /**
+     * Parse the attribute pointers and determine the stride of the buffer.
+     * @private
+     *
+     * @param {Object} attributePointers - The attribute pointer map.
+     *
+     * @return {number} - The stride of the buffer.
+     */
     function getStride( attributePointers ) {
         var BYTES_PER_COMPONENT = 4;
         var maxOffset = 0;
@@ -45,6 +53,14 @@
         return stride;
     }
 
+    /**
+     * Parse the attribute pointers to ensure they are valid.
+     * @private
+     *
+     * @param {Object} attributePointers - The attribute pointer map.
+     *
+     * @return {Object} - The validated attribute pointer map.
+     */
     function getAttributePointers( attributePointers ) {
         // ensure there are pointers provided
         if ( !attributePointers || Object.keys( attributePointers ).length === 0 ) {
@@ -83,10 +99,18 @@
         return pointers;
     }
 
-    function getNumComponents( pointers ) {
+    /**
+     * Return the number of components in the buffer.
+     * @private
+     *
+     * @param {Object} attributePointers - The attribute pointer map.
+     *
+     * @return {number} - The number of components in the buffer.
+     */
+    function getNumComponents( attributePointers ) {
         var size = 0;
-        Object.keys( pointers ).forEach( function( index ) {
-            size += pointers[ index ].size;
+        Object.keys( attributePointers ).forEach( function( index ) {
+            size += attributePointers[ index ].size;
         });
         return size;
     }
@@ -95,6 +119,15 @@
      * Instantiates an VertexBuffer object.
      * @class VertexBuffer
      * @classdesc A vertex buffer object.
+     *
+     * @param {Array|Float32Array|VertexPackage|number} arg - The buffer or length of the buffer.
+     * @param {Object} arg - The array pointer map, or in the case of a vertex package arg, the options.
+     * @param {Object} options - The rendering options.
+     * <pre>
+     *     mode - The draw mode / primitive type.
+     *     offset - The offset into the drawn buffer.
+     *     count - The number of vertices to draw.
+     * </pre>
      */
     function VertexBuffer( arg, attributePointers, options ) {
         options = options || {};

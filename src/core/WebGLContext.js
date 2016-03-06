@@ -37,9 +37,10 @@
     /**
      * Returns a Canvas element object from either an existing object, or
      * identification string.
+     * @private
      *
-     * @param {HTMLCanvasElement|String} arg - The Canvas
-     *     object or Canvas identification string.
+     * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas
+     *     identification string.
      *
      * @returns {HTMLCanvasElement} The Canvas element object.
      */
@@ -55,6 +56,7 @@
 
     /**
      * Attempts to retreive a wrapped WebGLRenderingContext.
+     * @private
      *
      * @param {HTMLCanvasElement} The Canvas element object to create the context under.
      *
@@ -80,6 +82,7 @@
      * Attempts to load all known extensions for a provided
      * WebGLRenderingContext. Stores the results in the context wrapper for
      * later queries.
+     * @private
      *
      * @param {Object} contextWrapper - The context wrapper.
      */
@@ -96,6 +99,7 @@
     /**
      * Attempts to create a WebGLRenderingContext wrapped inside an object which
      * will also store the extension query results.
+     * @private
      *
      * @param {HTMLCanvasElement} The Canvas element object to create the context under.
      * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.

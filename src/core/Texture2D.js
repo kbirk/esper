@@ -31,20 +31,53 @@
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
     };
-    var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
-    var DEFAULT_PREMULTIPLY_ALPHA = true;
-    var DEFAULT_MIPMAP = true;
-    var DEFAULT_INVERT_Y = true;
-    var DEFAULT_WRAP = 'REPEAT';
-    var DEFAULT_FILTER = 'LINEAR';
-    var DEFAULT_TYPE = 'UNSIGNED_BYTE';
-    var DEFAULT_FORMAT = 'RGBA';
     var _stack = {};
     var _boundTexture = null;
 
     /**
+     * The default type for textures.
+     */
+    var DEFAULT_TYPE = 'UNSIGNED_BYTE';
+
+    /**
+     * The default format for textures.
+     */
+    var DEFAULT_FORMAT = 'RGBA';
+
+    /**
+     * The default wrap mode for textures.
+     */
+    var DEFAULT_WRAP = 'REPEAT';
+
+    /**
+     * The default min / mag filter for textures.
+     */
+    var DEFAULT_FILTER = 'LINEAR';
+
+    /**
+     * The default for whether alpha premultiplying is enabled.
+     */
+    var DEFAULT_PREMULTIPLY_ALPHA = true;
+
+    /**
+     * The default for whether mipmapping is enabled.
+     */
+    var DEFAULT_MIPMAP = true;
+
+    /**
+     * The default for whether invert-y is enabled.
+     */
+    var DEFAULT_INVERT_Y = true;
+
+    /**
+     * The default mip-mapping filter suffix.
+     */
+    var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
+
+    /**
      * Binds the texture object to a location and activates the texture unit
      * while caching it to prevent unnecessary rebinds.
+     * @private
      *
      * @param {Texture2D} texture - The Texture2D object to bind.
      * @param {number} location - The texture unit location index.
@@ -63,6 +96,7 @@
 
     /**
      * Unbinds the texture object. Prevents unnecessary unbinding.
+     * @private
      *
      * @param {Texture2D} texture - The Texture2D object to unbind.
      */
@@ -80,6 +114,21 @@
      * Instantiates a Texture2D object.
      * @class Texture2D
      * @classdesc A texture class to represent a 2D texture.
+     *
+     * @param {Object} spec - The specification arguments:
+     * <pre>
+     *     wrap - The wrapping type over both S and T dimension.
+     *     wrapS - The wrapping type over the S dimension.
+     *     wrapT - The wrapping type over the T dimension.
+     *     filter - The min / mag filter used during scaling.
+     *     minFilter - The minification filter used during scaling.
+     *     magFilter - The magnification filter used during scaling.
+     *     mipMap - Whether or not mip-mapping is enabled.
+     *     invertY - Whether or not invert-y is enabled.
+     *     preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+     *     format - The texture pixel format.
+     *     type - The texture pixel component type.
+     * </pre>
      */
     function Texture2D( spec ) {
         this.gl = WebGLContext.get();
@@ -136,13 +185,16 @@
      * @returns {Texture2D} The texture object, for chaining.
      */
     Texture2D.prototype.pop = function( location ) {
-        var top;
         if ( !_stack[ location ] ) {
             console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
             return;
         }
+        if ( this !== _stack[ location ].top() ) {
+            console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
+            return;
+        }
         _stack[ location ].pop();
-        top = _stack[ location ].top();
+        var top = _stack[ location ].top();
         if ( top ) {
             bind( top, location );
         } else {

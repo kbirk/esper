@@ -49,20 +49,53 @@
         RGB: true,
         RGBA: true
     };
-    var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
-    var DEFAULT_WRAP = 'CLAMP_TO_EDGE';
-    var DEFAULT_FILTER = 'LINEAR';
-    var DEFAULT_PREMULTIPLY_ALPHA = true;
-    var DEFAULT_MIPMAP = true;
-    var DEFAULT_INVERT_Y = true;
-    var DEFAULT_TYPE = 'UNSIGNED_BYTE';
-    var DEFAULT_FORMAT = 'RGBA';
     var _stack = {};
     var _boundTexture = null;
 
     /**
+     * The default type for textures.
+     */
+    var DEFAULT_TYPE = 'UNSIGNED_BYTE';
+
+    /**
+     * The default format for textures.
+     */
+    var DEFAULT_FORMAT = 'RGBA';
+
+    /**
+     * The default wrap mode for textures.
+     */
+    var DEFAULT_WRAP = 'CLAMP_TO_EDGE';
+
+    /**
+     * The default min / mag filter for textures.
+     */
+    var DEFAULT_FILTER = 'LINEAR';
+
+    /**
+     * The default for whether alpha premultiplying is enabled.
+     */
+    var DEFAULT_PREMULTIPLY_ALPHA = true;
+
+    /**
+     * The default for whether mipmapping is enabled.
+     */
+    var DEFAULT_MIPMAP = true;
+
+    /**
+     * The default for whether invert-y is enabled.
+     */
+    var DEFAULT_INVERT_Y = true;
+
+    /**
+     * The default mip-mapping filter suffix.
+     */
+    var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
+
+    /**
      * If the provided image dimensions are not powers of two, it will redraw
      * the image to the next highest power of two.
+     * @private
      *
      * @param {HTMLImageElement} image - The image object.
      *
@@ -89,6 +122,7 @@
     /**
      * Binds the texture object to a location and activates the texture unit
      * while caching it to prevent unnecessary rebinds.
+     * @private
      *
      * @param {TextureCubeMap} texture - The TextureCubeMap object to bind.
      * @param {number} location - The texture unit location index.
@@ -107,6 +141,7 @@
 
     /**
      * Unbinds the texture object. Prevents unnecessary unbinding.
+     * @private
      *
      * @param {TextureCubeMap} texture - The TextureCubeMap object to unbind.
      */
@@ -122,6 +157,7 @@
 
     /**
      * Returns a function to load and buffer a given cube map face.
+     * @private
      *
      * @param {TextureCubeMap} cubeMap - The cube map object.
      * @param {String} url - The url to load the image.
@@ -145,6 +181,24 @@
      * Instantiates a TextureCubeMap object.
      * @class TextureCubeMap
      * @classdesc A texture class to represent a cube map texture.
+     *
+     * @param {Object} spec - The specification arguments:
+     * <pre>
+     *     images - The HTMLImageElements to buffer.
+     *     urls - The HTMLImageElements URL to load and buffer.
+     *     data - The Uint8Array's / Float32Array's to buffer.
+     *     wrap - The wrapping type over both S and T dimension.
+     *     wrapS - The wrapping type over the S dimension.
+     *     wrapT - The wrapping type over the T dimension.
+     *     filter - The min / mag filter used during scaling.
+     *     minFilter - The minification filter used during scaling.
+     *     magFilter - The magnification filter used during scaling.
+     *     mipMap - Whether or not mip-mapping is enabled.
+     *     invertY - Whether or not invert-y is enabled.
+     *     preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+     *     format - The texture pixel format.
+     *     type - The texture pixel component type.
+     * </pre>
      */
     function TextureCubeMap( spec, callback ) {
         var that = this;
@@ -221,12 +275,15 @@
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
      TextureCubeMap.prototype.pop = function( location ) {
-        var top;
         if ( !_stack[ location ] ) {
             console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
         }
+        if ( this !== _stack[ location ].top() ) {
+            console.warn( 'The current texture cube map is not the top most element on the stack. Command ignored.' );
+            return;
+        }
         _stack[ location ].pop();
-        top = _stack[ location ].top();
+        var top = _stack[ location ].top();
         if ( top ) {
             bind( top, location );
         } else {

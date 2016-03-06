@@ -16,16 +16,40 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
-    var DEFAULT_TYPE = 'UNSIGNED_SHORT';
-    var DEFAULT_MODE = 'TRIANGLES';
-    var DEFAULT_OFFSET = 0;
-    var DEFAULT_COUNT = 0;
     var _boundBuffer = null;
+
+    /**
+     * The default component type.
+     */
+    var DEFAULT_TYPE = 'UNSIGNED_SHORT';
+
+    /**
+     * The default render mode (primitive type).
+     */
+    var DEFAULT_MODE = 'TRIANGLES';
+
+    /**
+     * The default index offset to render from.
+     */
+    var DEFAULT_OFFSET = 0;
+
+    /**
+     * The default count of indices to render.
+     */
+    var DEFAULT_COUNT = 0;
 
     /**
      * Instantiates an IndexBuffer object.
      * @class IndexBuffer
      * @classdesc An index buffer object.
+     *
+     * @param {Uint16Array|Uin32Array|Array} arg - The index data to buffer.
+     * @param {Object} options - The rendering options.
+     * <pre>
+     *     mode - The draw mode / primitive type.
+     *     offset - The offset into the drawn buffer.
+     *     count - The number of vertices to draw.
+     * </pre>
      */
     function IndexBuffer( arg, options ) {
         options = options || {};

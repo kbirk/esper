@@ -26,14 +26,44 @@
         DEPTH_COMPONENT: true,
         DEPTH_STENCIL: true
     };
-    var DEFAULT_WRAP = 'CLAMP_TO_EDGE';
-    var DEFAULT_FILTER = 'LINEAR';
+
+    /**
+     * The default type for depth textures.
+     */
     var DEFAULT_TYPE = 'UNSIGNED_INT';
+
+    /**
+     * The default format for depth textures.
+     */
+    var DEFAULT_FORMAT = 'DEPTH_COMPONENT';
+
+    /**
+     * The default wrap mode for depth textures.
+     */
+    var DEFAULT_WRAP = 'CLAMP_TO_EDGE';
+
+    /**
+     * The default min / mag filter for depth textures.
+     */
+    var DEFAULT_FILTER = 'LINEAR';
 
     /**
      * Instantiates a DepthTexture2D object.
      * @class DepthTexture2D
      * @classdesc A texture class to represent a 2D depth texture.
+     *
+     * @param {Object} spec - The specification arguments:
+     * <pre>
+     *     data - The Uint8Array / Uint16Array / Uint32Array to buffer.
+     *     wrap - The wrapping type over both S and T dimension.
+     *     wrapS - The wrapping type over the S dimension.
+     *     wrapT - The wrapping type over the T dimension.
+     *     filter - The min / mag filter used during scaling.
+     *     minFilter - The minification filter used during scaling.
+     *     magFilter - The magnification filter used during scaling.
+     *     format - The texture pixel format.
+     *     type - The texture pixel component type.
+     * </pre>
      */
     function DepthTexture2D( spec ) {
         // ensure depth texture is supported
@@ -56,7 +86,7 @@
         spec.mipMap = false; // disable mip-mapping
         spec.invertY = false; // no need to invert-y
         spec.preMultiplyAlpha = false; // no alpha to pre-multiply
-        spec.format = FORMATS[ spec.format ] ? spec.format : 'DEPTH_COMPONENT';
+        spec.format = FORMATS[ spec.format ] ? spec.format : DEFAULT_FORMAT;
         // check if stencil-depth, or just depth
         if ( spec.format === 'DEPTH_STENCIL' ) {
             spec.type = 'UNSIGNED_INT_24_8_WEBGL';

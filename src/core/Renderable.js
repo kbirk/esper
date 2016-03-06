@@ -10,6 +10,21 @@
      * Instantiates an Renderable object.
      * @class Renderable
      * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
+     *
+     * @param {Object} spec - The renderable specification object.
+     * <pre>
+     *     vertices - The vertices to interleave and buffer.
+     *     vertexBuffer - An existing vertex buffer to use.
+     *     vertexBuffers - Multiple vertex buffers to use.
+     *     indices - The indices to buffer.
+     *     indexbuffer - An existing index buffer to use.
+     * </pre>
+     * @param {Object} options - The rendering options.
+     * <pre>
+     *     mode - The draw mode / primitive type.
+     *     offset - The offset into the drawn buffer.
+     *     count - The number of vertices to draw.
+     * </pre>
      */
     function Renderable( spec, options ) {
         spec = spec || {};

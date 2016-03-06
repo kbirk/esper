@@ -43,6 +43,7 @@
     /**
      * Given vertex and fragment shader source, parses the declarations and
      * appends information pertaining to the uniforms and attribtues declared.
+     * @private
      *
      * @param {Shader} shader - The shader object.
      * @param {String} vertSource - The vertex shader source.
@@ -75,9 +76,10 @@
         });
     }
 
-    /*
+    /**
      * Given a shader source string and shader type, compiles the shader and
      * returns the resulting WebGLShader object.
+     * @private
      *
      * @param {WebGLRenderingContext} gl - The webgl rendering context.
      * @param {String} shaderSource - The shader source.
@@ -98,6 +100,7 @@
 
     /**
      * Binds the attribute locations for the Shader object.
+     * @private
      *
      * @param {Shader} shader - The Shader object.
      */
@@ -115,6 +118,7 @@
 
     /**
      * Queries the webgl rendering context for the uniform locations.
+     * @private
      *
      * @param {Shader} shader - The Shader object.
      */
@@ -129,6 +133,7 @@
 
     /**
      * Returns a function to load shader source from a url.
+     * @private
      *
      * @param {String} url - The url to load the resource from.
      *
@@ -151,6 +156,7 @@
 
     /**
      * Returns a function to pass through the shader source.
+     * @private
      *
      * @param {String} source - The source of the shader.
      *
@@ -165,6 +171,11 @@
     /**
      * Returns a function that takes an array of GLSL source strings and URLs,
      * and resolves them into and array of GLSL source.
+     * @private
+     *
+     * @param {Array} sources - The shader sources.
+     *
+     * @returns - A function to resolve the shader sources.
      */
     function resolveSources( sources ) {
         return function( done ) {
@@ -186,6 +197,7 @@
 
     /**
      * Binds the shader object, caching it to prevent unnecessary rebinds.
+     * @private
      *
      * @param {Shader} shader - The Shader object to bind.
      */
@@ -200,6 +212,7 @@
 
     /**
      * Unbinds the shader object. Prevents unnecessary unbinding.
+     * @private
      *
      * @param {Shader} shader - The Shader object to unbind.
      */
@@ -214,6 +227,7 @@
 
     /**
      * Clears the shader attributes due to aborting of initialization.
+     * @private
      *
      * @param {Shader} shader - The Shader object.
      */
@@ -229,6 +243,15 @@
      * @class Shader
      * @classdesc A shader class to assist in compiling and linking webgl
      * shaders, storing attribute and uniform locations, and buffering uniforms.
+     *
+     * @param {Object} spec - The shader specification object.
+     * <pre>
+     *     common - Sources / URLs to be shared by both vvertex and fragment shaders.
+     *     vert - The vertex shader sources / URLs.
+     *     frag - The fragment shader sources / URLs.
+     * </pre>
+     * @param {Function} callback - The callback function to execute once the shader
+     *     has been successfully compiled and linked.
      */
     function Shader( spec, callback ) {
         var that = this;

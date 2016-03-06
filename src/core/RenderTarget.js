@@ -68,9 +68,12 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.pop = function() {
-        var top;
+        if ( this !== _stack.top() ) {
+            console.warn( 'The current render target is not the top most element on the stack. Command ignored.' );
+            return;
+        }
         _stack.pop();
-        top = _stack.top();
+        var top = _stack.top();
         if ( top ) {
             bind( top );
         } else {

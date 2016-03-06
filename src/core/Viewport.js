@@ -6,6 +6,15 @@
     var Stack = require('../util/Stack');
     var _stack = new Stack();
 
+    /**
+     * Bind the viewport to the rendering context.
+     *
+     * @param {Viewport} viewport - The viewport object.
+     * @param {number} width - The width override.
+     * @param {number} height - The height override.
+     * @param {number} x - The horizontal offset override.
+     * @param {number} y - The vertical offset override.
+     */
     function set( viewport, x, y, width, height ) {
         var gl = viewport.gl;
         x = ( x !== undefined ) ? x : viewport.x;
@@ -19,6 +28,14 @@
      * Instantiates an Viewport object.
      * @class Viewport
      * @classdesc A viewport object.
+     *
+     * @param {Object} spec - The viewport specification object.
+     * <pre>
+     *      width - The width of the viewport.
+     *      height - The height of the viewport.
+     *      x - The horizontal offset of the viewport.
+     *      y - The vertical offset of the viewport.
+     * </pre>
      */
     function Viewport( spec ) {
         spec = spec || {};
@@ -37,6 +54,9 @@
      * Updates the viewport objects width and height.
      * @memberof Viewport
      *
+     * @param {number} width - The width of the viewport.
+     * @param {number} height - The height of the viewport.
+     *
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.resize = function( width, height ) {
@@ -53,6 +73,9 @@
      * Updates the viewport objects x and y offsets.
      * @memberof Viewport
      *
+     * @param {number} x - The horizontal offset of the viewport.
+     * @param {number} y - The vertical offset of the viewport.
+     *
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.offset = function( x, y ) {
@@ -66,12 +89,18 @@
     };
 
     /**
-     * Sets the viewport object and pushes it to the front of the stack.
+     * Sets the viewport object and pushes it to the front of the stack. Any
+     * provided overrides are only temporarily pushed onto the stack.
      * @memberof Viewport
+     *
+     * @param {number} width - The width override.
+     * @param {number} height - The height override.
+     * @param {number} x - The horizontal offset override.
+     * @param {number} y - The vertical offset override.
      *
      * @returns {Viewport} The viewport object, for chaining.
      */
-     Viewport.prototype.push = function( x, y, width, height ) {
+    Viewport.prototype.push = function( x, y, width, height ) {
         _stack.push({
             viewport: this,
             x: x,
@@ -89,10 +118,13 @@
      *
      * @returns {Viewport} The viewport object, for chaining.
      */
-     Viewport.prototype.pop = function() {
-        var top;
+    Viewport.prototype.pop = function() {
+        if ( this !== _stack.top().viewport ) {
+            console.warn( 'The current viewport is not the top most element on the stack. Command ignored.' );
+            return;
+        }
         _stack.pop();
-        top = _stack.top();
+        var top = _stack.top();
         if ( top ) {
             set( top.viewport, top.x, top.y, top.width, top.height );
         } else {

@@ -32,6 +32,7 @@
 
     /**
      * Removes standard comments from the provided string.
+     * @private
      *
      * @param {String} str - The string to strip comments from.
      *
@@ -44,6 +45,7 @@
 
     /**
      * Converts all whitespace into a single ' ' space character.
+     * @private
      *
      * @param {String} str - The string to normalize whitespace from.
      *
@@ -58,6 +60,7 @@
     /**
      * Parses the name and count out of a name statement, returning the
      * declaration object.
+     * @private
      *
      * @param {String} qualifier - The qualifier string.
      * @param {String} precision - The precision string.
@@ -83,6 +86,7 @@
      * characters followed by a semi-colon. Therefore, a single 'statement' in
      * this sense could contain several comma separated declarations. Returns
      * all resulting declarations.
+     * @private
      *
      * @param {String} statement - The statement to parse.
      * @param {Object} precisions - The current state of global precisions.
@@ -140,6 +144,7 @@
     /**
      * Splits the source string by semi-colons and constructs an array of
      * declaration objects based on the provided qualifier keywords.
+     * @private
      *
      * @param {String} source - The shader source string.
      * @param {String|Array} keywords - The qualifier declaration keywords.
@@ -185,6 +190,7 @@
 
     /**
      * Filters out duplicate declarations present between shaders.
+     * @private
      *
      * @param {Array} declarations - The array of declarations.
      *
