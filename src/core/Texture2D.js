@@ -75,8 +75,7 @@
     var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
     /**
-     * Binds the texture object to a location and activates the texture unit
-     * while caching it to prevent unnecessary rebinds.
+     * Binds the texture object to a location and activates the texture unit while caching it to prevent unnecessary rebinds.
      * @private
      *
      * @param {Texture2D} texture - The Texture2D object to bind.
@@ -115,20 +114,20 @@
      * @class Texture2D
      * @classdesc A texture class to represent a 2D texture.
      *
-     * @param {Object} spec - The specification arguments:
-     * <pre>
-     *     wrap - The wrapping type over both S and T dimension.
-     *     wrapS - The wrapping type over the S dimension.
-     *     wrapT - The wrapping type over the T dimension.
-     *     filter - The min / mag filter used during scaling.
-     *     minFilter - The minification filter used during scaling.
-     *     magFilter - The magnification filter used during scaling.
-     *     mipMap - Whether or not mip-mapping is enabled.
-     *     invertY - Whether or not invert-y is enabled.
-     *     preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
-     *     format - The texture pixel format.
-     *     type - The texture pixel component type.
-     * </pre>
+     * @param {Uint8Array|Uint16Array|Uint32Array|Float32Array} spec.data - The data to buffer.
+     * @param {number} width - The width of the texture.
+     * @param {number} height - The height of the texture.
+     * @param {String} spec.wrap - The wrapping type over both S and T dimension.
+     * @param {String} spec.wrapS - The wrapping type over the S dimension.
+     * @param {String} spec.wrapT - The wrapping type over the T dimension.
+     * @param {String} spec.filter - The min / mag filter used during scaling.
+     * @param {String} spec.minFilter - The minification filter used during scaling.
+     * @param {String} spec.magFilter - The magnification filter used during scaling.
+     * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
+     * @param {bool} spec.invertY - Whether or not invert-y is enabled.
+     * @param {bool} spec.preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+     * @param {String} spec.format - The texture pixel format.
+     * @param {String} spec.type - The texture pixel component type.
      */
     function Texture2D( spec ) {
         this.gl = WebGLContext.get();
@@ -176,8 +175,7 @@
     };
 
     /**
-     * Unbinds the texture object and binds the texture beneath it on
-     * this stack. If there is no underlying texture, unbinds the unit.
+     * Unbinds the texture object and binds the texture beneath it on this stack. If there is no underlying texture, unbinds the unit.
      * @memberof Texture2D
      *
      * @param {number} location - The texture unit location index.
@@ -248,14 +246,13 @@
      * @memberof Texture2D
      *
      * @param {Object} params - The parameters by name.
-     * <pre>
-     *     wrap - The wrapping type over both S and T dimension.
-     *     wrapS - The wrapping type over the S dimension.
-     *     wrapT - The wrapping type over the T dimension.
-     *     filter - The min / mag filter used during scaling.
-     *     minFilter - The minification filter used during scaling.
-     *     magFilter - The magnification filter used during scaling.
-     * </pre>
+     * @param {String} params.wrap - The wrapping type over both S and T dimension.
+     * @param {String} params.wrapS - The wrapping type over the S dimension.
+     * @param {String} params.wrapT - The wrapping type over the T dimension.
+     * @param {String} params.filter - The min / mag filter used during scaling.
+     * @param {String} params.minFilter - The minification filter used during scaling.
+     * @param {String} params.magFilter - The magnification filter used during scaling.
+     *
      * @returns {Texture2D} The texture object, for chaining.
      */
     Texture2D.prototype.setParameters = function( params ) {

@@ -41,8 +41,7 @@
     var _boundShader = null;
 
     /**
-     * Given vertex and fragment shader source, parses the declarations and
-     * appends information pertaining to the uniforms and attribtues declared.
+     * Given vertex and fragment shader source, parses the declarations and appends information pertaining to the uniforms and attribtues declared.
      * @private
      *
      * @param {Shader} shader - The shader object.
@@ -77,8 +76,7 @@
     }
 
     /**
-     * Given a shader source string and shader type, compiles the shader and
-     * returns the resulting WebGLShader object.
+     * Given a shader source string and shader type, compiles the shader and returns the resulting WebGLShader object.
      * @private
      *
      * @param {WebGLRenderingContext} gl - The webgl rendering context.
@@ -169,8 +167,7 @@
     }
 
     /**
-     * Returns a function that takes an array of GLSL source strings and URLs,
-     * and resolves them into and array of GLSL source.
+     * Returns a function that takes an array of GLSL source strings and URLs, and resolves them into and array of GLSL source.
      * @private
      *
      * @param {Array} sources - The shader sources.
@@ -245,11 +242,9 @@
      * shaders, storing attribute and uniform locations, and buffering uniforms.
      *
      * @param {Object} spec - The shader specification object.
-     * <pre>
-     *     common - Sources / URLs to be shared by both vvertex and fragment shaders.
-     *     vert - The vertex shader sources / URLs.
-     *     frag - The fragment shader sources / URLs.
-     * </pre>
+     * @param {String|String[]|Object} spec.common - Sources / URLs to be shared by both vvertex and fragment shaders.
+     * @param {String|String[]|Object} spec.vert - The vertex shader sources / URLs.
+     * @param {String|String[]|Object} spec.frag - The fragment shader sources / URLs.
      * @param {Function} callback - The callback function to execute once the shader
      *     has been successfully compiled and linked.
      */
@@ -343,8 +338,7 @@
     };
 
     /**
-     * Unbinds the shader object and binds the shader beneath it on
-     * this stack. If there is no underlying shader, bind the backbuffer.
+     * Unbinds the shader object and binds the shader beneath it on this stack. If there is no underlying shader, bind the backbuffer.
      * @memberof Shader
      *
      * @returns {Shader} The shader object, for chaining.

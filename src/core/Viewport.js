@@ -30,12 +30,10 @@
      * @classdesc A viewport object.
      *
      * @param {Object} spec - The viewport specification object.
-     * <pre>
-     *      width - The width of the viewport.
-     *      height - The height of the viewport.
-     *      x - The horizontal offset of the viewport.
-     *      y - The vertical offset of the viewport.
-     * </pre>
+     * @param {number} spec.width - The width of the viewport.
+     * @param {number} spec.height - The height of the viewport.
+     * @param {number} spec.x - The horizontal offset of the viewport.
+     * @param {number} spec.y - The vertical offset of the viewport.
      */
     function Viewport( spec ) {
         spec = spec || {};
@@ -89,8 +87,7 @@
     };
 
     /**
-     * Sets the viewport object and pushes it to the front of the stack. Any
-     * provided overrides are only temporarily pushed onto the stack.
+     * Sets the viewport object and pushes it to the front of the stack. Any provided overrides are only temporarily pushed onto the stack.
      * @memberof Viewport
      *
      * @param {number} width - The width override.

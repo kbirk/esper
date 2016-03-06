@@ -66,6 +66,14 @@
      */
     var DEFAULT_INVERT_Y = true;
 
+    /**
+     * Returns true if the texture MUST be a power-of-two. Otherwise return false.
+     * @private
+     *
+     * @param {Object} spec - The texture specification object.
+     *
+     * @return {bool} - Whether or not the texture must be a power of two.
+     */
     function mustBePowerOfTwo( spec ) {
         // According to:
         // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL#Non_power-of-two_textures
@@ -77,6 +85,13 @@
             spec.wrapT === 'MIRRORED_REPEAT';
     }
 
+    /**
+     * Extracts the underlying data buffer from an image element. If texture must be a POT, resizes the texture.
+     * @private
+     *
+     * @param {Object} spec - The texture specification object.
+     * @param {HTMLImageElement} img - The image object.
+     */
     function setImgData( spec, img ) {
         // create an empty canvas element
         var canvas = document.createElement( 'canvas' );
@@ -101,25 +116,24 @@
      * @class ColorRexture2D
      * @classdesc A texture class to represent a 2D color texture.
      *
-     * @param {Object} spec - The specification arguments:
-     * <pre>
-     *     image - The HTMLImageElement to buffer.
-     *     url - The HTMLImageElement URL to load and buffer.
-     *     data - The Uint8Array / Float32Array to buffer.
-     *     wrap - The wrapping type over both S and T dimension.
-     *     wrapS - The wrapping type over the S dimension.
-     *     wrapT - The wrapping type over the T dimension.
-     *     filter - The min / mag filter used during scaling.
-     *     minFilter - The minification filter used during scaling.
-     *     magFilter - The magnification filter used during scaling.
-     *     mipMap - Whether or not mip-mapping is enabled.
-     *     invertY - Whether or not invert-y is enabled.
-     *     preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
-     *     format - The texture pixel format.
-     *     type - The texture pixel component type.
-     * </pre>
-     * @param {Function} callback - The callback to be executed if the data is
-     *      loaded asynchronously via a URL.
+     * @param {Object} spec - The specification arguments.
+     * @param {Image} spec.image - The HTMLImageElement to buffer.
+     * @param {String} spec.url - The HTMLImageElement URL to load and buffer.
+     * @param {Uint8Array|Float32Array} spec.data - The data to buffer.
+     * @param {number} width - The width of the texture.
+     * @param {number} height - The height of the texture.
+     * @param {String} spec.wrap - The wrapping type over both S and T dimension.
+     * @param {String} spec.wrapS - The wrapping type over the S dimension.
+     * @param {String} spec.wrapT - The wrapping type over the T dimension.
+     * @param {String} spec.filter - The min / mag filter used during scaling.
+     * @param {String} spec.minFilter - The minification filter used during scaling.
+     * @param {String} spec.magFilter - The magnification filter used during scaling.
+     * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
+     * @param {bool} spec.invertY - Whether or not invert-y is enabled.
+     * @param {bool} spec.preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+     * @param {String} spec.format - The texture pixel format.
+     * @param {String} spec.type - The texture pixel component type.
+     * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
      */
     function ColorRexture2D( spec, callback ) {
         spec = spec || {};

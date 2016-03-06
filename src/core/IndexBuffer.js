@@ -45,11 +45,9 @@
      *
      * @param {Uint16Array|Uin32Array|Array} arg - The index data to buffer.
      * @param {Object} options - The rendering options.
-     * <pre>
-     *     mode - The draw mode / primitive type.
-     *     offset - The offset into the drawn buffer.
-     *     count - The number of vertices to draw.
-     * </pre>
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
      */
     function IndexBuffer( arg, options ) {
         options = options || {};
@@ -160,11 +158,9 @@
      * @memberof IndexBuffer
      *
      * @param {Object} options - The options to pass to 'drawElements'. Optional.
-     * <pre>
-     *     mode - The draw mode / primitive type.
-     *     offset - The offset into the drawn buffer.
-     *     count - The number of vertices to draw.
-     * </pre>
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
      *
      * @returns {IndexBuffer} Returns the index buffer object for chaining.
      */

@@ -6,8 +6,7 @@
     var BYTES_PER_COMPONENT = 4;
 
     /**
-     * Removes invalid attribute arguments. A valid argument must be an Array
-     * of length > 0 key by a string representing an int.
+     * Removes invalid attribute arguments. A valid argument must be an Array of length > 0 key by a string representing an int.
      * @private
      *
      * @param {Object} attributes - The map of vertex attributes.
@@ -79,8 +78,7 @@
     }
 
     /**
-     * Calculates the type, size, and offset for each attribute in the
-     * attribute array along with the length and stride of the package.
+     * Calculates the type, size, and offset for each attribute in the attribute array along with the length and stride of the package.
      * @private
      *
      * @param {VertexPackage} vertexPackage - The VertexPackage object.
@@ -209,7 +207,7 @@
      * @class VertexPackage
      * @classdesc A vertex package object.
      *
-     * @param {Object} attributes - The attributes to interleave.
+     * @param {Object} attributes - The attributes to interleave keyed by index.
      */
     function VertexPackage( attributes ) {
         if ( attributes !== undefined ) {
@@ -221,8 +219,7 @@
     }
 
     /**
-     * Set the data to be interleaved inside the package. This clears any
-     * previously existing data.
+     * Set the data to be interleaved inside the package. This clears any previously existing data.
      *
      * @param {Object} attributes - The attributes to interleaved, keyed by index.
      *

@@ -212,23 +212,19 @@
     module.exports = {
 
         /**
-         * Parses the provided GLSL source, and returns all declaration statements
-         * that contain the provided qualifier type. This can be used to extract
-         * all attributes and uniform names and types from a shader.
+         * Parses the provided GLSL source, and returns all declaration statements that contain the provided qualifier type. This can be used to extract all attributes and uniform names and types from a shader.
          *
          * For example, when provided a 'uniform' qualifiers, the declaration:
-         * <pre>
+         *
          *     'uniform highp vec3 uSpecularColor;'
-         * </pre>
+         *
          * Would be parsed to:
-         * <pre>
          *     {
          *         qualifier: 'uniform',
          *         type: 'vec3',
          *         name: 'uSpecularColor',
          *         count: 1
          *     }
-         * </pre>
          * @param {String|Array} sources - The shader sources.
          * @param {String|Array} qualifiers - The qualifiers to extract.
          *
@@ -252,8 +248,7 @@
         },
 
         /**
-         * Detects based on the existence of a 'void main() {' statement, if
-         * the string is glsl source code.
+         * Detects based on the existence of a 'void main() {' statement, if the string is glsl source code.
          *
          * @param {String} str - The input string to test.
          *

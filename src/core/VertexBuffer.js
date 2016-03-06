@@ -123,11 +123,9 @@
      * @param {Array|Float32Array|VertexPackage|number} arg - The buffer or length of the buffer.
      * @param {Object} arg - The array pointer map, or in the case of a vertex package arg, the options.
      * @param {Object} options - The rendering options.
-     * <pre>
-     *     mode - The draw mode / primitive type.
-     *     offset - The offset into the drawn buffer.
-     *     count - The number of vertices to draw.
-     * </pre>
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
      */
     function VertexBuffer( arg, attributePointers, options ) {
         options = options || {};
@@ -292,11 +290,9 @@
      * @memberof VertexBuffer
      *
      * @param {Object} options - The options to pass to 'drawArrays'. Optional.
-     * <pre>
-     *     mode - The draw mode / primitive type.
-     *     offset - The offset into the drawn buffer.
-     *     count - The number of vertices to draw.
-     * </pre>
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
      *
      * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
      */

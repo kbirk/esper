@@ -52,18 +52,19 @@
      * @class DepthTexture2D
      * @classdesc A texture class to represent a 2D depth texture.
      *
-     * @param {Object} spec - The specification arguments:
-     * <pre>
-     *     data - The Uint8Array / Uint16Array / Uint32Array to buffer.
-     *     wrap - The wrapping type over both S and T dimension.
-     *     wrapS - The wrapping type over the S dimension.
-     *     wrapT - The wrapping type over the T dimension.
-     *     filter - The min / mag filter used during scaling.
-     *     minFilter - The minification filter used during scaling.
-     *     magFilter - The magnification filter used during scaling.
-     *     format - The texture pixel format.
-     *     type - The texture pixel component type.
-     * </pre>
+     * @param {Object} spec - The specification arguments.
+     * @param {Uint8Array|Uint16Array|Uint32Array} spec.data - The data to buffer.
+     * @param {number} width - The width of the texture.
+     * @param {number} height - The height of the texture.
+     * @param {String} spec.wrap - The wrapping type over both S and T dimension.
+     * @param {String} spec.wrapS - The wrapping type over the S dimension.
+     * @param {String} spec.wrapT - The wrapping type over the T dimension.
+     * @param {String} spec.filter - The min / mag filter used during scaling.
+     * @param {String} spec.minFilter - The minification filter used during scaling.
+     * @param {String} spec.magFilter - The magnification filter used during scaling.
+     * @param {String} spec.format - The texture pixel format.
+     * @param {String} spec.type - The texture pixel component type.
+     * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
      */
     function DepthTexture2D( spec ) {
         // ensure depth texture is supported

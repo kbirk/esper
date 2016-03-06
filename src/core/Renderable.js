@@ -12,19 +12,15 @@
      * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
      *
      * @param {Object} spec - The renderable specification object.
-     * <pre>
-     *     vertices - The vertices to interleave and buffer.
-     *     vertexBuffer - An existing vertex buffer to use.
-     *     vertexBuffers - Multiple vertex buffers to use.
-     *     indices - The indices to buffer.
-     *     indexbuffer - An existing index buffer to use.
-     * </pre>
+     * @param {Array|Float32Array} spec.vertices - The vertices to interleave and buffer.
+     * @param {VertexBuffer} spec.vertexBuffer - An existing vertex buffer to use.
+     * @param {VertexBuffer[]} spec.vertexBuffers - Multiple vertex buffers to use.
+     * @param {Array|Uint16Array|Uint32Array} spec.indices - The indices to buffer.
+     * @param {IndexBuffer} spec.indexbuffer - An existing index buffer to use.
      * @param {Object} options - The rendering options.
-     * <pre>
-     *     mode - The draw mode / primitive type.
-     *     offset - The offset into the drawn buffer.
-     *     count - The number of vertices to draw.
-     * </pre>
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
      */
     function Renderable( spec, options ) {
         spec = spec || {};
@@ -60,11 +56,9 @@
      * @memberof Renderable
      *
      * @param {Object} options - The options to pass to 'drawElements'. Optional.
-     * <pre>
-     *     mode - The draw mode / primitive type.
-     *     offset - The offset into the drawn buffer.
-     *     count - The number of vertices to draw.
-     * </pre>
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
      *
      * @returns {Renderable} Returns the renderable object for chaining.
      */

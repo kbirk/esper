@@ -35,8 +35,7 @@
     ];
 
     /**
-     * Returns a Canvas element object from either an existing object, or
-     * identification string.
+     * Returns a Canvas element object from either an existing object, or identification string.
      * @private
      *
      * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas
@@ -79,9 +78,7 @@
     }
 
     /**
-     * Attempts to load all known extensions for a provided
-     * WebGLRenderingContext. Stores the results in the context wrapper for
-     * later queries.
+     * Attempts to load all known extensions for a provided WebGLRenderingContext. Stores the results in the context wrapper for later queries.
      * @private
      *
      * @param {Object} contextWrapper - The context wrapper.
@@ -97,8 +94,7 @@
     }
 
     /**
-     * Attempts to create a WebGLRenderingContext wrapped inside an object which
-     * will also store the extension query results.
+     * Attempts to create a WebGLRenderingContext wrapped inside an object which will also store the extension query results.
      * @private
      *
      * @param {HTMLCanvasElement} The Canvas element object to create the context under.
@@ -136,8 +132,7 @@
     module.exports = {
 
         /**
-         * Binds a specific WebGL context as the active context. This context
-         * will be used for all code /webgl.
+         * Binds a specific WebGL context as the active context. This context will be used for all code /webgl.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string.
          *
@@ -154,11 +149,8 @@
         },
 
         /**
-         * Creates a new or retreives an existing WebGL context for a provided
-         * canvas object. During creation attempts to load all extensions found
-         * at: https://www.khronos.org/registry/webgl/extensions/. If no
-         * argument is provided it will attempt to return the currently bound
-         * context. If no context is bound, it will return 'null'.
+         * Creates a new or retreives an existing WebGL context for the provided or currently bound context object.
+         * During creation attempts to load all extensions found at: https://www.khronos.org/registry/webgl/extensions/.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
@@ -183,10 +175,7 @@
         },
 
         /**
-         * Returns an array of all supported extensions for the provided canvas
-         * object. If no argument is provided it will attempt to query the
-         * currently bound context. If no context is bound, it will return
-         * an empty array.
+         * Returns an array of all supported extensions for the provided or currently bound context object. If no context is bound, it will return an empty array.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
@@ -209,9 +198,7 @@
         },
 
         /**
-         * Returns an array of all unsupported extensions for the provided canvas
-         * object. If no argument is provided it will attempt to query the
-         * currently bound context. If no context is bound, it will return
+         * Returns an array of all unsupported extensions for the provided or currently bound context object. If no context is bound, it will return an empty array.
          * an empty array.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
@@ -235,9 +222,7 @@
         },
 
         /**
-         * Checks if an extension has been successfully loaded by the provided
-         * canvas object. If no argument is provided it will attempt to return
-         * the currently bound context. If no context is bound, it will return
+         * Checks if an extension has been successfully loaded for the provided or currently bound context object.
          * 'false'.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.

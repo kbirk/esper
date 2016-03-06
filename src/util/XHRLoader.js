@@ -8,15 +8,11 @@
          * Sends an XMLHttpRequest GET request to the supplied url.
          *
          * @param {String} url - The URL for the resource.
-         * @param {Object} options - Contains the following options:
-         * <pre>
-         *     {
-         *         {String} success - The success callback function.
-         *         {String} error - The error callback function.
-         *         {String} progress - The progress callback function.
-         *         {String} responseType - The responseType of the XHR.
-         *     }
-         * </pre>
+         * @param {Object} options - The XHR options.
+         * @param {Function} options.success - The success callback function.
+         * @param {Function} options.error - The error callback function.
+         * @param {Function} options.progress - The progress callback function.
+         * @param {Function} options.responseType - The responseType of the XHR.
          */
         load: function ( url, options ) {
             var request = new XMLHttpRequest();

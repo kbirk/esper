@@ -63,8 +63,7 @@
     };
 
     /**
-     * Unbinds the renderTarget object and binds the renderTarget beneath it on
-     * this stack. If there is no underlying renderTarget, bind the backbuffer.
+     * Unbinds the renderTarget object and binds the renderTarget beneath it on this stack. If there is no underlying renderTarget, bind the backbuffer.
      * @memberof RenderTarget
      *
      * @returns {RenderTarget} The renderTarget object, for chaining.
@@ -136,8 +135,7 @@
     };
 
     /**
-     * Resizes the renderTarget and all attached textures by the provided height
-     * and width.
+     * Resizes the renderTarget and all attached textures by the provided height and width.
      * @memberof RenderTarget
      *
      * @param {number} width - The new width of the renderTarget.

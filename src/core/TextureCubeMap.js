@@ -182,23 +182,45 @@
      * @class TextureCubeMap
      * @classdesc A texture class to represent a cube map texture.
      *
-     * @param {Object} spec - The specification arguments:
-     * <pre>
-     *     images - The HTMLImageElements to buffer.
-     *     urls - The HTMLImageElements URL to load and buffer.
-     *     data - The Uint8Array's / Float32Array's to buffer.
-     *     wrap - The wrapping type over both S and T dimension.
-     *     wrapS - The wrapping type over the S dimension.
-     *     wrapT - The wrapping type over the T dimension.
-     *     filter - The min / mag filter used during scaling.
-     *     minFilter - The minification filter used during scaling.
-     *     magFilter - The magnification filter used during scaling.
-     *     mipMap - Whether or not mip-mapping is enabled.
-     *     invertY - Whether or not invert-y is enabled.
-     *     preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
-     *     format - The texture pixel format.
-     *     type - The texture pixel component type.
-     * </pre>
+     * @param {Object} spec - The specification arguments
+     *
+     * @param {Object} spec.images - The HTMLImageElements to buffer.
+     * @param {HTMLImageElement} spec.images[+x] - The positive x image to buffer.
+     * @param {HTMLImageElement} spec.images[-x] - The negative x image to buffer.
+     * @param {HTMLImageElement} spec.images[+y] - The positive y image to buffer.
+     * @param {HTMLImageElement} spec.images[-y] - The negative y image to buffer.
+     * @param {HTMLImageElement} spec.images[+z] - The positive z image to buffer.
+     * @param {HTMLImageElement} spec.images[-z] - The negative z image to buffer.
+     *
+     * @param {Object} spec.urls - The HTMLImageElement URLs to buffer.
+     * @param {String} spec.urls[+x] - The positive x URL to buffer.
+     * @param {String} spec.urls[-x] - The negative x URL to buffer.
+     * @param {String} spec.urls[+y] - The positive y URL to buffer.
+     * @param {String} spec.urls[-y] - The negative y URL to buffer.
+     * @param {String} spec.urls[+z] - The positive z URL to buffer.
+     * @param {String} spec.urls[-z] - The negative z URL to buffer.
+     *
+     * @param {Object} spec.data - The data to buffer.
+     * @param {Uint8Array|Float32Array} spec.data[+x] - The positive x data to buffer.
+     * @param {Uint8Array|Float32Array} spec.data[-x] - The negative x data to buffer.
+     * @param {Uint8Array|Float32Array} spec.data[+y] - The positive y data to buffer.
+     * @param {Uint8Array|Float32Array} spec.data[-y] - The negative y data to buffer.
+     * @param {Uint8Array|Float32Array} spec.data[+z] - The positive z data to buffer.
+     * @param {Uint8Array|Float32Array} spec.data[-z] - The negative z data to buffer.
+     *
+     * @param {number} width - The width of the faces.
+     * @param {number} height - The height of the faces.
+     * @param {String} spec.wrap - The wrapping type over both S and T dimension.
+     * @param {String} spec.wrapS - The wrapping type over the S dimension.
+     * @param {String} spec.wrapT - The wrapping type over the T dimension.
+     * @param {String} spec.filter - The min / mag filter used during scaling.
+     * @param {String} spec.minFilter - The minification filter used during scaling.
+     * @param {String} spec.magFilter - The magnification filter used during scaling.
+     * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
+     * @param {bool} spec.invertY - Whether or not invert-y is enabled.
+     * @param {bool} spec.preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+     * @param {String} spec.format - The texture pixel format.
+     * @param {String} spec.type - The texture pixel component type.
      */
     function TextureCubeMap( spec, callback ) {
         var that = this;
@@ -363,14 +385,13 @@
      * @memberof TextureCubeMap
      *
      * @param {Object} params - The parameters by name.
-     * <pre>
-     *     wrap - The wrapping type over both S and T dimension.
-     *     wrapS - The wrapping type over the S dimension.
-     *     wrapT - The wrapping type over the T dimension.
-     *     filter - The min / mag filter used during scaling.
-     *     minFilter - The minification filter used during scaling.
-     *     magFilter - The magnification filter used during scaling.
-     * </pre>
+     * @param {String} params.wrap - The wrapping type over both S and T dimension.
+     * @param {String} params.wrapS - The wrapping type over the S dimension.
+     * @param {String} params.wrapT - The wrapping type over the T dimension.
+     * @param {String} params.filter - The min / mag filter used during scaling.
+     * @param {String} params.minFilter - The minification filter used during scaling.
+     * @param {String} params.magFilter - The magnification filter used during scaling.
+     *
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
     TextureCubeMap.prototype.setParameters = function( params ) {
