@@ -2,10 +2,10 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext'),
-        Stack = require('../util/Stack'),
-        _stack = new Stack(),
-        _boundBuffer = null;
+    var WebGLContext = require('./WebGLContext');
+    var Stack = require('../util/Stack');
+    var _stack = new Stack();
+    var _boundBuffer = null;
 
     /**
      * Binds the renderTarget object, caching it to prevent unnecessary rebinds.
@@ -126,87 +126,6 @@
             gl.TEXTURE_2D,
             texture.texture,
             0 );
-        this.pop();
-        return this;
-    };
-
-    /**
-     * Clears the color bits of the renderTarget.
-     * @memberof RenderTarget
-     *
-     * @param {number} r - The red value.
-     * @param {number} g - The green value.
-     * @param {number} b - The blue value.
-     * @param {number} a - The alpha value.
-     *
-     * @returns {RenderTarget} The renderTarget object, for chaining.
-     */
-    RenderTarget.prototype.clearColor = function( r, g, b, a ) {
-        var gl = this.gl;
-        r = ( r !== undefined ) ? r : 0;
-        g = ( g !== undefined ) ? g : 0;
-        b = ( b !== undefined ) ? b : 0;
-        a = ( a !== undefined ) ? a : 0;
-        this.push();
-        gl.clearColor( r, g, b, a );
-        gl.clear( gl.COLOR_BUFFER_BIT );
-        this.pop();
-        return this;
-    };
-
-    /**
-     * Clears the depth bits of the renderTarget.
-     * @memberof RenderTarget
-     *
-     * @returns {RenderTarget} The renderTarget object, for chaining.
-     */
-    RenderTarget.prototype.clearDepth = function( r, g, b, a ) {
-        var gl = this.gl;
-        r = ( r !== undefined ) ? r : 0;
-        g = ( g !== undefined ) ? g : 0;
-        b = ( b !== undefined ) ? b : 0;
-        a = ( a !== undefined ) ? a : 0;
-        this.push();
-        gl.clearColor( r, g, b, a );
-        gl.clear( gl.DEPTH_BUFFER_BIT );
-        this.pop();
-        return this;
-    };
-
-    /**
-     * Clears the stencil bits of the renderTarget.
-     * @memberof RenderTarget
-     *
-     * @returns {RenderTarget} The renderTarget object, for chaining.
-     */
-    RenderTarget.prototype.clearStencil = function( r, g, b, a ) {
-        var gl = this.gl;
-        r = ( r !== undefined ) ? r : 0;
-        g = ( g !== undefined ) ? g : 0;
-        b = ( b !== undefined ) ? b : 0;
-        a = ( a !== undefined ) ? a : 0;
-        this.push();
-        gl.clearColor( r, g, b, a );
-        gl.clear( gl.STENCIL_BUFFER_BIT );
-        this.pop();
-        return this;
-    };
-
-    /**
-     * Clears all the bits of the renderTarget.
-     * @memberof RenderTarget
-     *
-     * @returns {RenderTarget} The renderTarget object, for chaining.
-     */
-    RenderTarget.prototype.clear = function( r, g, b, a ) {
-        var gl = this.gl;
-        r = ( r !== undefined ) ? r : 0;
-        g = ( g !== undefined ) ? g : 0;
-        b = ( b !== undefined ) ? b : 0;
-        a = ( a !== undefined ) ? a : 0;
-        this.push();
-        gl.clearColor( r, g, b, a );
-        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT );
         this.pop();
         return this;
     };
