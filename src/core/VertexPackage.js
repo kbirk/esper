@@ -213,7 +213,7 @@
         if ( attributes !== undefined ) {
             this.set( attributes );
         } else {
-            this.data = new Float32Array(0);
+            this.buffer = new Float32Array(0);
             this.pointers = {};
         }
     }
