@@ -14,6 +14,15 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
+    var TYPES = {
+        FLOAT: true
+    };
+    var SIZES = {
+        1: true,
+        2: true,
+        3: true,
+        4: true
+    };
     var DEFAULT_MODE = 'TRIANGLES';
     var DEFAULT_OFFSET = 0;
     var DEFAULT_COUNT = 0;
@@ -56,12 +65,12 @@
             var type = pointer.type;
             var offset = pointer.offset;
             // check size
-            if ( !size || size < 1 || size > 4 ) {
+            if ( !SIZES[ size ] ) {
                 console.warn( 'Attribute pointer `size` parameter is invalid, defaulting to 4.' );
                 size = 4;
             }
             // check type
-            if ( !type || type !== 'FLOAT' ) {
+            if ( !TYPES[ type ] ) {
                 console.warn( 'Attribute pointer `type` parameter is invalid, defaulting to `FLOAT`.' );
                 type = 'FLOAT';
             }
@@ -82,6 +91,11 @@
         return size;
     }
 
+    /**
+     * Instantiates an VertexBuffer object.
+     * @class VertexBuffer
+     * @classdesc A vertex buffer object.
+     */
     function VertexBuffer( arg, attributePointers, options ) {
         options = options || {};
         this.buffer = 0;
@@ -92,7 +106,7 @@
         // first, set the attribute pointers
         if ( arg instanceof VertexPackage ) {
             // VertexPackage argument, use its attribute pointers
-            this.pointers = arg.attributePointers();
+            this.pointers = arg.pointers;
             // shift options arg since there will be no attrib pointers arg
             options = attributePointers || {};
         } else {
@@ -102,7 +116,7 @@
         if ( arg ) {
             if ( arg instanceof VertexPackage ) {
                 // VertexPackage argument
-                this.bufferData( arg.buffer() );
+                this.bufferData( arg.buffer );
             } else if ( arg instanceof WebGLBuffer ) {
                 // WebGLBuffer argument
                 this.buffer = arg;
@@ -115,6 +129,14 @@
         this.stride = getStride( this.pointers );
     }
 
+    /**
+     * Upload vertex data to the GPU.
+     * @memberof VertexBuffer
+     *
+     * @param {Array|Float32Array|number} arg - The array of data to buffer, or size of the buffer.
+     *
+     * @returns {VertexBuffer} The vertex buffer object for chaining.
+     */
     VertexBuffer.prototype.bufferData = function( arg ) {
         var gl = this.gl;
         if ( arg instanceof Array ) {
@@ -143,6 +165,15 @@
         gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
     };
 
+    /**
+     * Upload partial vertex data to the GPU.
+     * @memberof VertexBuffer
+     *
+     * @param {Array|Float32Array} array - The array of data to buffer.
+     * @param {number} offset - The offset at which to buffer.
+     *
+     * @returns {VertexBuffer} The vertex buffer object for chaining.
+     */
     VertexBuffer.prototype.bufferSubData = function( array, offset ) {
         var gl = this.gl;
         if ( !this.buffer ) {
@@ -160,6 +191,12 @@
         gl.bufferSubData( gl.ARRAY_BUFFER, offset, array );
     };
 
+    /**
+     * Binds the vertex buffer object.
+     * @memberof VertexBuffer
+     *
+     * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
+     */
     VertexBuffer.prototype.bind = function() {
         // if this buffer is already bound, exit early
         if ( _boundBuffer === this ) {
@@ -197,19 +234,12 @@
         });
     };
 
-    VertexBuffer.prototype.draw = function( options ) {
-        options = options || {};
-        if ( _boundBuffer === null ) {
-            console.warn( 'No VertexBuffer is bound, command ignored.' );
-            return;
-        }
-        var gl = this.gl;
-        var mode = gl[ options.mode || this.mode ];
-        var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
-        var count = ( options.count !== undefined ) ? options.count : this.count;
-        gl.drawArrays( mode, offset, count );
-    };
-
+    /**
+     * Unbinds the vertex buffer object.
+     * @memberof VertexBuffer
+     *
+     * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
+     */
     VertexBuffer.prototype.unbind = function() {
         // if no buffer is bound, exit early
         if ( _boundBuffer === null ) {
@@ -222,6 +252,32 @@
         gl.bindBuffer( gl.ARRAY_BUFFER, null );
         _boundBuffer = null;
         _enabledAttributes = {};
+    };
+
+    /**
+     * Execute the draw command for the bound buffer.
+     * @memberof VertexBuffer
+     *
+     * @param {Object} options - The options to pass to 'drawArrays'. Optional.
+     * <pre>
+     *     mode - The draw mode / primitive type.
+     *     offset - The offset into the drawn buffer.
+     *     count - The number of vertices to draw.
+     * </pre>
+     *
+     * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
+     */
+    VertexBuffer.prototype.draw = function( options ) {
+        options = options || {};
+        if ( _boundBuffer === null ) {
+            console.warn( 'No VertexBuffer is bound, command ignored.' );
+            return;
+        }
+        var gl = this.gl;
+        var mode = gl[ options.mode || this.mode ];
+        var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
+        var count = ( options.count !== undefined ) ? options.count : this.count;
+        gl.drawArrays( mode, offset, count );
     };
 
     module.exports = VertexBuffer;

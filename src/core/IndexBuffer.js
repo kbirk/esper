@@ -136,6 +136,11 @@
      * @memberof IndexBuffer
      *
      * @param {Object} options - The options to pass to 'drawElements'. Optional.
+     * <pre>
+     *     mode - The draw mode / primitive type.
+     *     offset - The offset into the drawn buffer.
+     *     count - The number of vertices to draw.
+     * </pre>
      *
      * @returns {IndexBuffer} Returns the index buffer object for chaining.
      */

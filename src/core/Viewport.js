@@ -15,6 +15,11 @@
         gl.viewport( x, y, width, height );
     }
 
+    /**
+     * Instantiates an Viewport object.
+     * @class Viewport
+     * @classdesc A viewport object.
+     */
     function Viewport( spec ) {
         spec = spec || {};
         this.gl = WebGLContext.get();

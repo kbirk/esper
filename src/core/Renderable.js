@@ -6,6 +6,11 @@
     var VertexBuffer = require('../core/VertexBuffer');
     var IndexBuffer = require('../core/IndexBuffer');
 
+    /**
+     * Instantiates an Renderable object.
+     * @class Renderable
+     * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
+     */
     function Renderable( spec, options ) {
         spec = spec || {};
         options = options || {};
@@ -35,6 +40,19 @@
         };
     }
 
+    /**
+     * Execute the draw command for the bound buffer.
+     * @memberof Renderable
+     *
+     * @param {Object} options - The options to pass to 'drawElements'. Optional.
+     * <pre>
+     *     mode - The draw mode / primitive type.
+     *     offset - The offset into the drawn buffer.
+     *     count - The number of vertices to draw.
+     * </pre>
+     *
+     * @returns {Renderable} Returns the renderable object for chaining.
+     */
     Renderable.prototype.draw = function( options ) {
         var overrides = options || {};
         // override options if provided

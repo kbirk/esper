@@ -112,24 +112,24 @@
     /**
      * Fill the arraybuffer with a single component attribute.
      *
-     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
      * @param {number} offset - The offset to the attribute.
      * @param {number} stride - The of stride of the buffer.
      */
-    function set1ComponentAttr( data, vertices, length, offset, stride ) {
+    function set1ComponentAttr( buffer, vertices, length, offset, stride ) {
         var vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
             j = offset + ( stride * i );
             if ( vertex.x !== undefined ) {
-                data[j] = vertex.x;
+                buffer[j] = vertex.x;
             } else if ( vertex[0] !== undefined ) {
-                data[j] = vertex[0];
+                buffer[j] = vertex[0];
             } else {
-                data[j] = vertex;
+                buffer[j] = vertex;
             }
         }
     }
@@ -137,66 +137,71 @@
     /**
      * Fill the arraybuffer with a double component attribute.
      *
-     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
      * @param {number} offset - The offset to the attribute.
      * @param {number} stride - The of stride of the buffer.
      */
-    function set2ComponentAttr( data, vertices, length, offset, stride ) {
+    function set2ComponentAttr( buffer, vertices, length, offset, stride ) {
         var vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
             j = offset + ( stride * i );
-            data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-            data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            buffer[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            buffer[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
         }
     }
 
     /**
      * Fill the arraybuffer with a triple component attribute.
      *
-     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
      * @param {number} offset - The offset to the attribute.
      * @param {number} stride - The of stride of the buffer.
      */
-    function set3ComponentAttr( data, vertices, length, offset, stride ) {
+    function set3ComponentAttr( buffer, vertices, length, offset, stride ) {
         var vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
             j = offset + ( stride * i );
-            data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-            data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-            data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+            buffer[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            buffer[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            buffer[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
         }
     }
 
     /**
      * Fill the arraybuffer with a quadruple component attribute.
      *
-     * @param {Float32Array} data - The arraybuffer to fill.
+     * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
      * @param {number} offset - The offset to the attribute.
      * @param {number} stride - The of stride of the buffer.
      */
-    function set4ComponentAttr( data, vertices, length, offset, stride ) {
+    function set4ComponentAttr( buffer, vertices, length, offset, stride ) {
         var vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
             j = offset + ( stride * i );
-            data[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
-            data[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
-            data[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
-            data[j+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
+            buffer[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            buffer[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            buffer[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+            buffer[j+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
         }
     }
 
+    /**
+     * Instantiates an VertexPackage object.
+     * @class VertexPackage
+     * @classdesc A vertex package object.
+     */
     function VertexPackage( attributes ) {
         if ( attributes !== undefined ) {
             this.set( attributes );
@@ -206,16 +211,24 @@
         }
     }
 
-    VertexPackage.prototype.set = function( attributeMap ) {
+    /**
+     * Set the data to be interleaved inside the package. This clears any
+     * previously existing data.
+     *
+     * @param {Object} attributes - The attributes to interleaved, keyed by index.
+     *
+     * @returns {VertexPackage} - The vertex package object, for chaining.
+     */
+    VertexPackage.prototype.set = function( attributes ) {
         // remove bad attributes
-        var attributes = parseAttributeMap( attributeMap );
+        attributes = parseAttributeMap( attributes );
         // set attribute pointers and stride
         setPointersAndStride( this, attributes );
         // set size of data vector
         var length = this.length;
         var stride = this.stride / BYTES_PER_COMPONENT;
         var pointers = this.pointers;
-        var data = this.data = new Float32Array( length * stride );
+        var buffer = this.buffer = new Float32Array( length * stride );
         // for each vertex attribute array
         attributes.forEach( function( vertices ) {
             // get the pointer
@@ -225,28 +238,20 @@
             // copy vertex data into arraybuffer
             switch ( pointer.size ) {
                 case 2:
-                    set2ComponentAttr( data, vertices.data, length, offset, stride );
+                    set2ComponentAttr( buffer, vertices.data, length, offset, stride );
                     break;
                 case 3:
-                    set3ComponentAttr( data, vertices.data, length, offset, stride );
+                    set3ComponentAttr( buffer, vertices.data, length, offset, stride );
                     break;
                 case 4:
-                    set4ComponentAttr( data, vertices.data, length, offset, stride );
+                    set4ComponentAttr( buffer, vertices.data, length, offset, stride );
                     break;
                 default:
-                    set1ComponentAttr( data, vertices.data, length, offset, stride );
+                    set1ComponentAttr( buffer, vertices.data, length, offset, stride );
                     break;
             }
         });
         return this;
-    };
-
-    VertexPackage.prototype.buffer = function() {
-        return this.data;
-    };
-
-    VertexPackage.prototype.attributePointers = function() {
-        return this.pointers;
     };
 
     module.exports = VertexPackage;
