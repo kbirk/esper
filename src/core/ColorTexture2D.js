@@ -108,7 +108,6 @@
                 if ( callback ) {
                     callback( that );
                 }
-                spec.callback = callback;
             };
             image.src = spec.url;
         } else {

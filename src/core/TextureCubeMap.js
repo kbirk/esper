@@ -49,7 +49,7 @@
         RGB: true,
         RGBA: true
     };
-    var DEFAULT_MIPMAP_MIN_FILTER = 'LINEAR_MIPMAP_LINEAR';
+    var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
     var DEFAULT_WRAP = 'CLAMP_TO_EDGE';
     var DEFAULT_FILTER = 'LINEAR';
     var DEFAULT_PREMULTIPLY_ALPHA = true;
@@ -355,7 +355,7 @@
             if ( this.mipMap ) {
                 if ( NON_MIPMAP_MIN_FILTERS[ param ] ) {
                     // upgrade to mip-map min filter
-                    param = DEFAULT_MIPMAP_MIN_FILTER;
+                    param += DEFAULT_MIPMAP_MIN_FILTER_SUFFIX;
                 }
                 if ( MIPMAP_MIN_FILTERS[ param ] ) {
                     this.minFilter = param;

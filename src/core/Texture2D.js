@@ -31,10 +31,14 @@
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
     };
-    var DEFAULT_MIPMAP_MIN_FILTER = 'LINEAR_MIPMAP_LINEAR';
+    var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
     var DEFAULT_PREMULTIPLY_ALPHA = true;
     var DEFAULT_MIPMAP = true;
     var DEFAULT_INVERT_Y = true;
+    var DEFAULT_WRAP = 'REPEAT';
+    var DEFAULT_FILTER = 'LINEAR';
+    var DEFAULT_TYPE = 'UNSIGNED_BYTE';
+    var DEFAULT_FORMAT = 'RGBA';
     var _stack = {};
     var _boundTexture = null;
 
@@ -81,18 +85,23 @@
         this.gl = WebGLContext.get();
         // create texture object
         this.texture = this.gl.createTexture();
+        // get specific params
+        spec.wrapS = spec.wrapS || spec.wrap;
+        spec.wrapT = spec.wrapT || spec.wrap;
+        spec.minFilter = spec.minFilter || spec.filter;
+        spec.magFilter = spec.magFilter || spec.filter;
         // set texture params
-        this.wrapS = spec.wrapS;
-        this.wrapT = spec.wrapT;
-        this.minFilter = spec.minFilter;
-        this.magFilter = spec.magFilter;
+        this.wrapS = spec.wrapS || DEFAULT_WRAP;
+        this.wrapT = spec.wrapT || DEFAULT_WRAP;
+        this.minFilter = spec.minFilter || DEFAULT_FILTER;
+        this.magFilter = spec.magFilter || DEFAULT_FILTER;
         // set other properties
         this.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
         this.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
         this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
         // set format and type
-        this.format = spec.format;
-        this.type = spec.type;
+        this.format = spec.format || DEFAULT_FORMAT;
+        this.type = spec.type || DEFAULT_TYPE;
         // buffer the data
         this.bufferData( spec.data || null, spec.width, spec.height );
         this.setParameters( this );
@@ -236,7 +245,7 @@
             if ( this.mipMap ) {
                 if ( NON_MIPMAP_MIN_FILTERS[ param ] ) {
                     // upgrade to mip-map min filter
-                    param = DEFAULT_MIPMAP_MIN_FILTER;
+                    param += DEFAULT_MIPMAP_MIN_FILTER_SUFFIX;
                 }
                 if ( MIPMAP_MIN_FILTERS[ param ] ) {
                     this.minFilter = param;
