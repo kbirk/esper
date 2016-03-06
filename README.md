@@ -324,35 +324,30 @@ renderable.draw({
 
 ### Textures
 
-Textures can be used to store and sample many different types of information. Typically a texture stores color values but can also be used to store depth values or any other types of encoded information. An `esper.Texture` can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, or buffered with no data at all.
+Textures can be used to store and sample many different types of information. Typically a texture stores color values but can also be used to store depth values or any other types of encoded information. An `esper.Texture2D` is a low level construct for interfacing directly with the WebGL texture API.
 
 ```javascript
 // Create texture from image URL.
 var texture = new esper.Texture2D({
-    url: 'images/checkerboard.png',    
-    wrap: 'REPEAT',
-    filter: 'LINEAR',
-    invertY: true
-}, function( texture ) {
-    console.log( 'Texture2D image successfully created.' );
-});
-
-// Create empty color texture buffer to be written to.
-var colorTexture = new esper.Texture2D({
-    height: 256,
-    width: 256,
+    data: new Uint8Array([
+        255, 0, 0, 255,
+        0, 255, 0, 255,
+        0, 0, 255, 255,
+        0, 255, 0, 255,
+    ]),
+    width: 2,
+    height: 2,
     format: 'RGBA',
-    type: 'UNSIGNED_BYTE'
+    type: 'UNSIGNED_BYTE',
+    wrapS: 'REPEAT',
+    wrapT: 'REPEAT',
+    minFlter: 'LINEAR',
+    magFilter: 'LINEAR',
+    invertY: false,
+    premultiplyAlpha: false,
+    mipMap: false
 }, function( texture ) {
-    console.log( 'Empty Texture2D successfully created.' );
-});
-
-// Create a depth texture. (Only works if depth texture extension is supported).
-var depthTexture = new esper.Texture2D({
-    width: 1024,
-    height: 1024,
-    format: 'DEPTH_COMPONENT',
-    type: 'UNSIGNED_INT'
+    console.log( 'Texture2D successfully created.' );
 });
 ```
 
@@ -371,7 +366,40 @@ shader.setUniform( 'uTextureSampler', 0 );
 texture.pop( 0 );
 ```
 
-All images or image dimensions that are not a power of two are resized to the next highest power of two. For example 129 becomes 256, 15 becomes 16, etc. All textures that are created from an image are automatically mip-mapped.
+### ColorTextures
+
+Color textures are the most commonly used type of texture and are used to store RGB or RGBA values. An `esper.ColorTexture2D` can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, ArrayBufferViews, or no data at all.
+
+```javascript
+// Create texture from image URL.
+var texture = new esper.ColorTexture2D({
+    url: 'images/checkerboard.png'
+}, function( texture ) {
+    console.log( 'Texture2D image successfully created.' );
+});
+
+// Create empty color texture buffer to be written to.
+var colorTexture = new esper.Texture2D({
+    height: 256,
+    width: 256
+}, function( texture ) {
+    console.log( 'Empty Texture2D successfully created.' );
+});
+```
+
+WebGL 1.0 requires that any texture with mipmapping enabled or repeating wrap modes (`REPEAT` or `MIRRORED_REPEAT`), _must_ have dimensions that are powers of two. `esper.ColorTexture2D` will automatically resize any non power of two textures to the next highest power of two. Ex. 129 becomes 256, 15 becomes 16, etc.
+
+### DepthTextures
+
+Depth textures can be used to store depth values and are commonly used in conjunction with RenderTargets. The `esper.DepthTexture2D` class is only available if the `WEBGL_depth_texture` extension is supported.
+
+```javascript
+// Create a depth texture. (Only works if depth texture extension is supported).
+var depthTexture = new esper.DepthTexture2D({
+    width: 1024,
+    height: 1024
+});
+```
 
 ### TextureCubeMaps
 
