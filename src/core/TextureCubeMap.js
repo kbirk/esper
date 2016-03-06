@@ -2,24 +2,63 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext'),
-        Util = require('../util/Util'),
-        Stack = require('../util/Stack'),
-        FACES = [
-            '-x', '+x',
-            '-y', '+y',
-            '-z', '+z'
-        ],
-        FACE_TARGETS = {
-            '+z': 'TEXTURE_CUBE_MAP_POSITIVE_Z',
-            '-z': 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
-            '+x': 'TEXTURE_CUBE_MAP_POSITIVE_X',
-            '-x': 'TEXTURE_CUBE_MAP_NEGATIVE_X',
-            '+y': 'TEXTURE_CUBE_MAP_POSITIVE_Y',
-            '-y': 'TEXTURE_CUBE_MAP_NEGATIVE_Y'
-        },
-        _stack = {},
-        _boundTexture = null;
+    var WebGLContext = require('./WebGLContext');
+    var Util = require('../util/Util');
+    var Stack = require('../util/Stack');
+    var FACES = [
+        '-x', '+x',
+        '-y', '+y',
+        '-z', '+z'
+    ];
+    var FACE_TARGETS = {
+        '+z': 'TEXTURE_CUBE_MAP_POSITIVE_Z',
+        '-z': 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
+        '+x': 'TEXTURE_CUBE_MAP_POSITIVE_X',
+        '-x': 'TEXTURE_CUBE_MAP_NEGATIVE_X',
+        '+y': 'TEXTURE_CUBE_MAP_POSITIVE_Y',
+        '-y': 'TEXTURE_CUBE_MAP_NEGATIVE_Y'
+    };
+    var MAG_FILTERS = {
+        NEAREST: true,
+        LINEAR: true
+    };
+    var MIN_FILTERS = {
+        NEAREST: true,
+        LINEAR: true,
+        NEAREST_MIPMAP_NEAREST: true,
+        LINEAR_MIPMAP_NEAREST: true,
+        NEAREST_MIPMAP_LINEAR: true,
+        LINEAR_MIPMAP_LINEAR: true
+    };
+    var NON_MIPMAP_MIN_FILTERS = {
+        NEAREST: true,
+        LINEAR: true,
+    };
+    var MIPMAP_MIN_FILTERS = {
+        NEAREST_MIPMAP_NEAREST: true,
+        LINEAR_MIPMAP_NEAREST: true,
+        NEAREST_MIPMAP_LINEAR: true,
+        LINEAR_MIPMAP_LINEAR: true
+    };
+    var WRAP_MODES = {
+        REPEAT: true,
+        MIRRORED_REPEAT: true,
+        CLAMP_TO_EDGE: true
+    };
+    var FORMATS = {
+        RGB: true,
+        RGBA: true
+    };
+    var DEFAULT_MIPMAP_MIN_FILTER = 'LINEAR_MIPMAP_LINEAR';
+    var DEFAULT_WRAP = 'CLAMP_TO_EDGE';
+    var DEFAULT_FILTER = 'LINEAR';
+    var DEFAULT_PREMULTIPLY_ALPHA = true;
+    var DEFAULT_MIPMAP = true;
+    var DEFAULT_INVERT_Y = true;
+    var DEFAULT_TYPE = 'UNSIGNED_BYTE';
+    var DEFAULT_FORMAT = 'RGBA';
+    var _stack = {};
+    var _boundTexture = null;
 
     /**
      * If the provided image dimensions are not powers of two, it will redraw
@@ -109,12 +148,25 @@
      */
     function TextureCubeMap( spec, callback ) {
         var that = this;
-        // store gl context
         this.gl = WebGLContext.get();
         this.texture = this.gl.createTexture();
-        this.wrap = spec.wrap || 'CLAMP_TO_EDGE';
-        this.filter = spec.filter || 'LINEAR';
-        this.invertY = spec.invertY !== undefined ? spec.invertY : false;
+        // get specific params
+        spec.wrapS = spec.wrapS || spec.wrap;
+        spec.wrapT = spec.wrapT || spec.wrap;
+        spec.minFilter = spec.minFilter || spec.filter;
+        spec.magFilter = spec.magFilter || spec.filter;
+        // set texture params
+        this.wrapS = WRAP_MODES[ spec.wrapS ] ? spec.wrapS : DEFAULT_WRAP;
+        this.wrapT = WRAP_MODES[ spec.wrapT ] ? spec.wrapT : DEFAULT_WRAP;
+        this.minFilter = MIN_FILTERS[ spec.minFilter ] ? spec.minFilter : DEFAULT_FILTER;
+        this.magFilter = MAG_FILTERS[ spec.magFilter ] ? spec.magFilter : DEFAULT_FILTER;
+        // set other properties
+        this.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
+        this.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
+        this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
+        // set format and type
+        this.format = FORMATS[ spec.format ] ? spec.format : DEFAULT_FORMAT;
+        this.type = DEFAULT_TYPE;
         // create cube map based on input
         if ( spec.images ) {
             // multiple Image objects
@@ -135,11 +187,7 @@
                 callback( that );
             });
         } else {
-            // empty cube map
-            this.format = spec.format || 'RGBA';
-            this.internalFormat = this.format; // webgl requires format === internalFormat
-            this.type = spec.type || 'UNSIGNED_BYTE';
-            this.mipMap = spec.mipMap !== undefined ? spec.mipMap : false;
+            // arraybuffer
             FACES.forEach( function( face ) {
                 var data = ( spec.data ? spec.data[face] : spec.data ) || null;
                 that.bufferFaceData( face, data, spec.width, spec.height );
@@ -175,8 +223,7 @@
      TextureCubeMap.prototype.pop = function( location ) {
         var top;
         if ( !_stack[ location ] ) {
-            console.log('No texture was bound to texture unit `' + location +
-                '`, command ignored.');
+            console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
         }
         _stack[ location ].pop();
         top = _stack[ location ].top();
@@ -200,28 +247,30 @@
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
     TextureCubeMap.prototype.bufferFaceData = function( face, data, width, height ) {
-        var gl = this.gl,
-            faceTarget = gl[ FACE_TARGETS[ face ] ];
+        var gl = this.gl;
+        var faceTarget = gl[ FACE_TARGETS[ face ] ];
         if ( !faceTarget ) {
-            console.log('Invalid face enumeration `' + face + '` provided, ' +
-                'command ignored.');
+            console.warn( 'Invalid face enumeration `' + face + '` provided, ' + 'command ignored.' );
         }
         // buffer face texture
         this.push();
+        // invert y if specified
+        gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
+        // premultiply alpha if specified
+        gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha );
         if ( data instanceof HTMLImageElement ) {
+            // from image
             this.images = this.images || {};
             this.images[ face ] = ensurePowerOfTwo( data );
-            this.filter = 'LINEAR'; // must be linear for mipmapping
-            this.mipMap = true;
-            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             gl.texImage2D(
                 faceTarget,
                 0, // level
-                gl.RGBA,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
+                gl[ this.format ], // webgl requires format === internalFormat
+                gl[ this.format ],
+                gl[ this.type ],
                 this.images[ face ] );
         } else {
+            // from arraybuffer
             this.data = this.data || {};
             this.data[ face ] = data;
             this.width = width || this.width;
@@ -229,7 +278,7 @@
             gl.texImage2D(
                 faceTarget,
                 0, // level
-                gl[ this.internalFormat ],
+                gl[ this.format ], // webgl requires format === internalFormat
                 this.width,
                 this.height,
                 0, // border, must be 0
@@ -256,50 +305,72 @@
      * Set the texture parameters.
      * @memberof TextureCubeMap
      *
-     * @param {Object} parameters - The parameters by name.
+     * @param {Object} params - The parameters by name.
      * <pre>
-     *     wrap | wrap.s | wrap.t - The wrapping type.
-     *     filter | filter.min | filter.mag - The filter type.
+     *     wrap - The wrapping type over both S and T dimension.
+     *     wrapS - The wrapping type over the S dimension.
+     *     wrapT - The wrapping type over the T dimension.
+     *     filter - The min / mag filter used during scaling.
+     *     minFilter - The minification filter used during scaling.
+     *     magFilter - The magnification filter used during scaling.
      * </pre>
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
-    TextureCubeMap.prototype.setParameters = function( parameters ) {
+    TextureCubeMap.prototype.setParameters = function( params ) {
         var gl = this.gl;
         this.push();
-        if ( parameters.wrap ) {
-            // set wrap parameters
-            this.wrap = parameters.wrap;
-            gl.texParameteri(
-                gl.TEXTURE_CUBE_MAP,
-                gl.TEXTURE_WRAP_S,
-                gl[ this.wrap.s || this.wrap ] );
-            gl.texParameteri(
-                gl.TEXTURE_CUBE_MAP,
-                gl.TEXTURE_WRAP_T,
-                gl[ this.wrap.t || this.wrap ] );
-            /* not supported in webgl 1.0
-            gl.texParameteri(
-                gl.TEXTURE_CUBE_MAP,
-                gl.TEXTURE_WRAP_R,
-                gl[ this.wrap.r || this.wrap ] );
-            */
-        }
-        if ( parameters.filter ) {
-            // set filter parameters
-            this.filter = parameters.filter;
-            var minFilter = this.filter.min || this.filter;
-            if ( this.minMap ) {
-                // append min mpa suffix to min filter
-                minFilter += '_MIPMAP_LINEAR';
+        // set wrap S parameter
+        var param = params.wrapS || params.wrap;
+        if ( param ) {
+            if ( WRAP_MODES[ param ] ) {
+                this.wrapS = param;
+                gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl[ this.wrapS ] );
+            } else {
+                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_S`, command ignored.' );
             }
-            gl.texParameteri(
-                gl.TEXTURE_CUBE_MAP,
-                gl.TEXTURE_MAG_FILTER,
-                gl[ this.filter.mag || this.filter ] );
-            gl.texParameteri(
-                gl.TEXTURE_CUBE_MAP,
-                gl.TEXTURE_MIN_FILTER,
-                gl[ minFilter] );
+        }
+        // set wrap T parameter
+        param = params.wrapT || params.wrap;
+        if ( param ) {
+            if ( WRAP_MODES[ param ] ) {
+                this.wrapT = param;
+                gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl[ this.wrapT ] );
+            } else {
+                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_T`, command ignored.' );
+            }
+        }
+        // set mag filter parameter
+        param = params.magFilter || params.filter;
+        if ( param ) {
+            if ( MAG_FILTERS[ param ] ) {
+                this.magFilter = param;
+                gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl[ this.magFilter ] );
+            } else {
+                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MAG_FILTER`, command ignored.' );
+            }
+        }
+        // set min filter parameter
+        param = params.minFilter || params.filter;
+        if ( param ) {
+            if ( this.mipMap ) {
+                if ( NON_MIPMAP_MIN_FILTERS[ param ] ) {
+                    // upgrade to mip-map min filter
+                    param = DEFAULT_MIPMAP_MIN_FILTER;
+                }
+                if ( MIPMAP_MIN_FILTERS[ param ] ) {
+                    this.minFilter = param;
+                    gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
+                } else  {
+                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                }
+            } else {
+                if ( MIN_FILTERS[ param ] ) {
+                    this.minFilter = param;
+                    gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
+                } else {
+                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                }
+            }
         }
         this.pop();
         return this;
