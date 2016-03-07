@@ -71,7 +71,7 @@
     RenderTarget.prototype.pop = function() {
         if ( this !== _stack.top() ) {
             console.warn( 'The current render target is not the top most element on the stack. Command ignored.' );
-            return;
+            return this;
         }
         _stack.pop();
         var top = _stack.top();

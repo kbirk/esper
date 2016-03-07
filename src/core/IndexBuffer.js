@@ -104,7 +104,7 @@
             this.type = 'UNSIGNED_INT';
         } else {
             console.error( 'IndexBuffer requires an Array or ArrayBuffer argument, command ignored.' );
-            return;
+            return this;
         }
         // create buffer, store count
         if ( !this.buffer ) {
@@ -168,7 +168,7 @@
         options = options || {};
         if ( _boundBuffer === null ) {
             console.warn( 'No IndexBuffer is bound, command ignored.' );
-            return;
+            return this;
         }
         var gl = this.gl;
         var mode = gl[ options.mode || this.mode ];
@@ -177,11 +177,11 @@
         var count = ( options.count !== undefined ) ? options.count : this.count;
         if ( count === 0 ) {
             console.warn( 'Attempting to draw an IndexBuffer with a count of 0, command ignored.' );
-            return;
+            return this;
         }
         if ( offset + count > this.count ) {
             console.warn( 'Attempting to draw with (offset + count) greater than the size of the IndexBuffer, command ignored.' );
-            return;
+            return this;
         }
         gl.drawElements( mode, count, type, offset );
         return this;

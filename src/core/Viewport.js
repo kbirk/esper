@@ -118,7 +118,7 @@
     Viewport.prototype.pop = function() {
         if ( this !== _stack.top().viewport ) {
             console.warn( 'The current viewport is not the top most element on the stack. Command ignored.' );
-            return;
+            return this;
         }
         _stack.pop();
         var top = _stack.top();

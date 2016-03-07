@@ -2,122 +2,10 @@
 
     'use strict';
 
-    var assert = require('assert'),
-        Util = require( '../../src/util/Util' );
+    var assert = require('assert');
+    var Util = require( '../../src/util/Util' );
 
     describe('Util', function() {
-        describe('#async()', function() {
-            it('should execute all jobs asynchronously', function( done ) {
-                var asyncResults = [];
-                Util.async([
-                    function( done ) {
-                        setTimeout( function() {
-                            asyncResults.push( 0 );
-                            done();
-                        }, 150 );
-                    },
-                    function( done ) {
-                        setTimeout( function() {
-                            asyncResults.push( 1 );
-                            done();
-                        }, 100 );
-                    },
-                    function( done ) {
-                        setTimeout( function() {
-                            asyncResults.push( 2 );
-                            done();
-                        }, 50 );
-                    }
-                ], function() {
-                    assert( asyncResults[0] === 2 );
-                    assert( asyncResults[1] === 1 );
-                    assert( asyncResults[2] === 0 );
-                    done();
-                });
-            });
-            it('should return results in the order they are queued', function( done ) {
-                Util.async([
-                    function( done ) {
-                        setTimeout( function() {
-                            done( 0 );
-                        }, 150 );
-                    },
-                    function( done ) {
-                        setTimeout( function() {
-                            done( 1 );
-                        }, 100 );
-                    },
-                    function( done ) {
-                        setTimeout( function() {
-                            done( 2 );
-                        }, 50 );
-                    }
-                ], function( results ) {
-                    assert( results[0] === 0 );
-                    assert( results[1] === 1 );
-                    assert( results[2] === 2 );
-                    done();
-                });
-            });
-            it('should accept an array of jobs, returning results in a corresponding array', function( done ) {
-                Util.async([
-                    function( done ) {
-                        done( 0 );
-                    },
-                    function( done ) {
-                        done( 1 );
-                    },
-                    function( done ) {
-                        done( 2 );
-                    }
-                ], function( results ) {
-                    assert( results[0] === 0 );
-                    assert( results[1] === 1 );
-                    assert( results[2] === 2 );
-                    done();
-                });
-            });
-            it('should accept a map of jobs, returning results in a corresponding map, ignoring prototypical attributes', function( done ) {
-                function Obj() {
-                    this.a = function( done ) {
-                        done( 'a' );
-                    };
-                    this.b = function( done ) {
-                        done( 'b' );
-                    };
-                    this.c = function( done ) {
-                        done( 'c' );
-                    };
-                }
-                Obj.prototype.d = function( done ) {
-                    assert( false );
-                    done( 'd' );
-                };
-                Util.async( new Obj(), function( results ) {
-                    assert( results.a === 'a' );
-                    assert( results.b === 'b' );
-                    assert( results.c === 'c' );
-                    assert( results.d === undefined );
-                    done();
-                });
-            });
-            it('should accept empty object and return empty object of results', function( done ) {
-                Util.async({}, function( results ) {
-                    for( var prop in results ) {
-                        if( results.hasOwnProperty( prop ) ) {
-                            assert( false );
-                        }
-                    }
-                    done();
-                });
-            });
-            it('should accept empty array and return empty array of results', function( done ) {
-                Util.async( [], function( results ) {
-                    assert( results.length === 0 );
-                    done();
-                });
-            });
-        });
         describe('#isTypedArray()', function() {
             it('should return true if the argument is instance of TypedArray, false if not', function() {
                 var a = new ArrayBuffer(64),
@@ -144,6 +32,10 @@
                 assert( !Util.isTypedArray( {} ) );
                 assert( !Util.isTypedArray( [] ) );
                 assert( !Util.isTypedArray( 'string' ) );
+                assert( !Util.isTypedArray( null ) );
+                assert( !Util.isTypedArray( undefined ) );
+                assert( !Util.isTypedArray( true ) );
+                assert( !Util.isTypedArray( false ) );
             });
         });
         describe('#isPowerOfTwo()', function() {

@@ -176,7 +176,7 @@
         } else if ( !Util.isTypedArray( arg ) && typeof arg !== 'number' ) {
             // if not arraybuffer or a numeric size
             console.error( 'VertexBuffer requires an Array or ArrayBuffer, or a size argument, command ignored.' );
-            return;
+            return this;
         }
         if ( !this.buffer ) {
             this.buffer = gl.createBuffer();
@@ -209,13 +209,13 @@
         var gl = this.gl;
         if ( !this.buffer ) {
             console.error( 'VertexBuffer has not been initially buffered, command ignored.' );
-            return;
+            return this;
         }
         if ( array instanceof Array ) {
             array = new Float32Array( array );
         } else if ( !Util.isTypedArray( array ) ) {
             console.error( 'VertexBuffer requires an Array or ArrayBuffer argument, command ignored.' );
-            return;
+            return this;
         }
         offset = ( offset !== undefined ) ? offset : DEFAULT_OFFSET;
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
@@ -300,7 +300,7 @@
         options = options || {};
         if ( _boundBuffer === null ) {
             console.warn( 'No VertexBuffer is bound, command ignored.' );
-            return;
+            return this;
         }
         var gl = this.gl;
         var mode = gl[ options.mode || this.mode ];

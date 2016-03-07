@@ -3,7 +3,9 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
+    var Async = require('../util/Async');
     var Util = require('../util/Util');
+    var ImageLoader = require('../util/ImageLoader');
     var Stack = require('../util/Stack');
     var FACES = [
         '-x', '+x',
@@ -167,13 +169,16 @@
      */
     function loadAndBufferImage( cubeMap, url, face ) {
         return function( done ) {
-            var image = new Image();
-            image.onload = function() {
-                // buffer face texture
-                cubeMap.bufferFaceData( face, image );
-                done();
-            };
-            image.src = url;
+            ImageLoader.load({
+                url: url,
+                success: function( image ) {
+                    cubeMap.bufferFaceData( face, image );
+                    done( null );
+                },
+                error: function( err ) {
+                    done( err, null );
+                }
+            });
         };
     }
 
@@ -258,9 +263,17 @@
                 // add job to map
                 jobs[ key ] = loadAndBufferImage( that, spec.urls[ key ], key );
             });
-            Util.async( jobs, function() {
+            Async.parallel( jobs, function( err ) {
+                if ( err ) {
+                    if ( callback ) {
+                        callback( err, null );
+                    }
+                    return;
+                }
                 that.setParameters( that );
-                callback( that );
+                if ( callback ) {
+                    callback( null, that );
+                }
             });
         } else {
             // arraybuffer
@@ -299,10 +312,11 @@
      TextureCubeMap.prototype.pop = function( location ) {
         if ( !_stack[ location ] ) {
             console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
+            return this;
         }
         if ( this !== _stack[ location ].top() ) {
             console.warn( 'The current texture cube map is not the top most element on the stack. Command ignored.' );
-            return;
+            return this;
         }
         _stack[ location ].pop();
         var top = _stack[ location ].top();
@@ -330,6 +344,7 @@
         var faceTarget = gl[ FACE_TARGETS[ face ] ];
         if ( !faceTarget ) {
             console.warn( 'Invalid face enumeration `' + face + '` provided, ' + 'command ignored.' );
+            return this;
         }
         // buffer face texture
         this.push();

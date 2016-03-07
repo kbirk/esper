@@ -4,7 +4,7 @@
 
     var WebGLContext = require('./WebGLContext');
     var ShaderParser = require('./ShaderParser');
-    var Util = require('../util/Util');
+    var Async = require('../util/Async');
     var XHRLoader = require('../util/XHRLoader');
     var Stack = require('../util/Stack');
     var UNIFORM_FUNCTIONS = {
@@ -139,16 +139,17 @@
      */
     function loadShaderSource( url ) {
         return function( done ) {
-            XHRLoader.load(
-                url,
-                {
-                    responseType: 'text',
-                    success: done,
-                    error: function(err) {
-                        console.error( err );
-                        done( null );
-                    }
-                });
+            XHRLoader.load({
+                url: url,
+                responseType: 'text',
+                success: function( res ) {
+                    console.log();
+                    done( null, res );
+                },
+                error: function( err ) {
+                    done( err, null );
+                }
+            });
         };
     }
 
@@ -162,7 +163,7 @@
      */
     function passThroughSource( source ) {
         return function( done ) {
-            done( source );
+            done( null, source );
         };
     }
 
@@ -186,9 +187,7 @@
                     jobs.push( loadShaderSource( source ) );
                 }
             });
-            Util.async( jobs, function( results ) {
-                done( results );
-            });
+            Async.parallel( jobs, done );
         };
     }
 
@@ -260,19 +259,27 @@
         // check source arguments
         if ( !spec.vert ) {
             console.error( 'Vertex shader argument has not been provided, shader initialization aborted.' );
+            return;
         }
         if ( !spec.frag ) {
             console.error( 'Fragment shader argument has not been provided, shader initialization aborted.' );
+            return;
         }
         // create the shader
-        Util.async({
+        Async.parallel({
             common: resolveSources( spec.common ),
             vert: resolveSources( spec.vert ),
             frag: resolveSources( spec.frag ),
-        }, function( shaders ) {
+        }, function( err, shaders ) {
+            if ( err ) {
+                if ( callback ) {
+                    callback( err, null );
+                }
+                return;
+            }
             that.create( shaders );
             if ( callback ) {
-                callback( that );
+                callback( null, that );
             }
         });
     }
@@ -376,18 +383,18 @@
         // ensure shader is bound
         if ( this !== _boundShader ) {
             console.warn( 'Attempting to set uniform `' + name + '` for an unbound shader, command ignored.' );
-            return;
+            return this;
         }
         var uniform = this.uniforms[ name ];
         // ensure that the uniform spec exists for the name
         if ( !uniform ) {
             console.warn( 'No uniform found under name `' + name + '`, command ignored.' );
-            return;
+            return this;
         }
         // ensure that the uniform argument is defined
         if ( value === undefined ) {
             console.warn( 'Argument passed for uniform `' + name + '` is undefined, command ignored.' );
-            return;
+            return this;
         }
         // if toArray function is present, convert to array
         if ( value.toArray ) {

@@ -69,7 +69,7 @@
     function DepthTexture2D( spec ) {
         // ensure depth texture is supported
         if( !WebGLContext.checkExtension( 'WEBGL_depth_texture' ) ) {
-            console.warn( 'Cannot create DepthTexture2D as `WEBGL_depth_texture` extension is unsupported by this browser, command ignored' );
+            console.error( 'Cannot create DepthTexture2D as `WEBGL_depth_texture` extension is unsupported by this browser, command ignored' );
             return;
         }
         spec = spec || {};

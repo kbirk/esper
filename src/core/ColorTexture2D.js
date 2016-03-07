@@ -4,6 +4,7 @@
 
     var WebGLContext = require('./WebGLContext');
     var Texture2D = require('./Texture2D');
+    var ImageLoader = require('../util/ImageLoader');
     var Util = require('../util/Util');
     var MAG_FILTERS = {
         NEAREST: true,
@@ -161,17 +162,24 @@
             Texture2D.call( this, spec );
         } else if ( spec.url ) {
             // request image source from url
-            var image = new Image();
+            spec.type = 'UNSIGNED_BYTE';
             var that = this;
-            image.onload = function() {
-                spec.type = 'UNSIGNED_BYTE';
-                setImgData( spec, image );
-                Texture2D.call( that, spec );
-                if ( callback ) {
-                    callback( that );
+            ImageLoader.load({
+                url: spec.url,
+                success: function( image ) {
+                    setImgData( spec, image );
+                    Texture2D.call( that, spec );
+                    if ( callback ) {
+                        callback( null, that );
+                    }
+                },
+                error: function( err ) {
+                    Texture2D.call( that, spec );
+                    if ( callback ) {
+                        callback( err, null );
+                    }
                 }
-            };
-            image.src = spec.url;
+            });
         } else {
             // use arraybuffer
             if ( spec.data === undefined ) {

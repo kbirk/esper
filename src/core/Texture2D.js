@@ -185,11 +185,11 @@
     Texture2D.prototype.pop = function( location ) {
         if ( !_stack[ location ] ) {
             console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
-            return;
+            return this;
         }
         if ( this !== _stack[ location ].top() ) {
             console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
-            return;
+            return this;
         }
         _stack[ location ].pop();
         var top = _stack[ location ].top();
@@ -327,7 +327,7 @@
     Texture2D.prototype.resize = function( width, height ) {
         if ( !width || !height ) {
             console.warn( 'Width or height arguments missing, command ignored.' );
-            return;
+            return this;
         }
         this.bufferData( this.data, width, height );
         return this;
