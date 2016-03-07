@@ -424,12 +424,6 @@ var texture = new esper.Texture2D({
     invertY: false,
     premultiplyAlpha: false,
     mipMap: false
-}, function( err, texture ) {
-    if ( err ) {
-        console.error( err );
-        return;
-    }
-    console.log( 'Texture2D successfully created.' );
 });
 ```
 
@@ -468,12 +462,6 @@ var texture = new esper.ColorTexture2D({
 var colorTexture = new esper.Texture2D({
     height: 256,
     width: 256
-}, function( err, texture ) {
-    if ( err ) {
-        console.error( err );
-        return;
-    }
-    console.log( 'Empty Texture2D successfully created.' );
 });
 ```
 
