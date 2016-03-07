@@ -85,7 +85,7 @@ if ( gl ) {
 }
 ```
 
-[Full JSFiddle Example](https://jsfiddle.net/mmhapabx/)
+[Full JSFiddle Example](https://jsfiddle.net/r1gzx0qu/)
 
 ## Documentation
 
