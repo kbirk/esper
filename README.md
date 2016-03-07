@@ -80,7 +80,11 @@ Shaders are programs that execute on the GPU and are essential to 3D programming
 var shader = new esper.Shader({
     vert: 'shaders/phong.vert',
     frag: 'shaders/phong.frag'
-}, function( shader ) {
+}, function( err, shader ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
     // Shader completion callback.
     console.log( 'Shader sources loaded and program instantiated' );
 });
@@ -104,8 +108,11 @@ var shader = new esper.Shader({
         'void main() {' +
         '    gl_FragColor = vec4( 1*uTime, 1*uTime, 1*uTime, 1.0 );' +
         '}'
-}, function( shader ) {
-    // Shader completion callback.
+}, function( err shader ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
     console.log( 'Shader sources loaded and program instantiated' );
 });
 ```
@@ -346,7 +353,11 @@ var texture = new esper.Texture2D({
     invertY: false,
     premultiplyAlpha: false,
     mipMap: false
-}, function( texture ) {
+}, function( err, texture ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
     console.log( 'Texture2D successfully created.' );
 });
 ```
@@ -374,7 +385,11 @@ Color textures are the most commonly used type of texture and are used to store 
 // Create texture from image URL.
 var texture = new esper.ColorTexture2D({
     url: 'images/checkerboard.png'
-}, function( texture ) {
+}, function( err, texture ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
     console.log( 'Texture2D image successfully created.' );
 });
 
@@ -382,7 +397,11 @@ var texture = new esper.ColorTexture2D({
 var colorTexture = new esper.Texture2D({
     height: 256,
     width: 256
-}, function( texture ) {
+}, function( err, texture ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
     console.log( 'Empty Texture2D successfully created.' );
 });
 ```
@@ -416,7 +435,11 @@ var cubeMapTexture = new esper.TextureCubeMap({
         '+z': 'images/sky/posz.png',
         '-z': 'images/sky/negz.png'
     }
-}, function() {
+}, function( err, texture ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
     console.log( 'TextureCubeMap successfully created.' );
 });
 
