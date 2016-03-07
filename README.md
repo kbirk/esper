@@ -16,6 +16,77 @@ or
 npm install esper
 ```
 
+## Usage
+
+```javascript
+
+var shader;
+var viewport;
+var renderable;
+var texture;
+
+function render() {
+	// setup
+	viewport.push();
+	shader.push();
+	shader.setUniform( 'uLightPosition', light );
+	shader.setUniform( 'uModelMatrix', model );
+	shader.setUniform( 'uViewMatrix', view );
+	shader.setUniform( 'uProjectionMatrix', projection );
+	shader.setUniform( 'uTextureSampler', 0 );
+	texture.push( 0 );
+	// draw
+	renderable.draw();
+	// teardown
+	texture.pop( 0 );
+	viewport.pop();
+	shader.pop();
+	// continue to next frame
+	requestAnimationFrame(render);
+}
+
+// create webgl context
+gl = esper.WebGLContext.get( "glcanvas" );
+
+// only continue if WebGL is available
+if ( gl ) {
+	// viewport
+	viewport = new esper.Viewport();
+	viewport.resize( window.innerWidth, window.innerHeight );
+	// shader
+	shader = new esper.Shader({
+		vert: phong.vert,
+		frag: phong.frag
+	});
+	// texture
+	texture = new esper.ColorTexture2D({
+		data: new Uint8Array([
+			255, 0, 0, 255,
+			0, 255, 0, 255,
+			0, 0, 255, 255,
+			255, 255, 0, 255
+		]),
+		width: 2,
+		height: 2,
+		wrap: 'CLAMP_TO_EDGE',
+		filter: 'NEAREST'
+	})
+	// renderable
+	renderable = new esper.Renderable({
+		vertices: {
+			0: cube.positions,
+			1: cube.normals,
+			2: cube.uvs
+		},
+		indices: cube.indices
+	});
+	// start render loop
+	render();
+}
+```
+
+[Full JSFiddle Example](https://jsfiddle.net/mmhapabx/)
+
 ## Documentation
 
 ### WebGLContext
