@@ -529,19 +529,15 @@ When compositing more complex scenes, intermediate render states may need to be 
 
 ```javascript
 // Create a shadow map texture.
-var shadowMapTexture = new esper.Texture2D({
+var shadowMapTexture = new esper.ColorTexture2D({
     width: 512,
-    height: 512,
-    format: 'RGBA',
-    type: 'UNSIGNED_BYTE'
+    height: 512
 });
 
 // Create a depth texture for the render target.
-var depthTexture = new esper.Texture2D({
+var depthTexture = new esper.DepthTexture2D({
     width: 512,
-    height: 512,
-    format: 'DEPTH_COMPONENT',
-    type: 'UNSIGNED_INT'
+    height: 512
 });
 
 // Create a render target and attach the textures.
