@@ -80,12 +80,14 @@ if ( gl ) {
 		},
 		indices: cube.indices
 	});
+	// enable depth testing
+	gl.enable( gl.DEPTH_TEST );
 	// start render loop
 	render();
 }
 ```
 
-[Full JSFiddle Example](https://jsfiddle.net/r1gzx0qu/)
+[Full JSFiddle Example](https://jsfiddle.net/0qm2q7ck/)
 
 ## Documentation
 
