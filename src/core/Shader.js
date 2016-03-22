@@ -41,6 +41,40 @@
     var _boundShader = null;
 
     /**
+     * Given a map of existing attributes, find the lowest index that is not
+     * already used. If the attribute ordering was already provided, use that
+     * instead.
+     * @private
+     *
+     * @param {Object} attributes - The existing attributes object.
+     * @param {Object} declaration - The attribute declaration object.
+     *
+     * @returns {number} The attribute index.
+     */
+    function getAttributeIndex( attributes, declaration ) {
+        // check if attribute is already declared, if so, use that index
+        if ( attributes[ declaration.name ] ) {
+            return attributes[ declaration.name ].index;
+        }
+        // convert attribute map to array
+        var arr = Object.keys( attributes ).map( function( key ) {
+            return attributes[ key ];
+        });
+        // sort attributes by index, ascending order
+        arr.sort( function( a, b ) {
+            return b.index - a.index;
+        });
+        // find the lowest available index
+        var lowestIndex = 0;
+        arr.forEach( function( attribute ) {
+            if ( attribute.index === lowestIndex ) {
+                lowestIndex++;
+            }
+        });
+        return lowestIndex;
+    }
+
+    /**
      * Given vertex and fragment shader source, parses the declarations and appends information pertaining to the uniforms and attribtues declared.
      * @private
      *
@@ -55,15 +89,15 @@
             [ vertSource, fragSource ],
             [ 'uniform', 'attribute' ]
         );
-        var attrCount = 0;
         // for each declaration in the shader
         declarations.forEach( function( declaration ) {
             // check if its an attribute or uniform
             if ( declaration.qualifier === 'attribute' ) {
                 // if attribute, store type and index
+                var index = getAttributeIndex( shader.attributes, declaration );
                 shader.attributes[ declaration.name ] = {
                     type: declaration.type,
-                    index: attrCount++
+                    index: index
                 };
             } else if ( declaration.qualifier === 'uniform' ) {
                 // if uniform, store type and buffer function name
