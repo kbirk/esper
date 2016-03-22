@@ -4,9 +4,9 @@
 
     var WebGLContext = require('./WebGLContext');
     var ShaderParser = require('./ShaderParser');
+    var State = require('./State');
     var Async = require('../util/Async');
     var XHRLoader = require('../util/XHRLoader');
-    var Stack = require('../util/Stack');
     var UNIFORM_FUNCTIONS = {
         'bool': 'uniform1i',
         'bool[]': 'uniform1iv',
@@ -37,8 +37,6 @@
         'sampler2D': 'uniform1i',
         'samplerCube': 'uniform1i'
     };
-    var _stack = new Stack();
-    var _boundShader = null;
 
     /**
      * Given a map of existing attributes, find the lowest index that is not
@@ -226,36 +224,6 @@
     }
 
     /**
-     * Binds the shader object, caching it to prevent unnecessary rebinds.
-     * @private
-     *
-     * @param {Shader} shader - The Shader object to bind.
-     */
-    function bind( shader ) {
-        // if this shader is already bound, exit early
-        if ( _boundShader === shader ) {
-            return;
-        }
-        shader.gl.useProgram( shader.program );
-        _boundShader = shader;
-    }
-
-    /**
-     * Unbinds the shader object. Prevents unnecessary unbinding.
-     * @private
-     *
-     * @param {Shader} shader - The Shader object to unbind.
-     */
-    function unbind( shader ) {
-        // if there is no shader bound, exit early
-        if ( _boundShader === null ) {
-            return;
-        }
-        shader.gl.useProgram( null );
-        _boundShader = null;
-    }
-
-    /**
      * Clears the shader attributes due to aborting of initialization.
      * @private
      *
@@ -278,6 +246,7 @@
      * @param {String|String[]|Object} spec.common - Sources / URLs to be shared by both vvertex and fragment shaders.
      * @param {String|String[]|Object} spec.vert - The vertex shader sources / URLs.
      * @param {String|String[]|Object} spec.frag - The fragment shader sources / URLs.
+     * @param {String[]} spec.attributes - The attribute index orderings.
      * @param {Function} callback - The callback function to execute once the shader
      *     has been successfully compiled and linked.
      */
@@ -290,6 +259,14 @@
         this.attributes = {};
         this.uniforms = {};
         this.hasLoggedError = false;
+        // if attribute ordering is provided, use those indices
+        if ( spec.attributes ) {
+            spec.attributes.forEach( function( attr, index ) {
+                that.attributes[ attr ] = {
+                    index: index
+                };
+            });
+        }
         // check source arguments
         if ( !spec.vert ) {
             console.error( 'Vertex shader argument has not been provided, shader initialization aborted.' );
@@ -373,8 +350,11 @@
      * @returns {Shader} The shader object, for chaining.
      */
     Shader.prototype.push = function() {
-        _stack.push( this );
-        bind( this );
+        // if this shader is already bound, no need to rebind
+        if ( State.shaders.top() !== this ) {
+            this.gl.useProgram( this.program );
+        }
+        State.shaders.push( this );
         return this;
     };
 
@@ -385,13 +365,20 @@
      * @returns {Shader} The shader object, for chaining.
      */
     Shader.prototype.pop = function() {
-        var top;
-        _stack.pop();
-        top = _stack.top();
-        if ( top ) {
-            bind( top );
+        // if there is no shader bound, exit early
+        if ( State.shaders.top() !== this ) {
+            console.warn( 'The current Shader is not the top most element on the stack. Command ignored.' );
+            return this;
+        }
+        // pop shader off stack
+        State.shaders.pop();
+        // if there is an underlying shader, bind it
+        var top = State.shaders.top();
+        if ( top && top !== this ) {
+            top.gl.useProgram( top.program );
         } else {
-            unbind( this );
+            // unbind the shader
+            this.gl.useProgram( null );
         }
         return this;
     };
@@ -415,7 +402,7 @@
             return;
         }
         // ensure shader is bound
-        if ( this !== _boundShader ) {
+        if ( this !== State.shaders.top() ) {
             console.warn( 'Attempting to set uniform `' + name + '` for an unbound shader, command ignored.' );
             return this;
         }

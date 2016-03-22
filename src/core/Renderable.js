@@ -71,19 +71,23 @@
         // draw the renderable
         if ( this.indexBuffer ) {
             // use index buffer to draw elements
+            // bind vertex buffers and enable attribute pointers
             this.vertexBuffers.forEach( function( vertexBuffer ) {
                 vertexBuffer.bind();
-                // no advantage to unbinding as there is no stack used
             });
-            this.indexBuffer.bind();
+            // draw primitives using index buffer
             this.indexBuffer.draw( overrides );
+            // disable attribute pointers
+            this.vertexBuffers.forEach( function( vertexBuffer ) {
+                vertexBuffer.unbind();
+            });
             // no advantage to unbinding as there is no stack used
         } else {
             // no index buffer, use draw arrays
             this.vertexBuffers.forEach( function( vertexBuffer ) {
                 vertexBuffer.bind();
                 vertexBuffer.draw( overrides );
-                // no advantage to unbinding as there is no stack used
+                vertexBuffer.unbind();
             });
         }
         return this;

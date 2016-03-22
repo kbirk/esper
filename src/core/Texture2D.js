@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var Stack = require('../util/Stack');
+    var State = require('./State');
     var MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
@@ -31,8 +31,6 @@
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
     };
-    var _stack = {};
-    var _boundTexture = null;
 
     /**
      * The default type for textures.
@@ -73,41 +71,6 @@
      * The default mip-mapping filter suffix.
      */
     var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
-
-    /**
-     * Binds the texture object to a location and activates the texture unit while caching it to prevent unnecessary rebinds.
-     * @private
-     *
-     * @param {Texture2D} texture - The Texture2D object to bind.
-     * @param {number} location - The texture unit location index.
-     */
-    function bind( texture, location ) {
-        // if this buffer is already bound, exit early
-        if ( _boundTexture === texture ) {
-            return;
-        }
-        var gl = texture.gl;
-        location = gl[ 'TEXTURE' + location ] || gl.TEXTURE0;
-        gl.activeTexture( location );
-        gl.bindTexture( gl.TEXTURE_2D, texture.texture );
-        _boundTexture = texture;
-    }
-
-    /**
-     * Unbinds the texture object. Prevents unnecessary unbinding.
-     * @private
-     *
-     * @param {Texture2D} texture - The Texture2D object to unbind.
-     */
-    function unbind( texture ) {
-        // if no buffer is bound, exit early
-        if ( _boundTexture === null ) {
-            return;
-        }
-        var gl = texture.gl;
-        gl.bindTexture( gl.TEXTURE_2D, null );
-        _boundTexture = null;
-    }
 
     /**
      * Instantiates a Texture2D object.
@@ -163,14 +126,22 @@
      * Binds the texture object and pushes it to the front of the stack.
      * @memberof Texture2D
      *
-     * @param {number} location - The texture unit location index.
+     * @param {number} location - The texture unit location index. Default to 0.
      *
      * @returns {Texture2D} The texture object, for chaining.
      */
     Texture2D.prototype.push = function( location ) {
-        _stack[ location ] = _stack[ location ] || new Stack();
-        _stack[ location ].push( this );
-        bind( this, location );
+        if ( location === undefined ) {
+            location = 0;
+        }
+        // if this texture is already bound, no need to rebind
+        if ( State.texture2Ds.top( location ) !== this ) {
+            var gl = this.gl;
+            gl.activeTexture( gl[ 'TEXTURE' + location ] );
+            gl.bindTexture( gl.TEXTURE_2D, this.texture );
+        }
+        // add to stack under the texture unit
+        State.texture2Ds.push( location, this );
         return this;
     };
 
@@ -178,27 +149,33 @@
      * Unbinds the texture object and binds the texture beneath it on this stack. If there is no underlying texture, unbinds the unit.
      * @memberof Texture2D
      *
-     * @param {number} location - The texture unit location index.
+     * @param {number} location - The texture unit location index. Default to 0.
      *
      * @returns {Texture2D} The texture object, for chaining.
      */
     Texture2D.prototype.pop = function( location ) {
-        if ( !_stack[ location ] ) {
-            console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
-            return this;
+        if ( location === undefined ) {
+            location = 0;
         }
-        if ( this !== _stack[ location ].top() ) {
+        if ( State.texture2Ds.top( location ) !== this ) {
             console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        _stack[ location ].pop();
-        var top = _stack[ location ].top();
+        State.texture2Ds.pop( location );
+        var gl;
+        var top = State.texture2Ds.top( location );
         if ( top ) {
-            bind( top, location );
+            if ( top !== this ) {
+                // bind underlying texture
+                gl = top.gl;
+                gl.activeTexture( gl[ 'TEXTURE' + location ] );
+                gl.bindTexture( gl.TEXTURE_2D, top.texture );
+            }
         } else {
-            unbind( this );
+            // unbind
+            gl = this.gl;
+            gl.bindTexture( gl.TEXTURE_2D, null );
         }
-        return this;
     };
 
     /**

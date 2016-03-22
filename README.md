@@ -313,6 +313,9 @@ vertexBuffer.draw({
     mode: LINES,
     count: n * 2
 });
+
+// Unbind
+vertexBuffer.unbind();
 ```
 
 ### VertexPackages
@@ -349,9 +352,6 @@ Rendering using an `esper.IndexBuffer` is easy as well, simply bind any referenc
 // Bind vertex buffer.
 vertexBuffer.bind();
 
-// Bind index buffer.
-indexBuffer.bind();
-
 // Draw triangles.
 indexBuffer.draw({
     mode: TRIANGLES
@@ -368,6 +368,8 @@ indexBuffer.draw({
     mode: LINES,
     count: n * 2
 });
+
+vertexBuffer.unbind();
 ```
 
 ### Renderables
@@ -531,7 +533,7 @@ When compositing more complex scenes, intermediate render states may need to be 
 
 ```javascript
 // Create a shadow map texture.
-var shadowMapTexture = new esper.ColorTexture2D({
+var shadowTexture = new esper.ColorTexture2D({
     width: 512,
     height: 512
 });
@@ -544,7 +546,7 @@ var depthTexture = new esper.DepthTexture2D({
 
 // Create a render target and attach the textures.
 var renderTarget = new esper.RenderTarget();
-renderTarget.setColorTarget( shadowMapTexture, 0 ); // Bind to color attachment 0
+renderTarget.setColorTarget( shadowTexture, 0 ); // Bind to color attachment 0
 renderTarget.setDepthTarget( depthTexture );
 ```
 
@@ -555,7 +557,7 @@ Drawing to the texture unit is simple:
 renderTarget.push();
 
 // Clear the bound color and depth textures.
-renderTarget.clear();
+gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
 // .. render to the render target
 
@@ -565,7 +567,7 @@ renderTarget.pop();
 // Now use the bound textures as you would normally.
 
 // Bind shadow map to texture unit 0.
-shadowMapTexture.push( 0 );
+shadowTexture.push( 0 );
 
 // Bind texture sampler to the same unit.
 shader.setUniform( 'uShadowTextureSampler', 0 );
@@ -573,5 +575,5 @@ shader.setUniform( 'uShadowTextureSampler', 0 );
 // ... render using the texture
 
 // Unbind from texture unit 0.
-shadowMapTexture.pop( 0 );
+shadowTexture.pop( 0 );
 ```

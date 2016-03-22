@@ -3,41 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var Stack = require('../util/Stack');
-    var _stack = new Stack();
-    var _boundBuffer = null;
-
-    /**
-     * Binds the renderTarget object, caching it to prevent unnecessary rebinds.
-     * @private
-     *
-     * @param {RenderTarget} renderTarget - The RenderTarget object to bind.
-     */
-     function bind( renderTarget ) {
-        // if this buffer is already bound, exit early
-        if ( _boundBuffer === renderTarget ) {
-            return;
-        }
-        var gl = renderTarget.gl;
-        gl.bindFramebuffer( gl.FRAMEBUFFER, renderTarget.framebuffer );
-        _boundBuffer = renderTarget;
-    }
-
-    /**
-     * Unbinds the renderTarget object. Prevents unnecessary unbinding.
-     * @private
-     *
-     * @param {RenderTarget} renderTarget - The RenderTarget object to unbind.
-     */
-     function unbind( renderTarget ) {
-        // if there is no buffer bound, exit early
-        if ( _boundBuffer === null ) {
-            return;
-        }
-        var gl = renderTarget.gl;
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
-        _boundBuffer = null;
-    }
+    var State = require('./State');
 
     /**
      * Instantiates a RenderTarget object.
@@ -57,8 +23,11 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.push = function() {
-        _stack.push( this );
-        bind( this );
+        if ( State.renderTargets.top() !== this ) {
+            var gl = this.gl;
+            gl.bindFramebuffer( gl.FRAMEBUFFER, this.framebuffer );
+        }
+        State.renderStargets.push( this );
         return this;
     };
 
@@ -69,16 +38,20 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.pop = function() {
-        if ( this !== _stack.top() ) {
+        // if there is no render target bound, exit early
+        if ( State.renderTargets.top() !== this ) {
             console.warn( 'The current render target is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        _stack.pop();
-        var top = _stack.top();
+        State.renderTargets.pop();
+        var top = State.renderTargets.top();
+        var gl;
         if ( top ) {
-            bind( top );
+            gl = top.gl;
+            gl.bindFramebuffer( gl.FRAMEBUFFER, top.framebuffer );
         } else {
-            unbind( this );
+            gl = this.gl;
+            gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         }
         return this;
     };

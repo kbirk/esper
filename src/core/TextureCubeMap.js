@@ -3,10 +3,10 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
+    var State = require('./State');
     var Async = require('../util/Async');
     var Util = require('../util/Util');
     var ImageLoader = require('../util/ImageLoader');
-    var Stack = require('../util/Stack');
     var FACES = [
         '-x', '+x',
         '-y', '+y',
@@ -51,8 +51,6 @@
         RGB: true,
         RGBA: true
     };
-    var _stack = {};
-    var _boundTexture = null;
 
     /**
      * The default type for textures.
@@ -119,42 +117,6 @@
             return canvas;
         }
         return image;
-    }
-
-    /**
-     * Binds the texture object to a location and activates the texture unit
-     * while caching it to prevent unnecessary rebinds.
-     * @private
-     *
-     * @param {TextureCubeMap} texture - The TextureCubeMap object to bind.
-     * @param {number} location - The texture unit location index.
-     */
-    function bind( texture, location ) {
-        // if this buffer is already bound, exit early
-        if ( _boundTexture === texture ) {
-            return;
-        }
-        var gl = texture.gl;
-        location = gl[ 'TEXTURE' + location ] || gl.TEXTURE0;
-        gl.activeTexture( location );
-        gl.bindTexture( gl.TEXTURE_CUBE_MAP, texture.texture );
-        _boundTexture = texture;
-    }
-
-    /**
-     * Unbinds the texture object. Prevents unnecessary unbinding.
-     * @private
-     *
-     * @param {TextureCubeMap} texture - The TextureCubeMap object to unbind.
-     */
-    function unbind( texture ) {
-        // if no buffer is bound, exit early
-        if ( _boundTexture === null ) {
-            return;
-        }
-        var gl = texture.gl;
-        gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
-        _boundTexture = null;
     }
 
     /**
@@ -293,10 +255,18 @@
      *
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
-     TextureCubeMap.prototype.push = function( location ) {
-        _stack[ location ] = _stack[ location ] || new Stack();
-        _stack[ location ].push( this );
-        bind( this, location );
+    TextureCubeMap.prototype.push = function( location ) {
+        if ( location === undefined ) {
+            location = 0;
+        }
+        // if this texture is already bound, no need to rebind
+        if ( State.textureCubeMaps.top( location ) !== this ) {
+            var gl = this.gl;
+            gl.activeTexture( gl[ 'TEXTURE' + location ] );
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.texture );
+        }
+        // add to stack under the texture unit
+        State.textureCubeMaps.push( location, this );
         return this;
     };
 
@@ -309,21 +279,28 @@
      *
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
-     TextureCubeMap.prototype.pop = function( location ) {
-        if ( !_stack[ location ] ) {
-            console.warn( 'No texture was bound to texture unit `' + location + '`, command ignored.' );
+    TextureCubeMap.prototype.pop = function( location ) {
+        if ( location === undefined ) {
+            location = 0;
+        }
+        if ( State.textureCubeMaps.top( location ) !== this ) {
+            console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        if ( this !== _stack[ location ].top() ) {
-            console.warn( 'The current texture cube map is not the top most element on the stack. Command ignored.' );
-            return this;
-        }
-        _stack[ location ].pop();
-        var top = _stack[ location ].top();
+        State.textureCubeMaps.pop( location );
+        var gl;
+        var top = State.textureCubeMaps.top( location );
         if ( top ) {
-            bind( top, location );
+            if ( top !== this ) {
+                // bind underlying texture
+                gl = top.gl;
+                gl.activeTexture( gl[ 'TEXTURE' + location ] );
+                gl.bindTexture( gl.TEXTURE_CUBE_MAP, top.texture );
+            }
         } else {
-            unbind( this );
+            // unbind
+            gl = this.gl;
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
         }
         return this;
     };

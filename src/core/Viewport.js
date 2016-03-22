@@ -3,8 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var Stack = require('../util/Stack');
-    var _stack = new Stack();
+    var State = require('./State');
 
     /**
      * Bind the viewport to the rendering context.
@@ -98,7 +97,7 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.push = function( x, y, width, height ) {
-        _stack.push({
+        State.viewports.push({
             viewport: this,
             x: x,
             y: y,
@@ -116,12 +115,12 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.pop = function() {
-        if ( this !== _stack.top().viewport ) {
+        if ( this !== State.viewports.top().viewport ) {
             console.warn( 'The current viewport is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        _stack.pop();
-        var top = _stack.top();
+        State.viewports.pop();
+        var top = State.viewports.top();
         if ( top ) {
             set( top.viewport, top.x, top.y, top.width, top.height );
         } else {

@@ -2,8 +2,7 @@
 
     'use strict';
 
-    var _boundContext = null;
-    var _contextsById = {};
+    var State = require('./State');
     var EXTENSIONS = [
         // ratified
         'OES_texture_float',
@@ -63,14 +62,14 @@
      */
     function getContextWrapper( arg ) {
         if ( !arg ) {
-            if ( _boundContext ) {
+            if ( State.boundWebGLContext ) {
                 // return last bound context
-                return _boundContext;
+                return State.boundWebGLContext;
             }
         } else {
             var canvas = getCanvas( arg );
             if ( canvas ) {
-                return _contextsById[ canvas.id ];
+                return State.webGLContexts[ canvas.id ];
             }
         }
         // no bound context or argument
@@ -117,9 +116,9 @@
             // load WebGL extensions
             loadExtensions( contextWrapper );
             // add context wrapper to map
-            _contextsById[ canvas.id ] = contextWrapper;
+            State.webGLContexts[ canvas.id ] = contextWrapper;
             // bind the context
-            _boundContext = contextWrapper;
+            State.boundWebGLContext = contextWrapper;
         } catch( err ) {
             console.error( err.message );
         }
@@ -141,7 +140,7 @@
         bind: function( arg ) {
             var wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                _boundContext = wrapper;
+                State.boundWebGLContext = wrapper;
                 return this;
             }
             console.error( 'No context exists for provided argument `' + arg + '`, command ignored.' );
@@ -171,7 +170,7 @@
                 return null;
             }
             // return context
-            return _contextsById[ canvas.id ].gl;
+            return State.webGLContexts[ canvas.id ].gl;
         },
 
         /**

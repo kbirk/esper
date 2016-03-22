@@ -3,6 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
+    var State = require('./State');
     var TYPES = {
         UNSIGNED_SHORT: true,
         UNSIGNED_INT: true
@@ -16,7 +17,6 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
-    var _boundBuffer = null;
 
     /**
      * The default component type.
@@ -120,40 +120,6 @@
     };
 
     /**
-     * Binds the index buffer object.
-     * @memberof IndexBuffer
-     *
-     * @returns {IndexBuffer} Returns the index buffer object for chaining.
-     */
-    IndexBuffer.prototype.bind = function() {
-        // if this buffer is already bound, exit early
-        if ( _boundBuffer === this ) {
-            return;
-        }
-        var gl = this.gl;
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
-        _boundBuffer = this;
-        return this;
-    };
-
-    /**
-     * Unbinds the index buffer object.
-     * @memberof IndexBuffer
-     *
-     * @returns {IndexBuffer} Returns the index buffer object for chaining.
-     */
-    IndexBuffer.prototype.unbind = function() {
-        // if there is no buffer bound, exit early
-        if ( _boundBuffer === null ) {
-            return;
-        }
-        var gl = this.gl;
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null );
-        _boundBuffer = null;
-        return this;
-    };
-
-    /**
      * Execute the draw command for the bound buffer.
      * @memberof IndexBuffer
      *
@@ -166,10 +132,6 @@
      */
     IndexBuffer.prototype.draw = function( options ) {
         options = options || {};
-        if ( _boundBuffer === null ) {
-            console.warn( 'No IndexBuffer is bound, command ignored.' );
-            return this;
-        }
         var gl = this.gl;
         var mode = gl[ options.mode || this.mode ];
         var type = gl[ this.type ];
@@ -180,9 +142,15 @@
             return this;
         }
         if ( offset + count > this.count ) {
-            console.warn( 'Attempting to draw with (offset + count) greater than the size of the IndexBuffer, command ignored.' );
+            console.warn( 'Attempting to draw an IndexBuffer with (offset + count) greater than the count, command ignored.' );
             return this;
         }
+        // if this buffer is already bound, exit early
+        if ( State.boundIndexBuffer !== this.buffer ) {
+            gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
+            State.boundIndexBuffer = this.buffer;
+        }
+        // draw elements
         gl.drawElements( mode, count, type, offset );
         return this;
     };

@@ -3,8 +3,8 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
+    var State = require('./State');
     var VertexPackage = require('./VertexPackage');
-    var Util = require('../util/Util');
     var MODES = {
         POINTS: true,
         LINES: true,
@@ -26,8 +26,6 @@
     var DEFAULT_MODE = 'TRIANGLES';
     var DEFAULT_OFFSET = 0;
     var DEFAULT_COUNT = 0;
-    var _boundBuffer = null;
-    var _enabledAttributes = {};
 
     /**
      * Parse the attribute pointers and determine the stride of the buffer.
@@ -139,7 +137,7 @@
      * @classdesc A vertex buffer object.
      *
      * @param {Array|Float32Array|VertexPackage|number} arg - The buffer or length of the buffer.
-     * @param {Object} arg - The array pointer map, or in the case of a vertex package arg, the options.
+     * @param {Object} attributePointers - The array pointer map, or in the case of a vertex package arg, the options.
      * @param {Object} options - The rendering options.
      * @param {String} options.mode - The draw mode / primitive type.
      * @param {String} options.offset - The offset into the drawn buffer.
@@ -191,9 +189,9 @@
         if ( arg instanceof Array ) {
             // cast arrays into bufferview
             arg = new Float32Array( arg );
-        } else if ( !Util.isTypedArray( arg ) && typeof arg !== 'number' ) {
+        } else if ( !ArrayBuffer.isView( arg ) && typeof arg !== 'number' ) {
             // if not arraybuffer or a numeric size
-            console.error( 'VertexBuffer requires an Array or ArrayBuffer, or a size argument, command ignored.' );
+            console.error( 'VertexBuffer requires an Array, ArrayBuffer, or number argument, command ignored.' );
             return this;
         }
         if ( !this.buffer ) {
@@ -231,7 +229,7 @@
         }
         if ( array instanceof Array ) {
             array = new Float32Array( array );
-        } else if ( !Util.isTypedArray( array ) ) {
+        } else if ( !ArrayBuffer.isView( array ) ) {
             console.error( 'VertexBuffer requires an Array or ArrayBuffer argument, command ignored.' );
             return this;
         }
@@ -247,19 +245,15 @@
      * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
      */
     VertexBuffer.prototype.bind = function() {
-        // if this buffer is already bound, exit early
-        if ( _boundBuffer === this ) {
-            return;
-        }
         var gl = this.gl;
+        // cache this vertex buffer
+        if ( State.boundVertexBuffer !== this.buffer ) {
+            // bind buffer
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
+            State.boundVertexBuffer = this.buffer;
+        }
         var pointers = this.pointers;
         var stride = this.stride;
-        var prevEnabledAttributes = _enabledAttributes;
-        // cache this vertex buffer
-        _boundBuffer = this;
-        _enabledAttributes = {};
-        // bind buffer
-        gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         Object.keys( pointers ).forEach( function( index ) {
             var pointer = pointers[ index ];
             // set attribute pointer
@@ -270,16 +264,11 @@
                 false,
                 stride,
                 pointer.offset );
-            // enabled attribute array
-            gl.enableVertexAttribArray( index );
-            // cache attribute
-            _enabledAttributes[ index ] = true;
-            // remove from previous list
-            delete prevEnabledAttributes[ index ];
-        });
-        // ensure leaked attribute arrays are disabled
-        Object.keys( prevEnabledAttributes ).forEach( function( index ) {
-            gl.disableVertexAttribArray( index );
+            // enable attribute index
+            if ( !State.enabledVertexAttributes[ index ] ) {
+                gl.enableVertexAttribArray( index );
+                State.enabledVertexAttributes[ index ] = true;
+            }
         });
     };
 
@@ -290,17 +279,20 @@
      * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
      */
     VertexBuffer.prototype.unbind = function() {
-        // if no buffer is bound, exit early
-        if ( _boundBuffer === null ) {
-            return;
-        }
         var gl = this.gl;
+        // only bind if it already isn't bound
+        if ( State.boundVertexBuffer !== this.buffer ) {
+            // bind buffer
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
+            State.boundVertexBuffer = this.buffer;
+        }
         Object.keys( this.pointers ).forEach( function( index ) {
-            gl.disableVertexAttribArray( index );
+            // disable attribute index
+            if ( State.enabledVertexAttributes[ index ] ) {
+                gl.disableVertexAttribArray( index );
+                State.enabledVertexAttributes[ index ] = false;
+            }
         });
-        gl.bindBuffer( gl.ARRAY_BUFFER, null );
-        _boundBuffer = null;
-        _enabledAttributes = {};
     };
 
     /**
@@ -316,15 +308,17 @@
      */
     VertexBuffer.prototype.draw = function( options ) {
         options = options || {};
-        if ( _boundBuffer === null ) {
-            console.warn( 'No VertexBuffer is bound, command ignored.' );
+        if ( State.boundVertexBuffer !== this.buffer ) {
+            console.warn( 'The current VertexBuffer is not bound. Command ignored.' );
             return this;
         }
         var gl = this.gl;
         var mode = gl[ options.mode || this.mode ];
         var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
+        // draw elements
         gl.drawArrays( mode, offset, count );
+        return this;
     };
 
     module.exports = VertexBuffer;
