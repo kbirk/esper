@@ -5,19 +5,6 @@
     module.exports = {
 
         /**
-         * Returns true if a provided array is a javscript TypedArray.
-         *
-         * @param {*} array - The variable to test.
-         *
-         * @returns {boolean} - Whether or not the variable is a TypedArray.
-         */
-        isTypedArray: function( array ) {
-            return array &&
-                array.buffer instanceof ArrayBuffer &&
-                array.byteLength !== undefined;
-        },
-
-        /**
          * Returns true if the provided integer is a power of two.
          *
          * @param {integer} num - The number to test.

@@ -6,38 +6,6 @@
     var Util = require( '../../src/util/Util' );
 
     describe('Util', function() {
-        describe('#isTypedArray()', function() {
-            it('should return true if the argument is instance of TypedArray, false if not', function() {
-                var a = new ArrayBuffer(64),
-                    b = new Uint8Array( a ),
-                    c = new Uint16Array( a ),
-                    d = new Uint32Array( a ),
-                    e = new Int8Array( a ),
-                    f = new Int16Array( a ),
-                    g = new Int16Array( a ),
-                    h = new Int32Array( a ),
-                    i = new Float32Array( a ),
-                    j = new Float64Array( a );
-                assert( !Util.isTypedArray( a ) );
-                assert( Util.isTypedArray( b ) );
-                assert( Util.isTypedArray( c ) );
-                assert( Util.isTypedArray( d ) );
-                assert( Util.isTypedArray( e ) );
-                assert( Util.isTypedArray( f ) );
-                assert( Util.isTypedArray( g ) );
-                assert( Util.isTypedArray( h ) );
-                assert( Util.isTypedArray( i ) );
-                assert( Util.isTypedArray( j ) );
-                assert( !Util.isTypedArray( 4 ) );
-                assert( !Util.isTypedArray( {} ) );
-                assert( !Util.isTypedArray( [] ) );
-                assert( !Util.isTypedArray( 'string' ) );
-                assert( !Util.isTypedArray( null ) );
-                assert( !Util.isTypedArray( undefined ) );
-                assert( !Util.isTypedArray( true ) );
-                assert( !Util.isTypedArray( false ) );
-            });
-        });
         describe('#isPowerOfTwo()', function() {
             it('should return true if the argument is a power of two, false if not', function() {
                 assert( Util.isPowerOfTwo( 1 ) );
@@ -58,7 +26,7 @@
         describe('#nextHighestPowerOfTwo()', function() {
             it('should return a power of two', function() {
                 var i;
-                for ( i=0; i<100; i++ ) {
+                for ( i=0; i<257; i++ ) {
                     assert( Util.isPowerOfTwo( Util.nextHighestPowerOfTwo( Math.random()*100 ) ) );
                 }
             });
