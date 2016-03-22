@@ -131,15 +131,16 @@
                     },
                     b: function( done ) {
                         setTimeout( function() {
+                            assert(false);
                             done( null, 1 );
-                        }, 200 );
+                        }, 1000 );
                     },
                     c: function( done ) {
                         done( null, 2 );
                     }
-                }, function( err, results ) {
+                }, function( err ) {
                     assert( err );
-                    assert( results === undefined );
+                    //assert( results === undefined );
                     done();
                 });
             });
@@ -152,15 +153,16 @@
                     },
                     function( done ) {
                         setTimeout( function() {
+                            assert(false);
                             done( null, 1 );
-                        }, 200 );
+                        }, 1000 );
                     },
                     function( done ) {
                         done( null, 2 );
                     }
-                ], function( err, results ) {
+                ], function( err ) {
                     assert( err );
-                    assert( results === undefined );
+                    //assert( results === undefined );
                     done();
                 });
             });

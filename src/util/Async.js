@@ -2,83 +2,47 @@
 
     'use strict';
 
-    var simplyDeferred = require('simply-deferred');
-    var Deferred = simplyDeferred.Deferred;
-    var when = simplyDeferred.when;
-
-    /**
-     * Returns a function that resolves the provided deferred.
-     * @private
-     *
-     * @param {Deferred} deferred - The deferred object.
-     *
-     * @returns {Function} The function to resolve the deferred.
-     */
-    function resolveDeferred( deferred ) {
-        return function( err, result ) {
-            if ( err ) {
-                deferred.reject( err );
-                return;
-            }
-            deferred.resolve( result );
+    function getIterator( arg ) {
+        var i = -1;
+        var len;
+        if ( Array.isArray( arg ) ) {
+            len = arg.length;
+            return function() {
+                i++;
+                return i < len ? i : null;
+            };
+        }
+        var keys = Object.keys( arg );
+        len = keys.length;
+        return function() {
+            i++;
+            return i < len ? keys[i] : null;
         };
     }
 
-    /**
-     * Dispatches an array of jobs, accumulating the results and
-     * passing them to the callback function in corresponding indices.
-     * @private
-     *
-     * @param {Array} jobs - The job array.
-     * @param {Function} callback - The callback function.
-     */
-     function asyncArray( jobs, callback ) {
-        var deferreds = [];
-        jobs.forEach( function( job ) {
-            var deferred = new Deferred();
-            deferreds.push( deferred );
-            job( resolveDeferred( deferred ) );
-        });
-        when.apply( when, deferreds )
-            .fail( function( err ) {
-                callback( err );
-            })
-            .done( function() {
-                var results = Array.prototype.slice.call( arguments, 0 );
-                callback( null, results );
-            });
-    }
+    function each( object, iterator, callback ) {
+        var key;
+        var completed = 0;
 
-    /**
-     * Dispatches a map of jobs, accumulating the results and
-     * passing them to the callback function under corresponding
-     * keys.
-     * @private
-     *
-     * @param {Object} jobs - The job map.
-     * @param {Function} callback - The callback function.
-     */
-     function asyncObj( jobs, callback ) {
-        var keys = [];
-        var deferreds = [];
-        Object.keys( jobs ).forEach( function( key ) {
-            var deferred = new Deferred();
-            deferreds.push( deferred );
-            keys.push( key );
-            jobs[ key ]( resolveDeferred( deferred ) );
-        });
-        when.apply( when, deferreds )
-            .fail( function( err ) {
-                callback( err );
-            })
-            .done( function() {
-                var results = Array.prototype.slice.call( arguments, 0 );
-                var resultsByKey = {};
-                keys.forEach( function( key, index ) {
-                    resultsByKey[ key ] = results[index];
-                });
-                callback( null, resultsByKey );
-            });
+        function done( err ) {
+            completed--;
+            if ( err ) {
+                callback(err);
+            } else if ( key === null && completed <= 0 ) {
+                // check if key is null in case iterator isn't exhausted and done
+                // was resolved synchronously.
+                callback(null);
+            }
+        }
+
+        var iter = getIterator(object);
+        while ( (key = iter()) !== null ) {
+            completed += 1;
+            iterator( object[ key ], key, done );
+        }
+        if ( completed === 0 ) {
+            callback( null );
+        }
     }
 
     module.exports = {
@@ -87,18 +51,22 @@
          * Execute a set of functions asynchronously, once all have been
          * completed, execute the provided callback function. Jobs may be passed
          * as an array or object. The callback function will be passed the
-         * results in the same format as the jobs. All jobs must have accept and
-         * execute a callback function upon completion.
+         * results in the same format as the tasks. All tasks must have accept
+         * and execute a callback function upon completion.
          *
-         * @param {Array|Object} jobs - The set of functions to execute.
+         * @param {Array|Object} tasks - The set of functions to execute.
          * @param {Function} callback - The callback function to be executed upon completion.
          */
-        parallel: function( jobs, callback ) {
-            if ( jobs instanceof Array ) {
-                asyncArray( jobs, callback );
-            } else {
-                asyncObj( jobs, callback );
-            }
+        parallel: function (tasks, callback) {
+            var results = Array.isArray( tasks ) ? [] : {};
+            each( tasks, function( task, key, callback ) {
+                task( function( err, res ) {
+                    results[ key ] = res;
+                    callback( err );
+                });
+            }, function( err ) {
+                callback( err, results );
+            });
         }
 
     };
