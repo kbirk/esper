@@ -28,7 +28,7 @@
     var BRACKET_WHITESPACE_REGEXP = /(\s*)(\[)(\s*)(\d+)(\s*)(\])(\s*)/g;
     var NAME_COUNT_REGEXP = /([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?/;
     var PRECISION_REGEX = /\b(precision)\s+(\w+)\s+(\w+)/;
-    var GLSL_REGEXP =  /void\s+main\s*\(\s*\)\s*/mi;
+    var GLSL_REGEXP =  /void\s+main\s*\(\s*(void)*\s*\)\s*/mi;
 
     /**
      * Removes standard comments from the provided string.

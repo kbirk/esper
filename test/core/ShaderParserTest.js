@@ -171,7 +171,7 @@
             });
         });
         describe('#isGLSL()', function() {
-            it('should return true if the argument string contains a `void main() {}`', function() {
+            it('should return true if the argument string contains a `void main(...) {}`', function() {
                 var source0 = [
                         'uniform highp mat4 A[10], B, C[2];',
                         'uniform highp mat4 D;',
@@ -189,7 +189,7 @@
                         'uniform highp mat4 uProjectionMatrix;',
                         'varying highp vec3 vMVPosition;',
                         'varying highp vec3 vMVNormal;',
-                        'void main() {',
+                        'void main(void) {',
                             'highp vec4 mvPos = uViewMatrix * uModelMatrix * vec4( aVertexPosition, 1.0 );',
                             'gl_Position = uProjectionMatrix * mvPos;',
                             'vMVPosition = vec3( mvPos ) / mvPos.w;',
@@ -200,7 +200,7 @@
                         'uniform highp vec3 uLightPosition;',
                         'varying highp vec3 vMVPosition;',
                         'varying highp vec3 vMVNormal;',
-                        'void main() {',
+                        'void main( void ) {',
                             'highp vec4 texelColor = vec4(0.8, 0.6, 0.3, 1.0);',
                             'highp vec3 normal = normalize( vMVNormal );',
                             'highp vec3 vLight = vec3( uViewMatrix * vec4( uLightPosition, 1.0 ) );',
@@ -209,16 +209,28 @@
                             'highp vec3 viewDir = normalize( -vMVPosition );',
                             'highp float diffuse = max( dot( lightDir, normal ), 0.0 );',
                             'gl_FragColor = vec4(texelColor.rgb * 0.1 + diffuse * texelColor.rgb, texelColor.a );',
-                    	'}'].join(''),
-                    url0 = 'shaders/vert.glsl',
-                    url1 = 'shaders/main.vert',
-                    url3 = 'shaders/void/main.frag';
+                    	'}'].join('');
                 assert( ShaderParser.isGLSL( source0 ) );
                 assert( ShaderParser.isGLSL( source1 ) );
                 assert( ShaderParser.isGLSL( source2 ) );
+            });
+            it('should return false if the argument string does not contain a `void main(...) {}`', function() {
+                var url0 = 'shaders/vert.glsl',
+                    url1 = 'shaders/main.vert',
+                    url3 = 'shaders/void/main.frag',
+                    url4 = 'shaders/voidmain(void).frag',
+                    url5 = 'shaders/voidmain(){}.frag',
+                    url6 = 'shaders/voidmain(void){}.frag',
+                    url7 = 'shaders/voidmain(){}.frag',
+                    url8 = 'shaders/voidmain(){}.frag';
                 assert( !ShaderParser.isGLSL( url0 ) );
                 assert( !ShaderParser.isGLSL( url1 ) );
                 assert( !ShaderParser.isGLSL( url3 ) );
+                assert( !ShaderParser.isGLSL( url4 ) );
+                assert( !ShaderParser.isGLSL( url5 ) );
+                assert( !ShaderParser.isGLSL( url6 ) );
+                assert( !ShaderParser.isGLSL( url7 ) );
+                assert( !ShaderParser.isGLSL( url8 ) );
             });
         });
     });
