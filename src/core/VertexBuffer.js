@@ -38,18 +38,36 @@
      * @return {number} - The stride of the buffer.
      */
     function getStride( attributePointers ) {
+        // if there is only one attribute pointer assigned to this buffer,
+        // there is no need for stride, set to default of 0
+        var indices = Object.keys( attributePointers );
+        if ( indices.length === 1 ) {
+            return 0;
+        }
         var BYTES_PER_COMPONENT = 4;
         var maxOffset = 0;
+        var sizeSum = 0;
         var stride = 0;
-        Object.keys( attributePointers ).forEach( function( key ) {
-            // track the largest offset to determine the stride of the buffer
-            var pointer = attributePointers[ key ];
+        indices.forEach( function( index ) {
+            var pointer = attributePointers[ index ];
             var offset = pointer.offset;
+            var size = pointer.size;
+            // track the sum of each attribute size
+            sizeSum += size;
+            // track the largest offset to determine the stride of the buffer
             if ( offset > maxOffset ) {
                 maxOffset = offset;
-                stride = offset + ( pointer.size * BYTES_PER_COMPONENT );
+                stride = offset + ( size * BYTES_PER_COMPONENT );
             }
         });
+        // check if the max offset is greater than or equal to the the sum of
+        // the sizes. If so this buffer is not interleaved and does not need a
+        // stride.
+        if ( maxOffset >= sizeSum ) {
+            // TODO: test what stride === 0 does for an interleaved buffer of
+            // length === 1.
+            return 0;
+        }
         return stride;
     }
 
