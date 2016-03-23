@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
     var Async = require('../util/Async');
     var Util = require('../util/Util');
     var ImageLoader = require('../util/ImageLoader');
@@ -192,6 +192,7 @@
     function TextureCubeMap( spec, callback ) {
         var that = this;
         this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
         this.texture = this.gl.createTexture();
         // get specific params
         spec.wrapS = spec.wrapS || spec.wrap;
@@ -260,13 +261,13 @@
             location = 0;
         }
         // if this texture is already bound, no need to rebind
-        if ( State.textureCubeMaps.top( location ) !== this ) {
+        if ( this.state.textureCubeMaps.top( location ) !== this ) {
             var gl = this.gl;
             gl.activeTexture( gl[ 'TEXTURE' + location ] );
             gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.texture );
         }
         // add to stack under the texture unit
-        State.textureCubeMaps.push( location, this );
+        this.state.textureCubeMaps.push( location, this );
         return this;
     };
 
@@ -283,13 +284,14 @@
         if ( location === undefined ) {
             location = 0;
         }
-        if ( State.textureCubeMaps.top( location ) !== this ) {
+        var state = this.state;
+        if ( state.textureCubeMaps.top( location ) !== this ) {
             console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        State.textureCubeMaps.pop( location );
+        state.textureCubeMaps.pop( location );
         var gl;
-        var top = State.textureCubeMaps.top( location );
+        var top = state.textureCubeMaps.top( location );
         if ( top ) {
             if ( top !== this ) {
                 // bind underlying texture

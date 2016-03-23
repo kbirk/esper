@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
     var TYPES = {
         UNSIGNED_SHORT: true,
         UNSIGNED_INT: true
@@ -52,6 +52,7 @@
     function IndexBuffer( arg, options ) {
         options = options || {};
         this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
         this.buffer = 0;
         this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
@@ -146,9 +147,9 @@
             return this;
         }
         // if this buffer is already bound, exit early
-        if ( State.boundIndexBuffer !== this.buffer ) {
+        if ( this.state.boundIndexBuffer !== this.buffer ) {
             gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
-            State.boundIndexBuffer = this.buffer;
+            this.state.boundIndexBuffer = this.buffer;
         }
         // draw elements
         gl.drawElements( mode, count, type, offset );

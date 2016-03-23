@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
     var MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
@@ -94,6 +94,7 @@
      */
     function Texture2D( spec ) {
         this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
         // create texture object
         this.texture = this.gl.createTexture();
         // get specific params
@@ -135,13 +136,13 @@
             location = 0;
         }
         // if this texture is already bound, no need to rebind
-        if ( State.texture2Ds.top( location ) !== this ) {
+        if ( this.state.texture2Ds.top( location ) !== this ) {
             var gl = this.gl;
             gl.activeTexture( gl[ 'TEXTURE' + location ] );
             gl.bindTexture( gl.TEXTURE_2D, this.texture );
         }
         // add to stack under the texture unit
-        State.texture2Ds.push( location, this );
+        this.state.texture2Ds.push( location, this );
         return this;
     };
 
@@ -157,13 +158,14 @@
         if ( location === undefined ) {
             location = 0;
         }
-        if ( State.texture2Ds.top( location ) !== this ) {
+        var state = this.state;
+        if ( state.texture2Ds.top( location ) !== this ) {
             console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        State.texture2Ds.pop( location );
+        state.texture2Ds.pop( location );
         var gl;
-        var top = State.texture2Ds.top( location );
+        var top = state.texture2Ds.top( location );
         if ( top ) {
             if ( top !== this ) {
                 // bind underlying texture

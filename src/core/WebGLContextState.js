@@ -4,32 +4,20 @@
 
     var Stack = require('../util/Stack');
     var StackMap = require('../util/StackMap');
+    var _states = {};
 
-    module.exports = {
-
-        /**
-         * The currently bound WebGL context.
-         * @private
-         */
-        boundWebGLContext: null,
-
-        /**
-         * All the current WebGL contexts
-         * @private
-         */
-        webGLContexts: {},
-
+    function WebGLContextState() {
         /**
          * The currently bound vertex buffer.
          * @private
          */
-        boundVertexBuffer: null,
+        this.boundVertexBuffer = null;
 
         /**
          * The currently enabled vertex attributes.
          * @private
          */
-        enabledVertexAttributes: {
+        this.enabledVertexAttributes = {
             '0': false,
             '1': false,
             '2': false,
@@ -37,43 +25,55 @@
             '4': false,
             '5': false
             // ... others will be added as needed
-        },
+        };
 
         /**
          * The currently bound index buffer.
          * @private
          */
-        boundIndexBuffer: null,
+        this.boundIndexBuffer = null;
 
         /**
          * The stack of pushed shaders.
          * @private
          */
-        shaders: new Stack(),
+        this.shaders = new Stack();
 
         /**
          * The stack of pushed viewports.
          * @private
          */
-        viewports: new Stack(),
+        this.viewports = new Stack();
 
         /**
          * The stack of pushed render targets.
          * @private
          */
-        renderTargets: new Stack(),
+        this.renderTargets = new Stack();
 
         /**
          * The map of stacks pushed texture2Ds, keyed by texture unit index.
          * @private
          */
-        texture2Ds: new StackMap(),
+        this.texture2Ds = new StackMap();
 
         /**
          * The map of pushed texture2Ds,, keyed by texture unit index.
          * @private
          */
-        textureCubeMaps: new StackMap()
+        this.textureCubeMaps = new StackMap();
+    }
+
+    module.exports = {
+
+        get: function( gl ) {
+            var id = gl.canvas.id;
+            if ( !_states[ id ] ) {
+                _states[ id ] = new WebGLContextState();
+            }
+            return _states[ id ];
+        }
+
     };
 
 }());

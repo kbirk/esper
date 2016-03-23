@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
     var VertexPackage = require('./VertexPackage');
     var MODES = {
         POINTS: true,
@@ -61,7 +61,7 @@
         // check if the max offset is greater than or equal to the the sum of
         // the sizes. If so this buffer is not interleaved and does not need a
         // stride.
-        if ( maxOffset >= sizeSum ) {
+        if ( maxOffset >= sizeSum * BYTES_PER_COMPONENT ) {
             // TODO: test what stride === 0 does for an interleaved buffer of
             // length === 1.
             return 0;
@@ -147,6 +147,7 @@
         options = options || {};
         this.buffer = 0;
         this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
         this.mode = MODES[ options.mode ] ? options : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
         this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
@@ -246,11 +247,12 @@
      */
     VertexBuffer.prototype.bind = function() {
         var gl = this.gl;
+        var state = this.state;
         // cache this vertex buffer
-        if ( State.boundVertexBuffer !== this.buffer ) {
+        if ( state.boundVertexBuffer !== this.buffer ) {
             // bind buffer
             gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-            State.boundVertexBuffer = this.buffer;
+            state.boundVertexBuffer = this.buffer;
         }
         var pointers = this.pointers;
         var stride = this.stride;
@@ -265,9 +267,9 @@
                 stride,
                 pointer.offset );
             // enable attribute index
-            if ( !State.enabledVertexAttributes[ index ] ) {
+            if ( !state.enabledVertexAttributes[ index ] ) {
                 gl.enableVertexAttribArray( index );
-                State.enabledVertexAttributes[ index ] = true;
+                state.enabledVertexAttributes[ index ] = true;
             }
         });
     };
@@ -280,17 +282,18 @@
      */
     VertexBuffer.prototype.unbind = function() {
         var gl = this.gl;
+        var state = this.state;
         // only bind if it already isn't bound
-        if ( State.boundVertexBuffer !== this.buffer ) {
+        if ( state.boundVertexBuffer !== this.buffer ) {
             // bind buffer
             gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-            State.boundVertexBuffer = this.buffer;
+            state.boundVertexBuffer = this.buffer;
         }
         Object.keys( this.pointers ).forEach( function( index ) {
             // disable attribute index
-            if ( State.enabledVertexAttributes[ index ] ) {
+            if ( state.enabledVertexAttributes[ index ] ) {
                 gl.disableVertexAttribArray( index );
-                State.enabledVertexAttributes[ index ] = false;
+                state.enabledVertexAttributes[ index ] = false;
             }
         });
     };
@@ -308,7 +311,7 @@
      */
     VertexBuffer.prototype.draw = function( options ) {
         options = options || {};
-        if ( State.boundVertexBuffer !== this.buffer ) {
+        if ( this.state.boundVertexBuffer !== this.buffer ) {
             console.warn( 'The current VertexBuffer is not bound. Command ignored.' );
             return this;
         }

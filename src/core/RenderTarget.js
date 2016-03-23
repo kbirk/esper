@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
 
     /**
      * Instantiates a RenderTarget object.
@@ -11,8 +11,9 @@
      * @classdesc A renderTarget class to allow rendering to textures.
      */
     function RenderTarget() {
-        var gl = this.gl = WebGLContext.get();
-        this.framebuffer = gl.createFramebuffer();
+        this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
+        this.framebuffer = this.gl.createFramebuffer();
         this.textures = {};
     }
 
@@ -23,11 +24,11 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.push = function() {
-        if ( State.renderTargets.top() !== this ) {
+        if ( this.state.renderTargets.top() !== this ) {
             var gl = this.gl;
             gl.bindFramebuffer( gl.FRAMEBUFFER, this.framebuffer );
         }
-        State.renderStargets.push( this );
+        this.state.renderTargets.push( this );
         return this;
     };
 
@@ -38,13 +39,14 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.pop = function() {
+        var state = this.state;
         // if there is no render target bound, exit early
-        if ( State.renderTargets.top() !== this ) {
+        if ( state.renderTargets.top() !== this ) {
             console.warn( 'The current render target is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        State.renderTargets.pop();
-        var top = State.renderTargets.top();
+        state.renderTargets.pop();
+        var top = state.renderTargets.top();
         var gl;
         if ( top ) {
             gl = top.gl;

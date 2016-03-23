@@ -4,7 +4,7 @@
 
     var WebGLContext = require('./WebGLContext');
     var ShaderParser = require('./ShaderParser');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
     var Async = require('../util/Async');
     var XHRLoader = require('../util/XHRLoader');
     var UNIFORM_FUNCTIONS = {
@@ -60,7 +60,7 @@
         });
         // sort attributes by index, ascending order
         arr.sort( function( a, b ) {
-            return b.index - a.index;
+            return a.index - b.index;
         });
         // find the lowest available index
         var lowestIndex = 0;
@@ -255,10 +255,10 @@
         spec = spec || {};
         this.program = 0;
         this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
         this.version = spec.version || '1.00';
         this.attributes = {};
         this.uniforms = {};
-        this.hasLoggedError = false;
         // if attribute ordering is provided, use those indices
         if ( spec.attributes ) {
             spec.attributes.forEach( function( attr, index ) {
@@ -351,10 +351,10 @@
      */
     Shader.prototype.push = function() {
         // if this shader is already bound, no need to rebind
-        if ( State.shaders.top() !== this ) {
+        if ( this.state.shaders.top() !== this ) {
             this.gl.useProgram( this.program );
         }
-        State.shaders.push( this );
+        this.state.shaders.push( this );
         return this;
     };
 
@@ -365,15 +365,16 @@
      * @returns {Shader} The shader object, for chaining.
      */
     Shader.prototype.pop = function() {
+        var state = this.state;
         // if there is no shader bound, exit early
-        if ( State.shaders.top() !== this ) {
+        if ( state.shaders.top() !== this ) {
             console.warn( 'The current Shader is not the top most element on the stack. Command ignored.' );
             return this;
         }
         // pop shader off stack
-        State.shaders.pop();
+        state.shaders.pop();
         // if there is an underlying shader, bind it
-        var top = State.shaders.top();
+        var top = state.shaders.top();
         if ( top && top !== this ) {
             top.gl.useProgram( top.program );
         } else {
@@ -395,14 +396,11 @@
     Shader.prototype.setUniform = function( name, value ) {
         // ensure shader program exists
         if ( !this.program ) {
-            if ( !this.hasLoggedError ) {
-                console.warn( 'Attempting to use an incomplete shader, command ignored.' );
-                this.hasLoggedError = true;
-            }
+            console.warn( 'Attempting to use an incomplete shader, command ignored.' );
             return;
         }
         // ensure shader is bound
-        if ( this !== State.shaders.top() ) {
+        if ( this !== this.state.shaders.top() ) {
             console.warn( 'Attempting to set uniform `' + name + '` for an unbound shader, command ignored.' );
             return this;
         }

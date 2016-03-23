@@ -2,7 +2,6 @@
 
     'use strict';
 
-    var State = require('./State');
     var EXTENSIONS = [
         // ratified
         'OES_texture_float',
@@ -32,22 +31,54 @@
         'EXT_sRGB',
         'WEBGL_compressed_texture_etc1'
     ];
+    var _boundContext = null;
+    var _contexts = {};
+
+    /**
+     * Returns an rfc4122 version 4 compliant UUID.
+     * @private
+     *
+     * @returns {String} The UUID string.
+     */
+    function getUUID() {
+        var replace = function( c ) {
+            var r = Math.random() * 16 | 0;
+            var v = ( c === 'x' ) ? r : ( r & 0x3 | 0x8 );
+            return v.toString( 16 );
+        };
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, replace );
+    }
+
+    /**
+     * Returns the id of the HTMLCanvasElement element. If there is no id, it
+     * generates one and appends it.
+     * @private
+     *
+     * @param {HTMLCanvasElement} canvas - The Canvas object.
+     *
+     * @returns {String} The Canvas id string.
+     */
+    function getId( canvas ) {
+        if ( !canvas.id ) {
+            canvas.id = getUUID();
+        }
+        return canvas.id;
+    }
 
     /**
      * Returns a Canvas element object from either an existing object, or identification string.
      * @private
      *
-     * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas
-     *     identification string.
+     * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas id or selector string.
      *
      * @returns {HTMLCanvasElement} The Canvas element object.
      */
     function getCanvas( arg ) {
-        if ( arg instanceof HTMLImageElement ||
-             arg instanceof HTMLCanvasElement ) {
+        if ( arg instanceof HTMLCanvasElement ) {
             return arg;
         } else if ( typeof arg === 'string' ) {
-            return document.getElementById( arg );
+            return document.getElementById( arg ) ||
+                document.querySelector( arg );
         }
         return null;
     }
@@ -62,14 +93,14 @@
      */
     function getContextWrapper( arg ) {
         if ( !arg ) {
-            if ( State.boundWebGLContext ) {
+            if ( _boundContext ) {
                 // return last bound context
-                return State.boundWebGLContext;
+                return _boundContext;
             }
         } else {
             var canvas = getCanvas( arg );
             if ( canvas ) {
-                return State.webGLContexts[ canvas.id ];
+                return _contexts[ getId( canvas ) ];
             }
         }
         // no bound context or argument
@@ -83,13 +114,10 @@
      * @param {Object} contextWrapper - The context wrapper.
      */
     function loadExtensions( contextWrapper ) {
-        var gl = contextWrapper.gl,
-            extension,
-            i;
-        for ( i=0; i<EXTENSIONS.length; i++ ) {
-            extension = EXTENSIONS[i];
-            contextWrapper.extensions[ extension ] = gl.getExtension( extension );
-        }
+        var gl = contextWrapper.gl;
+        EXTENSIONS.forEach( function( id ) {
+            contextWrapper.extensions[ id ] = gl.getExtension( id );
+        });
     }
 
     /**
@@ -109,16 +137,16 @@
             gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
             // wrap context
             contextWrapper = {
-                id: canvas.id,
+                id: getId( canvas ),
                 gl: gl,
                 extensions: {}
             };
             // load WebGL extensions
             loadExtensions( contextWrapper );
             // add context wrapper to map
-            State.webGLContexts[ canvas.id ] = contextWrapper;
+            _contexts[ getId( canvas ) ] = contextWrapper;
             // bind the context
-            State.boundWebGLContext = contextWrapper;
+            _boundContext = contextWrapper;
         } catch( err ) {
             console.error( err.message );
         }
@@ -140,7 +168,7 @@
         bind: function( arg ) {
             var wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                State.boundWebGLContext = wrapper;
+                _boundContext = wrapper;
                 return this;
             }
             console.error( 'No context exists for provided argument `' + arg + '`, command ignored.' );
@@ -170,7 +198,7 @@
                 return null;
             }
             // return context
-            return State.webGLContexts[ canvas.id ].gl;
+            return _contexts[ getId( canvas ) ].gl;
         },
 
         /**

@@ -3,7 +3,7 @@
     'use strict';
 
     var WebGLContext = require('./WebGLContext');
-    var State = require('./State');
+    var WebGLContextState = require('./WebGLContextState');
 
     /**
      * Bind the viewport to the rendering context.
@@ -37,6 +37,7 @@
     function Viewport( spec ) {
         spec = spec || {};
         this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
         // set size
         this.resize(
             spec.width || this.gl.canvas.width,
@@ -97,7 +98,7 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.push = function( x, y, width, height ) {
-        State.viewports.push({
+        this.state.viewports.push({
             viewport: this,
             x: x,
             y: y,
@@ -115,12 +116,13 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.pop = function() {
-        if ( this !== State.viewports.top().viewport ) {
+        var state = this.state;
+        if ( this !== state.viewports.top().viewport ) {
             console.warn( 'The current viewport is not the top most element on the stack. Command ignored.' );
             return this;
         }
-        State.viewports.pop();
-        var top = State.viewports.top();
+        state.viewports.pop();
+        var top = state.viewports.top();
         if ( top ) {
             set( top.viewport, top.x, top.y, top.width, top.height );
         } else {
