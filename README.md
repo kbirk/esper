@@ -46,7 +46,11 @@ function render() {
 }
 
 // create webgl context
-gl = esper.WebGLContext.get( "glcanvas" );
+try {
+	gl = esper.WebGLContext.get( "glcanvas" );
+} catch( err ) {
+	console.err( err.message );
+}
 
 // only continue if WebGL is available
 if ( gl ) {
@@ -87,7 +91,7 @@ if ( gl ) {
 }
 ```
 
-[Full JSFiddle Example](https://jsfiddle.net/0qm2q7ck/)
+[Full JSFiddle Example](https://jsfiddle.net/340dLd1e/)
 
 ## Documentation
 
@@ -97,17 +101,26 @@ In order to access the WebGL API you need a canvas element from which a WebGL re
 
 ```javascript
 // Get WebGL context and load all available extensions.
-var gl = esper.WebGLContext.get( 'canvas-id' );
-// Check if context creation was successful.
-if ( !gl ) {
-    console.log( 'Failure to create context, the browser may not support it.' );  
+var gl;
+try {
+	gl = esper.WebGLContext.get( 'canvas-id' );
+} catch( err ) {
+	console.error( err.message );
 }
+```
 
-// Get a WebGL context with options and load all available extensions.
-var gl = esper.WebGLContext.get( canvasDOMElement, {
-    antialias: false
-    depth: false
-});
+Options can be provided via the second parameter.
+
+```javascript
+var gl;
+try {
+	gl = esper.WebGLContext.get( canvasDOMElement, {
+	    antialias: false
+	    depth: false
+	});
+} catch( err ) {
+	console.error( err.message );
+}
 ```
 
 Once a context has been created, it is bound internally and can be accessed throughout the application by calling `esper.WebGLContext.get`. It is important to note that all esper classes will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL constructs cannot be shared between contexts and result in redundant buffers and textures.

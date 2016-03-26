@@ -56,15 +56,17 @@
                 WebGLContext.remove( canvas );
                 global.document = undefined;
             });
-            it('should return null if no canvas element can be referenced from the argument', function() {
-                var gl = WebGLContext.get( null );
-                assert( gl === null );
+            it('should throw an exception if no canvas element can be referenced from the argument', function() {
+                try {
+                    WebGLContext.get( null );
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
             it('should return the previously created context if no argument is provided', function() {
-                var gl = WebGLContext.get();
-                assert( gl === null );
                 var canvas = new HTMLCanvasElement();
-                gl = WebGLContext.get( canvas );
+                var gl = WebGLContext.get( canvas );
                 assert( gl instanceof WebGLRenderingContext );
                 assert( gl === WebGLContext.get() );
                 WebGLContext.remove( canvas );
@@ -80,13 +82,21 @@
         });
 
         describe('#bind()', function() {
-            it('should do nothing if no argument is passed', function() {
-                WebGLContext.bind();
-                assert( true );
+            it('should throw an exception if no argument is passed', function() {
+                try {
+                    WebGLContext.bind();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
-            it('should do nothing if no canvas element can be referenced from the argument', function() {
-                WebGLContext.bind( null );
-                assert( true );
+            it('should throw an exception if no canvas element can be referenced from the argument', function() {
+                try {
+                    WebGLContext.bind( null );
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
             it('should bind the context as the current implicit context', function() {
                 var canvas0 = new HTMLCanvasElement();
@@ -103,27 +113,45 @@
         });
 
         describe('#remove()', function() {
-            it('should do nothing if no argument is passed', function() {
-                WebGLContext.remove();
-                assert( true );
+            it('should throw an exception if no argument is passed', function() {
+                try {
+                    WebGLContext.remove();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
-            it('should do nothing if no canvas element can be referenced from the argument', function() {
-                WebGLContext.remove( null );
-                assert( true );
+            it('should throw an exception if no canvas element can be referenced from the argument', function() {
+                try {
+                    WebGLContext.remove( null );
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
             it('should remove the context', function() {
                 var canvas = new HTMLCanvasElement();
                 var gl = WebGLContext.get( canvas );
                 assert( gl === WebGLContext.get() );
                 WebGLContext.remove( canvas );
-                assert( WebGLContext.get() === null );
+                try {
+                    WebGLContext.get();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
             it('should unbind the removed context if it is currently bound', function() {
                 var canvas = new HTMLCanvasElement();
                 var gl = WebGLContext.get( canvas );
                 assert( gl === WebGLContext.get() );
                 WebGLContext.remove( canvas );
-                assert( WebGLContext.get() === null );
+                try {
+                    WebGLContext.get();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
         });
 

@@ -130,36 +130,26 @@
      * @returns {Object} The context wrapper.
      */
     function createContextWrapper( canvas, options ) {
-        var contextWrapper;
-        var gl;
-        try {
-            // get WebGL context, fallback to experimental
-            gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
-            // wrap context
-            contextWrapper = {
-                id: getId( canvas ),
-                gl: gl,
-                extensions: {}
-            };
-            // load WebGL extensions
-            loadExtensions( contextWrapper );
-            // add context wrapper to map
-            _contexts[ getId( canvas ) ] = contextWrapper;
-            // bind the context
-            _boundContext = contextWrapper;
-        } catch( err ) {
-            console.error( err.message );
-        }
-        if ( !gl ) {
-            console.error( 'Unable to initialize WebGL. Your browser may not support it.' );
-        }
+        var gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
+        // wrap context
+        var contextWrapper = {
+            id: getId( canvas ),
+            gl: gl,
+            extensions: {}
+        };
+        // load WebGL extensions
+        loadExtensions( contextWrapper );
+        // add context wrapper to map
+        _contexts[ getId( canvas ) ] = contextWrapper;
+        // bind the context
+        _boundContext = contextWrapper;
         return contextWrapper;
     }
 
     module.exports = {
 
         /**
-         * Binds a specific WebGL context as the active context. This context will be used for all code /webgl.
+         * Retrieves an existing WebGL context associated with the provided argument and binds it. While bound, the active context will be used implicitly by any instantiated `esper` constructs.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string.
          *
@@ -171,18 +161,17 @@
                 _boundContext = wrapper;
                 return this;
             }
-            console.error( 'No context exists for provided argument `' + arg + '`, command ignored.' );
-            return this;
+            throw 'No context exists for provided argument `' + arg + '`';
         },
 
         /**
-         * Creates a new or retreives an existing WebGL context for the provided or currently bound context object.
+         * Retrieves an existing WebGL context associated with the provided argument. If no context exists, one is created.
          * During creation attempts to load all extensions found at: https://www.khronos.org/registry/webgl/extensions/.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
          *
-         * @returns {WebGLRenderingContext} The WebGLRenderingContext context object.
+         * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
          */
         get: function( arg, options ) {
             var wrapper = getContextWrapper( arg );
@@ -193,14 +182,21 @@
             // get canvas element
             var canvas = getCanvas( arg );
             // try to find or create context
-            if ( !canvas || !createContextWrapper( canvas, options ) ) {
-                console.error( 'Context could not be found or created for argument of type `' + ( typeof arg ) + '`, returning `null`.' );
-                return null;
+            if ( !canvas ) {
+                throw 'Context could not be associated with argument of type `' + ( typeof arg ) + '`';
             }
-            // return context
-            return _contexts[ getId( canvas ) ].gl;
+            // create context
+            return createContextWrapper( canvas, options ).gl;
         },
 
+        /**
+         * Removes an existing WebGL context object for the provided or currently bound object.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
+         *
+         * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
+         */
         remove: function( arg ) {
             var wrapper = getContextWrapper( arg );
             if ( wrapper ) {
@@ -211,7 +207,7 @@
                     _boundContext = null;
                 }
             } else {
-                console.error( 'Context could not be found or deleted for argument of type `' + ( typeof arg ) + '`.' );
+                throw 'Context could not be found or deleted for argument of type `' + ( typeof arg ) + '`';
             }
         },
 
@@ -234,7 +230,7 @@
                 });
                 return supported;
             }
-            console.error( 'No context is currently bound or was provided, returning an empty array.' );
+            console.warn( 'No context is currently bound or was provided, returning an empty array' );
             return [];
         },
 
@@ -258,7 +254,7 @@
                 });
                 return unsupported;
             }
-            console.error( 'No context is currently bound or was provided, returning an empty array.' );
+            console.warn( 'No context is currently bound or was provided, returning an empty array' );
             return [];
         },
 
@@ -282,7 +278,7 @@
                 var extensions = wrapper.extensions;
                 return extensions[ extension ] ? true : false;
             }
-            console.error( 'No context is currently bound or provided as argument, returning false.' );
+            console.warn( 'No context is currently bound or provided as argument, returning false' );
             return false;
         }
     };
