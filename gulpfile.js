@@ -17,8 +17,17 @@
     var project = 'esper';
     var paths = {
         root: 'src/exports.js',
-        src: 'src/**/*.js',
-        tests: 'test/**/*.js',
+        src: [
+            'src/**/*.js'
+        ],
+        tests: [
+            'test/**/*.js'
+        ],
+        coverage: [
+            'src/**/*.js',
+            '!src/util/XHRLoader.js',
+            '!src/util/ImageLoader.js'
+        ],
         build: 'build'
     };
 
@@ -70,11 +79,11 @@
     });
 
     gulp.task('test', function() {
-        return gulp.src( paths.src )
+        return gulp.src( paths.coverage )
             .pipe( istanbul({ includeUntested: false }) ) // Covering files
             .pipe( istanbul.hookRequire() )
             .on( 'finish', function () {
-                return gulp.src([ paths.tests ])
+                return gulp.src( paths.tests )
                     .pipe( mocha({ reporter: 'list' })
                         .on( 'error', handleErrorTimeout ) ) // print mocha error message
                     .pipe( istanbul.writeReports() ); // Creating the reports after tests runned
