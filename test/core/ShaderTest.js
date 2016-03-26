@@ -70,24 +70,24 @@
 
         describe('#constructor()', function() {
             it('should throw an exception if there is no `vert` argument', function() {
+                var result = false;
                 try {
-                    new Shader({
-                        frag: frag
-                    });
-                    assert( false );
+                    new Shader();
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should throw an exception if there is no `frag` argument', function() {
+                var result = false;
                 try {
                     new Shader({
                         vert: vert
                     });
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should accept shader arguments as glsl source', function() {
                 var shader = new Shader({
@@ -152,12 +152,13 @@
                     vert: vert,
                     frag: frag
                 });
+                var result = false;
                 try {
                     shader.pop();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
         });
 
@@ -217,12 +218,13 @@
                     vert: vert,
                     frag: frag
                 });
+                var result = false;
                 try {
                     shader.setUniform( 'uModelMatrix', identity );
-                    assert( false );
-                } catch ( err ) {
-                    assert( true );
+                } catch( err ) {
+                    result = true;
                 }
+                assert( result );
             });
             it('should throw an exception if the uniform does not exist', function() {
                 var shader = new Shader({
@@ -230,12 +232,13 @@
                     frag: frag
                 });
                 shader.push();
+                var result = false;
                 try {
                     shader.setUniform('doesNotExist', identity );
-                    assert( false );
-                } catch ( err ) {
-                    assert( true );
+                } catch( err ) {
+                    result = true;
                 }
+                assert( result );
                 shader.pop();
             });
             it('should throw an exception if the no value is provided', function() {
@@ -244,12 +247,13 @@
                     frag: frag
                 });
                 shader.push();
+                var result = false;
                 try {
                     shader.setUniform('uModelMatrix' );
-                    assert( false );
-                } catch ( err ) {
-                    assert( true );
+                } catch( err ) {
+                    result = true;
                 }
+                assert( result );
                 shader.pop();
             });
         });

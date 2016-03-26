@@ -150,6 +150,7 @@
                 assert( p.buffer.length === 3 * 4 );
             });
             it('should throw exception on invalid or erroneous attribute values', function() {
+                var result = false;
                 try {
                     new VertexPackage({
                         0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
@@ -158,39 +159,31 @@
                         3: 5,
                         sadfasd: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                     });
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should throw exception on invalid or erroneous attribute indices', function() {
+                var result = false;
                 try {
                     new VertexPackage({
                         0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
                         'error': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                     });
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
-                try {
-                    new VertexPackage({
-                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
-                        '1.3': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
-                    });
-                    assert( false );
-                } catch( err ) {
-                    assert( true );
-                }
+                result = false;
                 try {
                     new VertexPackage({
                         0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
                         'a3f': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                     });
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
         });
 

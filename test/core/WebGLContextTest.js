@@ -43,12 +43,13 @@
                 global.document = undefined;
             });
             it('should throw an exception if no canvas element can be referenced from the argument', function() {
+                var result = false;
                 try {
                     WebGLContext.get( null );
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should return the previously created context if no argument is provided', function() {
                 var canvas = new HTMLCanvasElement();
@@ -64,25 +65,29 @@
                 assert( gl0 === WebGLContext.get( canvas0 ) );
                 var gl1 = WebGLContext.get( canvas1 );
                 assert( gl1 === WebGLContext.get( canvas1 ) );
+                WebGLContext.remove( canvas0 );
+                WebGLContext.remove( canvas1 );
             });
         });
 
         describe('#bind()', function() {
             it('should throw an exception if no argument is passed', function() {
+                var result = false;
                 try {
                     WebGLContext.bind();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should throw an exception if no canvas element can be referenced from the argument', function() {
+                var result = false;
                 try {
                     WebGLContext.bind( null );
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should bind the context as the current implicit context', function() {
                 var canvas0 = new HTMLCanvasElement();
@@ -100,44 +105,48 @@
 
         describe('#remove()', function() {
             it('should throw an exception if no argument is passed', function() {
+                var result = false;
                 try {
                     WebGLContext.remove();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should throw an exception if no canvas element can be referenced from the argument', function() {
+                var result = false;
                 try {
                     WebGLContext.remove( null );
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should remove the context', function() {
                 var canvas = new HTMLCanvasElement();
                 var gl = WebGLContext.get( canvas );
                 assert( gl === WebGLContext.get() );
                 WebGLContext.remove( canvas );
+                var result = false;
                 try {
                     WebGLContext.get();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
             it('should unbind the removed context if it is currently bound', function() {
                 var canvas = new HTMLCanvasElement();
                 var gl = WebGLContext.get( canvas );
                 assert( gl === WebGLContext.get() );
                 WebGLContext.remove( canvas );
+                var result = false;
                 try {
                     WebGLContext.get();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
         });
 
@@ -150,12 +159,13 @@
                 WebGLContext.remove( canvas );
             });
             it('should throw an exception if no context is referenced', function() {
+                var result = false;
                 try {
                     WebGLContext.supportedExtensions();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
         });
 
@@ -168,12 +178,13 @@
                 WebGLContext.remove( canvas );
             });
             it('should throw an exception if no context is referenced', function() {
+                var result = false;
                 try {
                     WebGLContext.unsupportedExtensions();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
         });
 
@@ -181,8 +192,18 @@
             it('should return a bool for whether or not the extension is support', function() {
                 var canvas = new HTMLCanvasElement();
                 WebGLContext.get( canvas );
-                var isSupported = WebGLContext.checkExtension('randomExt');
-                assert( typeof isSupported === 'boolean' );
+                var supported = WebGLContext.supportedExtensions();
+                var unsupported = WebGLContext.unsupportedExtensions();
+                supported.forEach( function( ext ) {
+                    var isSupported = WebGLContext.checkExtension( ext );
+                    assert( typeof isSupported === 'boolean' );
+                    assert( isSupported );
+                });
+                unsupported.forEach( function( ext ) {
+                    var isSupported = WebGLContext.checkExtension( ext );
+                    assert( typeof isSupported === 'boolean' );
+                    assert( !isSupported );
+                });
                 WebGLContext.remove( canvas );
             });
             it('should query an unbound context if provided', function() {
@@ -193,12 +214,13 @@
                 WebGLContext.remove( canvas );
             });
             it('should return throw an exception if no context is referenced', function() {
+                var result = false;
                 try {
                     WebGLContext.checkExtension();
-                    assert( false );
                 } catch( err ) {
-                    assert( true );
+                    result = true;
                 }
+                assert( result );
             });
         });
 
