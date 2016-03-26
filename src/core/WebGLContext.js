@@ -92,7 +92,7 @@
      * @returns {Object} The context wrapper.
      */
     function getContextWrapper( arg ) {
-        if ( !arg ) {
+        if ( arg === undefined ) {
             if ( _boundContext ) {
                 // return last bound context
                 return _boundContext;
@@ -187,18 +187,32 @@
         get: function( arg, options ) {
             var wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                // return the native WebGLRenderingContext
-                return wrapper.gl;
+               // return the native WebGLRenderingContext
+               return wrapper.gl;
             }
             // get canvas element
             var canvas = getCanvas( arg );
             // try to find or create context
             if ( !canvas || !createContextWrapper( canvas, options ) ) {
-                console.error( 'Context could not be found or created for argument of type`' + ( typeof arg ) + '`, returning `null`.' );
+                console.error( 'Context could not be found or created for argument of type `' + ( typeof arg ) + '`, returning `null`.' );
                 return null;
             }
             // return context
             return _contexts[ getId( canvas ) ].gl;
+        },
+
+        remove: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                // delete the context
+                delete _contexts[ wrapper.id ];
+                // remove if currently bound
+                if ( wrapper === _boundContext ) {
+                    _boundContext = null;
+                }
+            } else {
+                console.error( 'Context could not be found or deleted for argument of type `' + ( typeof arg ) + '`.' );
+            }
         },
 
         /**
@@ -266,7 +280,7 @@
             var wrapper = getContextWrapper( arg );
             if ( wrapper ) {
                 var extensions = wrapper.extensions;
-                return extensions[ extension ] ? extensions[ extension ] : false;
+                return extensions[ extension ] ? true : false;
             }
             console.error( 'No context is currently bound or provided as argument, returning false.' );
             return false;
