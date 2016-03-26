@@ -19,8 +19,7 @@
             var index = parseInt( key, 10 );
             // check that key is an valid integer
             if ( isNaN( index ) ) {
-                console.warn( 'Attribute index `' + key + '` does not represent an integer, discarding attribute.' );
-                return;
+                throw 'Attribute index `' + key + '` does not represent a valid integer';
             }
             var vertices = attributes[key];
             // ensure attribute is valid
@@ -33,7 +32,7 @@
                     data: vertices
                 });
             } else {
-                console.warn( 'Error parsing attribute of index `' + key + '`, attribute discarded.' );
+                throw 'Error parsing attribute of index `' + key + '`';
             }
         });
         // sort attributes ascending by index

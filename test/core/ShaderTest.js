@@ -9,8 +9,6 @@
     require('webgl-mock');
     var canvas;
     var gl;
-    var _warn;
-    var _error;
     var _load;
 
     var vert = [
@@ -69,18 +67,6 @@
             gl = null;
             XHRLoader.load = _load;
         });
-
-        // beforeEach( function() {
-        //     _warn = console.warn;
-        //     _error = console.error;
-        //     console.warn = function() {};
-        //     console.error = function() {};
-        // });
-        //
-        // afterEach( function() {
-        //     console.warn = _warn;
-        //     console.error = _error;
-        // });
 
         describe('#constructor()', function() {
             it('should throw an exception if there is no `vert` argument', function() {
@@ -148,19 +134,30 @@
 
         describe('#pop()', function() {
             it('should pop the shader off the stack', function() {
-                var shader = new Shader({
+                var shader0 = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
-                shader.pop();
+                var shader1 = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader0.push();
+                shader1.push();
+                shader1.pop();
+                shader0.pop();
             });
-            it('should no nothing if this shader is not the top of the stack', function() {
+            it('should throw an exception if this shader is not the top of the stack', function() {
                 var shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.pop();
+                try {
+                    shader.pop();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
         });
 

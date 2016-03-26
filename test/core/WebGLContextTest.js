@@ -5,22 +5,8 @@
     var assert = require('assert');
     var WebGLContext = require('../../src/core/WebGLContext');
     require('webgl-mock');
-    var _warn;
-    var _error;
 
     describe('WebGLContext', function() {
-
-        beforeEach( function() {
-            _warn = console.warn;
-            _error = console.error;
-            console.warn = function() {};
-            console.error = function() {};
-        });
-
-        afterEach( function() {
-            console.warn = _warn;
-            console.error = _error;
-        });
 
         describe('#get()', function() {
             it('should return a WebGLRenderingContext when given a HTMLCanvasElement', function() {
@@ -163,10 +149,13 @@
                 assert( exts instanceof Array );
                 WebGLContext.remove( canvas );
             });
-            it('should return an empty array if no context is referenced', function() {
-                var exts = WebGLContext.supportedExtensions();
-                assert( exts instanceof Array );
-                assert( exts.length === 0 );
+            it('should throw an exception if no context is referenced', function() {
+                try {
+                    WebGLContext.supportedExtensions();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
         });
 
@@ -178,15 +167,18 @@
                 assert( exts instanceof Array );
                 WebGLContext.remove( canvas );
             });
-            it('should return an empty array if no context is referenced', function() {
-                var exts = WebGLContext.unsupportedExtensions();
-                assert( exts instanceof Array );
-                assert( exts.length === 0 );
+            it('should throw an exception if no context is referenced', function() {
+                try {
+                    WebGLContext.unsupportedExtensions();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
         });
 
         describe('#checkExtension()', function() {
-            it('should a bool for whether or not the extension is support', function() {
+            it('should return a bool for whether or not the extension is support', function() {
                 var canvas = new HTMLCanvasElement();
                 WebGLContext.get( canvas );
                 var isSupported = WebGLContext.checkExtension('randomExt');
@@ -200,10 +192,13 @@
                 assert( typeof isSupported === 'boolean' );
                 WebGLContext.remove( canvas );
             });
-            it('should return false if there is no context to check', function() {
-                var isSupported = WebGLContext.checkExtension();
-                assert( typeof isSupported === 'boolean' );
-                assert( isSupported === false );
+            it('should return throw an exception if no context is referenced', function() {
+                try {
+                    WebGLContext.checkExtension();
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
         });
 

@@ -230,8 +230,7 @@
                 });
                 return supported;
             }
-            console.warn( 'No context is currently bound or was provided, returning an empty array' );
-            return [];
+            throw 'No context is currently bound or could be associated with the provided argument';
         },
 
         /**
@@ -254,8 +253,7 @@
                 });
                 return unsupported;
             }
-            console.warn( 'No context is currently bound or was provided, returning an empty array' );
-            return [];
+            throw 'No context is currently bound or could be associated with the provided argument';
         },
 
         /**
@@ -271,15 +269,14 @@
             if ( !extension ) {
                 // shift parameters if no canvas arg is provided
                 extension = arg;
-                arg = null;
+                arg = undefined;
             }
             var wrapper = getContextWrapper( arg );
             if ( wrapper ) {
                 var extensions = wrapper.extensions;
                 return extensions[ extension ] ? true : false;
             }
-            console.warn( 'No context is currently bound or provided as argument, returning false' );
-            return false;
+            throw 'No context is currently bound or could be associated with the provided argument';
         }
     };
 

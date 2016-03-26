@@ -4,22 +4,8 @@
 
     var assert = require('assert');
     var VertexPackage = require( '../../src/core/VertexPackage' );
-    var _warn;
-    var _error;
 
     describe('VertexPackage', function() {
-
-        beforeEach( function() {
-            _warn = console.warn;
-            _error = console.error;
-            console.warn = function() {};
-            console.error = function() {};
-        });
-
-        afterEach( function() {
-            console.warn = _warn;
-            console.error = _error;
-        });
 
         describe('#constructor()', function() {
             it('should accept an object of vertex attribute arrays', function() {
@@ -163,15 +149,48 @@
                 });
                 assert( p.buffer.length === 3 * 4 );
             });
-            it('should gracefully remove unused or erroneous attributes', function() {
-                var p = new VertexPackage({
-                    0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
-                    1: [],
-                    2: null,
-                    3: 5,
-                    sadfasd: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
-                });
-                assert( p.buffer.length === 4*3 );
+            it('should throw exception on invalid or erroneous attribute values', function() {
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        1: [],
+                        2: null,
+                        3: 5,
+                        sadfasd: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
+            });
+            it('should throw exception on invalid or erroneous attribute indices', function() {
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        'error': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        '1.3': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        'a3f': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                    assert( false );
+                } catch( err ) {
+                    assert( true );
+                }
             });
         });
 

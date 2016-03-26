@@ -344,8 +344,7 @@
         var state = this.state;
         // if there is no shader bound, exit early
         if ( state.shaders.top() !== this ) {
-            console.warn( 'The current Shader is not the top most element on the stack. Command ignored.' );
-            return this;
+            throw 'The current Shader is not the top most element on the stack';
         }
         // pop shader off stack
         state.shaders.pop();
