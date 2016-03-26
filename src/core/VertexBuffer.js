@@ -17,6 +17,10 @@
     var TYPES = {
         FLOAT: true
     };
+    var BYTES_PER_TYPE = {
+        FLOAT: 4
+    };
+    var BYTES_PER_COMPONENT = BYTES_PER_TYPE.FLOAT;
     var SIZES = {
         1: true,
         2: true,
@@ -26,7 +30,6 @@
     var DEFAULT_MODE = 'TRIANGLES';
     var DEFAULT_OFFSET = 0;
     var DEFAULT_COUNT = 0;
-    var BYTES_PER_COMPONENT = 4;
 
     /**
      * Parse the attribute pointers and determine the stride of the buffer.
@@ -44,24 +47,25 @@
             return 0;
         }
         var maxOffset = 0;
-        var sizeSum = 0;
+        var byteSizeSum = 0;
         var stride = 0;
         indices.forEach( function( index ) {
             var pointer = attributePointers[ index ];
             var offset = pointer.offset;
             var size = pointer.size;
+            var type = pointer.type;
             // track the sum of each attribute size
-            sizeSum += size;
+            byteSizeSum += size * BYTES_PER_TYPE[ type ];
             // track the largest offset to determine the stride of the buffer
             if ( offset > maxOffset ) {
                 maxOffset = offset;
-                stride = offset + ( size * BYTES_PER_COMPONENT );
+                stride = offset + ( size * BYTES_PER_TYPE[ type ] );
             }
         });
         // check if the max offset is greater than or equal to the the sum of
         // the sizes. If so this buffer is not interleaved and does not need a
         // stride.
-        if ( maxOffset >= sizeSum * BYTES_PER_COMPONENT ) {
+        if ( maxOffset >= byteSizeSum ) {
             // TODO: test what stride === 0 does for an interleaved buffer of
             // length === 1.
             return 0;
@@ -159,6 +163,8 @@
         } else {
             this.pointers = getAttributePointers( attributePointers );
         }
+        // set stride
+        this.stride = getStride( this.pointers );
         // then buffer the data
         if ( arg ) {
             if ( arg instanceof VertexPackage ) {
@@ -176,15 +182,18 @@
                 this.bufferData( arg );
             }
         }
-        // finally, set stride
-        this.stride = getStride( this.pointers );
+        // ensure there isn't an overflow
+        var bufferCount = ( this.byteLength / BYTES_PER_COMPONENT ) / getNumComponents( this.pointers );
+        if ( this.count + this.offset > bufferCount ) {
+            throw 'VertexBuffer `count` of ' + this.count + ' and `offset` of ' + this.offset + ' overflows the total count of the buffer ' + bufferCount;
+        }
     }
 
     /**
      * Upload vertex data to the GPU.
      * @memberof VertexBuffer
      *
-     * @param {Array|Float32Array|number} arg - The array of data to buffer, or size of the buffer in bytes.
+     * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer, or size of the buffer in bytes.
      *
      * @returns {VertexBuffer} The vertex buffer object for chaining.
      */
@@ -215,6 +224,9 @@
         }
         // set byte length
         if ( typeof arg === 'number' ) {
+            if ( arg % BYTES_PER_COMPONENT ) {
+                throw 'Byte length must be multiple of ' + BYTES_PER_COMPONENT;
+            }
             this.byteLength = arg;
         } else {
             this.byteLength = arg.length * BYTES_PER_COMPONENT;
@@ -227,7 +239,7 @@
      * Upload partial vertex data to the GPU.
      * @memberof VertexBuffer
      *
-     * @param {Array|Float32Array} array - The array of data to buffer.
+     * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
      * @param {number} byteOffset - The byte offset at which to buffer.
      *
      * @returns {VertexBuffer} The vertex buffer object for chaining.
@@ -250,6 +262,7 @@
         }
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferSubData( gl.ARRAY_BUFFER, byteOffset, array );
+        return this;
     };
 
     /**
@@ -333,9 +346,12 @@
         var mode = gl[ options.mode || this.mode ];
         var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
+        if ( count === 0 ) {
+            throw 'Attempting to draw with a count of 0';
+        }
         var bufferCount = this.byteLength / BYTES_PER_COMPONENT;
         if ( count + offset > bufferCount ) {
-            throw 'Provided `count` of `' + count + '` and offset of `' + offset + '` overflows the total count of the buffer `' + bufferCount + '`';
+            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' overflows the total count of the buffer ' + bufferCount;
         }
         // draw elements
         gl.drawArrays( mode, offset, count );

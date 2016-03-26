@@ -116,6 +116,9 @@
             positions = null;
             normals = null;
             uvs = null;
+            pointers = null;
+            separate = null;
+            interleaved = null;
         });
 
         describe('#constructor()', function() {
@@ -151,7 +154,7 @@
                 }
                 assert( result );
             });
-            it('should accept an array type and attribute pointers as arguments', function() {
+            it('should accept an Array and attribute pointers as arguments', function() {
                 try {
                     new VertexBuffer( separate.buffer, separate.pointers );
                     assert( true );
@@ -159,9 +162,9 @@
                     assert( false );
                 }
             });
-            it('should accept a length and attribute pointers as arguments', function() {
+            it('should accept a numeric byte length and attribute pointers as arguments', function() {
                 try {
-                    new VertexBuffer( separate.buffer.length, separate.pointers );
+                    new VertexBuffer( separate.buffer.length * bytesPerComponent, separate.pointers );
                     assert( true );
                 } catch( err ) {
                     assert( false );
@@ -214,14 +217,26 @@
                 assert( vb1.count === 0 );
             });
             it('should accept mode, count, and offset options for drawing', function() {
-                var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers, {
+                var vb = new VertexBuffer( positions, pointers, {
                     mode: 'POINTS',
-                    count: 100,
-                    offset: 10
+                    count: ( positions.length / 3 ) / 2,
+                    offset: ( positions.length / 3 ) / 2
                 });
                 assert( vb.mode === 'POINTS' );
-                assert( vb.count === 100 );
-                assert( vb.offset === 10 );
+                assert( vb.count === ( positions.length / 3 ) / 2 );
+                assert( vb.offset === ( positions.length / 3 ) / 2 );
+            });
+            it('should throw an exception if count + offset overflows the buffer', function() {
+                var result = false;
+                try {
+                    new VertexBuffer( positions, pointers, {
+                        count: positions.length / 3,
+                        offset: 1
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
             });
             it('should throw an exception if no attribute pointers are provided', function() {
                 var result = false;
@@ -344,20 +359,30 @@
                     assert( false );
                 }
             });
-            it('should accept numeric length argument', function() {
+            it('should accept numeric byte length argument', function() {
                 var vb = new VertexBuffer( null, pointers );
                 try {
-                    vb.bufferData( positions.length );
+                    vb.bufferData( positions.length * bytesPerComponent );
                     assert( true );
                 } catch( err ) {
                     assert( false );
                 }
             });
+            it('should throw an exception if byte length is not multiple of component byte size', function() {
+                var vb = new VertexBuffer( null, pointers );
+                var result = false;
+                try {
+                    vb.bufferData( positions.length * bytesPerComponent + 1 );
+                }catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
             it('should not overwrite count if count is not zero', function() {
                 var vb = new VertexBuffer( positions, pointers, {
                     count: 200
                 });
-                vb.bufferData( positions.length );
+                vb.bufferData( positions.length * bytesPerComponent );
                 assert( vb.count === 200 );
             });
             it('should throw an exception when given an invalid argument', function() {
@@ -420,14 +445,14 @@
                 var vb = new VertexBuffer( null, pointers );
                 var result = false;
                 try {
-                    vb.bufferSubData( new ArrayBuffer( positions.length ) );
+                    vb.bufferSubData( new ArrayBuffer( positions.length * bytesPerComponent ) );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
             });
             it('should throw an exception when given an invalid argument', function() {
-                var vb = new VertexBuffer( positions.length, pointers );
+                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 var result = false;
                 try {
                     vb.bufferSubData( 'str' );
@@ -444,7 +469,7 @@
                 assert( result );
             });
             it('should throw an exception when provided offset and argument length overflow the buffer size', function() {
-                var vb = new VertexBuffer( positions.length, pointers );
+                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 var result = false;
                 try {
                     vb.bufferSubData( positions, 10 * bytesPerComponent );
@@ -500,6 +525,20 @@
                 } catch( err ) {
                     result = true;
                 }
+                assert( result );
+            });
+            it('should throw an exception if the count is zero', function() {
+                var vb = new VertexBuffer( positions, pointers );
+                var result = false;
+                try {
+                    vb.bind();
+                    vb.draw({
+                        count: 0
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                vb.unbind();
                 assert( result );
             });
             it('should throw an exception if the count and offset overflow the buffer', function() {

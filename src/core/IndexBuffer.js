@@ -17,6 +17,10 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
+    var BYTES_PER_TYPE = {
+        UNSIGNED_SHORT: 2,
+        UNSIGNED_INT: 4
+    };
 
     /**
      * The default component type.
@@ -58,14 +62,40 @@
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
         this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
+        this.byteLength = 0;
         if ( arg ) {
             if ( arg instanceof WebGLBuffer ) {
-                // if the argument is already a webglbuffer, simply wrap it
+                // WebGLBuffer argument
+                if ( options.byteLength === undefined ) {
+                    throw 'Argument of type `WebGLBuffer` must be complimented with a corresponding `options.byteLength`';
+                }
+                this.byteLength = options.byteLength;
                 this.buffer = arg;
+            } else if ( typeof arg === 'number' ) {
+                // byte length argument
+                if ( options.type === undefined ) {
+                    throw 'Argument of type `number` must be complimented with a corresponding `options.type`';
+                }
+                this.bufferData( arg );
+            } else if ( arg instanceof ArrayBuffer ) {
+                // ArrayBuffer arg
+                if ( options.type === undefined ) {
+                    throw 'Argument of type `ArrayBuffer` must be complimented with a corresponding `options.type`';
+                }
+                this.bufferData( arg );
             } else {
-                // otherwise, buffer it
+                // Array or ArrayBufferView argument
                 this.bufferData( arg );
             }
+        } else {
+            if ( options.type === undefined ) {
+                throw 'Empty buffer must be complimented with a corresponding `options.type`';
+            }
+        }
+        // ensure there isn't an overflow
+        var bufferCount = ( this.byteLength / BYTES_PER_TYPE[ this.type ] );
+        if ( this.count + this.offset > bufferCount ) {
+            throw 'IndexBuffer `count` of ' + this.count + ' and `offset` of ' + this.offset + ' overflows the total count of the buffer ' + bufferCount;
         }
     }
 
@@ -73,50 +103,94 @@
      * Upload index data to the GPU.
      * @memberof IndexBuffer
      *
-     * @param {Array|Uint16Array|Uint32Array} arg - The array of data to buffer.
+     * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer.
      *
      * @returns {IndexBuffer} The index buffer object for chaining.
      */
     IndexBuffer.prototype.bufferData = function( arg ) {
         var gl = this.gl;
-        // check for type support
-        var uint32support = WebGLContext.checkExtension( 'OES_element_index_uint' );
-        if( !uint32support ) {
-            // no support for uint32
-            if ( arg instanceof Array ) {
-                // if array, buffer to uint16
-                arg = new Uint16Array( arg );
-            } else if ( arg instanceof Uint32Array ) {
-                // if uint32, downgrade to uint16
-                console.warn( 'Cannot create IndexBuffer of format gl.UNSIGNED_INT as OES_element_index_uint is not supported, defaulting to gl.UNSIGNED_SHORT.' );
-                arg = new Uint16Array( arg );
-            }
-        } else {
-            // uint32 is supported
-            if ( arg instanceof Array ) {
-                // if array, buffer to uint32
+        // cast array to ArrayBufferView based on provided type
+        if ( arg instanceof Array ) {
+            // check for type support
+            if ( this.type === 'UNSIGNED_INT' ) {
+                var uint32support = WebGLContext.checkExtension( 'OES_element_index_uint' );
+                if( !uint32support ) {
+                    throw 'Cannot create buffer of format gl.UNSIGNED_INT as extension `OES_element_index_uint` is not supported';
+                }
+                // uint32 is supported
                 arg = new Uint32Array( arg );
+            } else {
+                // buffer to uint16
+                arg = new Uint16Array( arg );
             }
         }
-        // set data type based on array
+        // set type based on arg
         if ( arg instanceof Uint16Array ) {
             this.type = 'UNSIGNED_SHORT';
         } else if ( arg instanceof Uint32Array ) {
             this.type = 'UNSIGNED_INT';
-        } else {
-            console.error( 'IndexBuffer requires an Array or ArrayBuffer argument, command ignored.' );
-            return this;
+        } else if ( !( arg instanceof ArrayBuffer ) && typeof arg !== 'number' ) {
+            throw '`bufferData` requires an Array, ArrayBuffer, ArrayBufferView or numberic argument';
         }
+        // set byte length
+        this.byteLength = arg.length * BYTES_PER_TYPE[ this.type ];
         // create buffer, store count
         if ( !this.buffer ) {
             this.buffer = gl.createBuffer();
         }
         // don't overwrite the count if it is already set
         if ( this.count === DEFAULT_COUNT ) {
-            this.count = arg.length;
+            if ( typeof arg === 'number' ) {
+                this.count = ( arg / BYTES_PER_TYPE[ this.type ] );
+            } else {
+                this.count = arg.length;
+            }
         }
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, arg, gl.STATIC_DRAW );
+        return this;
+    };
+
+    /**
+     * Upload partial index data to the GPU.
+     * @memberof IndexBuffer
+     *
+     * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
+     * @param {number} byteOffset - The byte offset at which to buffer.
+     *
+     * @returns {IndexBuffer} The vertex buffer object for chaining.
+     */
+    IndexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
+        var gl = this.gl;
+        if ( !this.buffer ) {
+            throw '`bufferSubData` has not been allocated, use `bufferData`';
+        }
+        // check for type support
+        var uint32support = WebGLContext.checkExtension( 'OES_element_index_uint' );
+        if( !uint32support ) {
+            // no support for uint32
+            if ( array instanceof Array ) {
+                // if array, buffer to uint16
+                array = new Uint16Array( array );
+            } else if ( array instanceof Uint32Array ) {
+                // if uint32, downgrade to uint16
+                throw 'Cannot buffer data of format gl.UNSIGNED_INT as extension `OES_element_index_uint` is not supported';
+            }
+        } else {
+            // uint32 is supported
+            if ( array instanceof Array ) {
+                // if array, buffer to uint32
+                array = new Uint32Array( array );
+            }
+        }
+        byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_OFFSET;
+        // get the total number of attribute components from pointers
+        var byteLength = array.length * BYTES_PER_TYPE[ this.type ];
+        if ( byteOffset + byteLength > this.byteLength ) {
+            throw 'Argument of length ' + byteLength + ' bytes and offset of ' + byteOffset + ' bytes overflows the buffer length of ' + this.byteLength + ' bytes';
+        }
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
+        gl.bufferSubData( gl.ELEMENT_ARRAY_BUFFER, byteOffset, array );
         return this;
     };
 
@@ -139,12 +213,11 @@
         var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
         if ( count === 0 ) {
-            console.warn( 'Attempting to draw an IndexBuffer with a count of 0, command ignored.' );
-            return this;
+            throw 'Attempting to draw with a count of 0';
         }
+        var bufferCount = this.byteLength / BYTES_PER_TYPE[ this.type ];
         if ( offset + count > this.count ) {
-            console.warn( 'Attempting to draw an IndexBuffer with (offset + count) greater than the count, command ignored.' );
-            return this;
+            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' overflows the total count of the buffer ' + bufferCount;
         }
         // if this buffer is already bound, exit early
         if ( this.state.boundIndexBuffer !== this.buffer ) {
