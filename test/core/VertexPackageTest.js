@@ -2,9 +2,10 @@
 
     'use strict';
 
-    var assert = require('assert'),
-        VertexPackage = require( '../../src/core/VertexPackage' ),
-        _warn, _error;
+    var assert = require('assert');
+    var VertexPackage = require( '../../src/core/VertexPackage' );
+    var _warn;
+    var _error;
 
     describe('VertexPackage', function() {
 
