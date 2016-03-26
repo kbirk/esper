@@ -122,8 +122,7 @@
         gl.shaderSource( shader, shaderSource );
         gl.compileShader( shader );
         if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
-            console.error( 'An error occurred compiling the shaders:', gl.getShaderInfoLog( shader ) );
-            return null;
+            throw 'An error occurred compiling the shaders:\n' + gl.getShaderInfoLog( shader );
         }
         return shader;
     }
@@ -175,7 +174,6 @@
                 url: url,
                 responseType: 'text',
                 success: function( res ) {
-                    console.log();
                     done( null, res );
                 },
                 error: function( err ) {
@@ -224,16 +222,43 @@
     }
 
     /**
-     * Clears the shader attributes due to aborting of initialization.
+     * Creates the shader program object from source strings. This includes:
+     *    1) Compiling and linking the shader program.
+     *    2) Parsing shader source for attribute and uniform information.
+     *    3) Binding attribute locations, by order of delcaration.
+     *    4) Querying and storing uniform location.
      * @private
      *
      * @param {Shader} shader - The Shader object.
+     * @param {Object} sources - A map containing sources under 'vert' and 'frag' attributes.
+     *
+     * @returns {Shader} The shader object, for chaining.
      */
-    function abortShader( shader ) {
-        shader.program = null;
-        shader.attributes = null;
-        shader.uniforms = null;
-        return shader;
+    function createProgram( shader, sources ) {
+        var gl = shader.gl;
+        var common = sources.common.join( '' );
+        var vert = sources.vert.join( '' );
+        var frag = sources.frag.join( '' );
+        // compile shaders
+        var vertexShader = compileShader( gl, common + vert, 'VERTEX_SHADER' );
+        var fragmentShader = compileShader( gl, common + frag, 'FRAGMENT_SHADER' );
+        // parse source for attribute and uniforms
+        setAttributesAndUniforms( shader, vert, frag );
+        // create the shader program
+        shader.program = gl.createProgram();
+        // attach vertex and fragment shaders
+        gl.attachShader( shader.program, vertexShader );
+        gl.attachShader( shader.program, fragmentShader );
+        // bind vertex attribute locations BEFORE linking
+        bindAttributeLocations( shader );
+        // link shader
+        gl.linkProgram( shader.program );
+        // If creating the shader program failed, alert
+        if ( !gl.getProgramParameter( shader.program, gl.LINK_STATUS ) ) {
+            throw 'An error occured linking the shader:\n' + gl.getProgramInfoLog( shader.program );
+        }
+        // get shader uniform locations
+        getUniformLocations( shader );
     }
 
     /**
@@ -253,6 +278,13 @@
     function Shader( spec, callback ) {
         var that = this;
         spec = spec || {};
+        // check source arguments
+        if ( !spec.vert ) {
+            throw 'Vertex shader argument has not been provided, shader initialization aborted';
+        }
+        if ( !spec.frag ) {
+            throw 'Fragment shader argument has not been provided, shader initialization aborted';
+        }
         this.program = 0;
         this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( this.gl );
@@ -267,81 +299,25 @@
                 };
             });
         }
-        // check source arguments
-        if ( !spec.vert ) {
-            console.error( 'Vertex shader argument has not been provided, shader initialization aborted.' );
-            return;
-        }
-        if ( !spec.frag ) {
-            console.error( 'Fragment shader argument has not been provided, shader initialization aborted.' );
-            return;
-        }
         // create the shader
         Async.parallel({
             common: resolveSources( spec.common ),
             vert: resolveSources( spec.vert ),
             frag: resolveSources( spec.frag ),
-        }, function( err, shaders ) {
+        }, function( err, sources ) {
             if ( err ) {
                 if ( callback ) {
                     callback( err, null );
                 }
                 return;
             }
-            that.create( shaders );
+            // once all shader sources are loaded
+            createProgram( that, sources );
             if ( callback ) {
                 callback( null, that );
             }
         });
     }
-
-    /**
-     * Creates the shader object from source strings. This includes:
-     *    1) Compiling and linking the shader program.
-     *    2) Parsing shader source for attribute and uniform information.
-     *    3) Binding attribute locations, by order of delcaration.
-     *    4) Querying and storing uniform location.
-     * @memberof Shader
-     *
-     * @param {Object} shaders - A map containing sources under 'vert' and
-     *     'frag' attributes.
-     *
-     * @returns {Shader} The shader object, for chaining.
-     */
-    Shader.prototype.create = function( shaders ) {
-        // once all shader sources are loaded
-        var gl = this.gl;
-        var common = shaders.common.join( '' );
-        var vert = shaders.vert.join( '' );
-        var frag = shaders.frag.join( '' );
-        // compile shaders
-        var vertexShader = compileShader( gl, common + vert, 'VERTEX_SHADER' );
-        var fragmentShader = compileShader( gl, common + frag, 'FRAGMENT_SHADER' );
-        if ( !vertexShader || !fragmentShader ) {
-            console.error( 'Aborting instantiation of shader due to compilation errors.' );
-            return abortShader( this );
-        }
-        // parse source for attribute and uniforms
-        setAttributesAndUniforms( this, vert, frag );
-        // create the shader program
-        this.program = gl.createProgram();
-        // attach vertex and fragment shaders
-        gl.attachShader( this.program, vertexShader );
-        gl.attachShader( this.program, fragmentShader );
-        // bind vertex attribute locations BEFORE linking
-        bindAttributeLocations( this );
-        // link shader
-        gl.linkProgram( this.program );
-        // If creating the shader program failed, alert
-        if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS ) ) {
-            console.error( 'An error occured linking the shader:', gl.getProgramInfoLog( this.program ) );
-            console.error( 'Aborting instantiation of shader due to linking errors.' );
-            return abortShader( this );
-        }
-        // get shader uniform locations
-        getUniformLocations( this );
-        return this;
-    };
 
     /**
      * Binds the shader object and pushes it to the front of the stack.
@@ -394,26 +370,18 @@
      * @returns {Shader} The shader object, for chaining.
      */
     Shader.prototype.setUniform = function( name, value ) {
-        // ensure shader program exists
-        if ( !this.program ) {
-            console.warn( 'Attempting to use an incomplete shader, command ignored.' );
-            return;
-        }
         // ensure shader is bound
         if ( this !== this.state.shaders.top() ) {
-            console.warn( 'Attempting to set uniform `' + name + '` for an unbound shader, command ignored.' );
-            return this;
+            throw 'Attempting to set uniform `' + name + '` for an unbound shader';
         }
         var uniform = this.uniforms[ name ];
         // ensure that the uniform spec exists for the name
         if ( !uniform ) {
-            console.warn( 'No uniform found under name `' + name + '`, command ignored.' );
-            return this;
+            throw 'No uniform found under name `' + name + '`';
         }
         // ensure that the uniform argument is defined
         if ( value === undefined ) {
-            console.warn( 'Argument passed for uniform `' + name + '` is undefined, command ignored.' );
-            return this;
+            throw 'Argument passed for uniform `' + name + '` is undefined';
         }
         // if toArray function is present, convert to array
         if ( value.toArray ) {
