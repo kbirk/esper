@@ -208,9 +208,6 @@
             // if not arraybuffer or a numeric size
             throw '`bufferData` requires an Array, ArrayBuffer, ArrayBufferView, or number argument';
         }
-        if ( !this.buffer ) {
-            this.buffer = gl.createBuffer();
-        }
         // don't overwrite the count if it is already set
         if ( this.count === DEFAULT_COUNT ) {
             // get the total number of attribute components from pointers
@@ -231,6 +228,11 @@
         } else {
             this.byteLength = arg.length * BYTES_PER_COMPONENT;
         }
+        // create buffer
+        if ( !this.buffer ) {
+            this.buffer = gl.createBuffer();
+        }
+        // buffer the data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
     };

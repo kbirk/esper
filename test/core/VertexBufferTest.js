@@ -373,17 +373,17 @@
                 var result = false;
                 try {
                     vb.bufferData( positions.length * bytesPerComponent + 1 );
-                }catch( err ) {
+                } catch( err ) {
                     result = true;
                 }
                 assert( result );
             });
             it('should not overwrite count if count is not zero', function() {
-                var vb = new VertexBuffer( positions, pointers, {
-                    count: 200
+                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers, {
+                    count: ( positions.length / 3 ) / 2
                 });
-                vb.bufferData( positions.length * bytesPerComponent );
-                assert( vb.count === 200 );
+                vb.bufferData( positions );
+                assert( vb.count === ( positions.length / 3 ) / 2 );
             });
             it('should throw an exception when given an invalid argument', function() {
                 var vb = new VertexBuffer( null, pointers );

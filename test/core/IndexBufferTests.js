@@ -230,11 +230,12 @@
                 }
             });
             it('should not overwrite count if count is not zero', function() {
-                var ib = new IndexBuffer( indices, {
-                    count: 200
+                var ib = new IndexBuffer( indices.length * shortBytes, {
+                    type: 'UNSIGNED_SHORT',
+                    count: indices.length / 2
                 });
-                ib.bufferData( indices.length );
-                assert( ib.count === 200 );
+                ib.bufferData( indices );
+                assert( ib.count === indices.length / 2 );
             });
             it('should throw an exception when given an invalid argument', function() {
                 var ib = new IndexBuffer( null, {
@@ -265,6 +266,28 @@
                 assert( ib.count === indices.length / 2 );
                 assert( ib.offset === indices.length / 2 );
             });
+            it('should throw an exception if byte length is not multiple of component byte size', function() {
+                var ib0 = new IndexBuffer( null, {
+                    type: 'UNSIGNED_INT'
+                });
+                var result = false;
+                try {
+                    ib0.bufferData( indices.length * intBytes + 1 );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                var ib1 = new IndexBuffer( null, {
+                    type: 'UNSIGNED_SHORT'
+                });
+                result = false;
+                try {
+                    ib1.bufferData( indices.length * shortBytes + 1 );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
             it('should throw an exception if count and offset overflows the buffer', function() {
                 var result = false;
                 try {
@@ -280,56 +303,67 @@
             });
         });
 
-        /*
         describe('#bufferSubData()', function() {
             it('should accept an Array argument', function() {
-                var ib = new IndexBuffer( positions.length * bytesPerComponent, pointers );
+                var ib = new IndexBuffer( indices.length * intBytes, {
+                    type: 'UNSIGNED_INT'
+                });
                 try {
-                    ib.bufferSubData( positions );
+                    ib.bufferSubData( indices );
                     assert( true );
                 } catch( err ) {
                     assert( false );
                 }
             });
             it('should accept an ArrayBufferView argument', function() {
-                var ib = new IndexBuffer( positions.length * bytesPerComponent, pointers );
+                var ib = new IndexBuffer( indices.length * shortBytes, {
+                    type: 'UNSIGNED_SHORT'
+                });
                 try {
-                    ib.bufferSubData( new Float32Array( positions ) );
+                    ib.bufferSubData( new Uint16Array( indices ) );
                     assert( true );
                 } catch( err ) {
                     assert( false );
                 }
             });
             it('should accept an ArrayBuffer argument', function() {
-                var ib = new IndexBuffer( positions.length * bytesPerComponent, pointers );
+                var ib = new IndexBuffer( indices.length * shortBytes, {
+                    type: 'UNSIGNED_SHORT'
+                });
                 try {
-                    ib.bufferSubData( new ArrayBuffer( positions.length ) );
+                    ib.bufferSubData( new ArrayBuffer( indices.length ) );
                     assert( true );
                 } catch( err ) {
                     assert( false );
                 }
             });
             it('should accept a second numberic byte offset argument', function() {
-                var ib = new IndexBuffer( positions.length * bytesPerComponent * 2, pointers );
+                var ib = new IndexBuffer( indices.length * shortBytes * 2, {
+                    type: 'UNSIGNED_SHORT'
+                });
                 try {
-                    ib.bufferSubData( positions, positions.length * bytesPerComponent );
+                    ib.bufferSubData( indices, indices.length * shortBytes );
                     assert( true );
                 } catch( err ) {
                     assert( false );
                 }
             });
             it('should throw an exception if the buffer has not been initialized', function() {
-                var ib = new IndexBuffer( null, pointers );
+                var ib = new IndexBuffer( null, {
+                    type: 'UNSIGNED_SHORT'
+                });
                 var result = false;
                 try {
-                    ib.bufferSubData( new ArrayBuffer( positions.length ) );
+                    ib.bufferSubData( new ArrayBuffer( indices.length * shortBytes ) );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
             });
             it('should throw an exception when given an invalid argument', function() {
-                var ib = new IndexBuffer( positions.length, pointers );
+                var ib = new IndexBuffer( indices.length * shortBytes, {
+                    type: 'UNSIGNED_SHORT'
+                });
                 var result = false;
                 try {
                     ib.bufferSubData( 'str' );
@@ -346,64 +380,59 @@
                 assert( result );
             });
             it('should throw an exception when provided offset and argument length overflow the buffer size', function() {
-                var ib = new IndexBuffer( positions.length, pointers );
+                var ib = new IndexBuffer( indices.length * shortBytes, {
+                    type: 'UNSIGNED_SHORT'
+                });
                 var result = false;
                 try {
-                    ib.bufferSubData( positions, 10 * bytesPerComponent );
+                    ib.bufferSubData( indices, 10 * shortBytes );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
             });
         });
-        */
 
-        /*
         describe('#draw()', function() {
             it('should draw the buffer', function() {
-                var ib = new IndexBuffer( positions, pointers );
-                ib.bind();
-                ib.bind();
+                var ib = new IndexBuffer( indices );
                 ib.draw();
-                ib.unbind();
+                ib.draw();
             });
             it('should accept mode, count, and offset overrides', function() {
-                var ib = new IndexBuffer( positions, pointers );
-                ib.bind();
+                var ib = new IndexBuffer( indices );
                 ib.draw({
                     mode: 'POINTS',
-                    count: ( positions.length / 3 ) / 2,
-                    offset: ( positions.length / 3 ) / 2
+                    count: indices.length / 2,
+                    offset: indices.length / 2
                 });
-                ib.unbind();
             });
-            it('should throw an exception if the buffer is not bound', function() {
-                var ib = new IndexBuffer( positions, pointers );
+            it('should throw an exception if the count is zero', function() {
+                var ib = new IndexBuffer( indices );
                 var result = false;
                 try {
-                    ib.draw();
+                    ib.draw({
+                        count: 0
+                    });
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
             });
             it('should throw an exception if the count and offset overflow the buffer', function() {
-                var ib = new IndexBuffer( positions, pointers );
+                var ib = new IndexBuffer( indices );
                 var result = false;
                 try {
-                    ib.bind();
                     ib.draw({
-                        count: positions.length,
+                        count: indices.length,
                         offset: 1
                     });
-                    ib.unbind();
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
             });
         });
-        */
 
     });
 
