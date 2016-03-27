@@ -59,6 +59,10 @@
         this.state = WebGLContextState.get( this.gl );
         this.buffer = 0;
         this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
+        // check if type is supported
+        if ( this.type === 'UNSIGNED_INT' && !WebGLContext.checkExtension( 'OES_element_index_uint' ) ) {
+            throw 'Cannot create IndexBuffer of type gl.UNSIGNED_INT as extension `OES_element_index_uint` is not supported';
+        }
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
         this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
@@ -113,10 +117,6 @@
         if ( arg instanceof Array ) {
             // check for type support
             if ( this.type === 'UNSIGNED_INT' ) {
-                var uint32support = WebGLContext.checkExtension( 'OES_element_index_uint' );
-                if( !uint32support ) {
-                    throw 'Cannot create buffer of format gl.UNSIGNED_INT as extension `OES_element_index_uint` is not supported';
-                }
                 // uint32 is supported
                 arg = new Uint32Array( arg );
             } else {
@@ -124,7 +124,7 @@
                 arg = new Uint16Array( arg );
             }
         }
-        // set type based on arg
+        // set ensure type corresponds to data
         if ( arg instanceof Uint16Array ) {
             this.type = 'UNSIGNED_SHORT';
         } else if ( arg instanceof Uint32Array ) {
@@ -177,17 +177,14 @@
         if ( array instanceof Array ) {
             // check for type support
             if ( this.type === 'UNSIGNED_INT' ) {
-                var uint32support = WebGLContext.checkExtension( 'OES_element_index_uint' );
-                if( !uint32support ) {
-                    throw 'Cannot create buffer of format gl.UNSIGNED_INT as extension `OES_element_index_uint` is not supported';
-                }
                 // uint32 is supported
                 array = new Uint32Array( array );
             } else {
                 // buffer to uint16
                 array = new Uint16Array( array );
             }
-        } else if ( !( array instanceof Uint16Array ) &&
+        } else if (
+            !( array instanceof Uint16Array ) &&
             !( array instanceof Uint32Array ) &&
             !( array instanceof ArrayBuffer ) ) {
             throw '`bufferSubData` requires an Array, ArrayBuffer, or ArrayBufferView argument';
@@ -195,7 +192,6 @@
         byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_OFFSET;
         // get the total number of attribute components from pointers
         var byteLength = array.length * BYTES_PER_TYPE[ this.type ];
-        console.log( byteOffset ,' + ', byteLength, ' > ', this.byteLength);
         if ( byteOffset + byteLength > this.byteLength ) {
             throw 'Argument of length ' + byteLength + ' bytes and offset of ' + byteOffset + ' bytes overflows the buffer length of ' + this.byteLength + ' bytes';
         }

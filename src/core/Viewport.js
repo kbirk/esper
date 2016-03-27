@@ -140,7 +140,7 @@
         var state = this.state;
         var top = state.viewports.top();
         if ( !top || this !== top.viewport ) {
-            throw 'The current viewport is not the top most element on the stack';
+            throw 'Viewport is not the top most element on the stack';
         }
         state.viewports.pop();
         top = state.viewports.top();

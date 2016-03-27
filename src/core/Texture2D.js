@@ -4,6 +4,7 @@
 
     var WebGLContext = require('./WebGLContext');
     var WebGLContextState = require('./WebGLContextState');
+    var Util = require('../util/Util');
     var MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
@@ -30,6 +31,10 @@
         REPEAT: true,
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
+    };
+    var DEPTH_TYPES = {
+        DEPTH_COMPONENT: true,
+        DEPTH_STENCIL: true
     };
 
     /**
@@ -93,6 +98,13 @@
      * @param {String} spec.type - The texture pixel component type.
      */
     function Texture2D( spec ) {
+        spec = spec || {};
+        if ( !Util.isInteger( spec.width ) || spec.width <= 0 ) {
+            throw '`width` argument is missing or invalid';
+        }
+        if ( !Util.isInteger( spec.height ) || spec.height <= 0 ) {
+            throw '`width` argument is missing or invalid';
+        }
         this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( this.gl );
         // create texture object
@@ -111,9 +123,16 @@
         this.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
         this.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
         this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
-        // set format and type
+        // set format
         this.format = spec.format || DEFAULT_FORMAT;
+        if ( DEPTH_TYPES[ this.format ] && !WebGLContext.checkExtension( 'WEBGL_depth_texture' ) ) {
+            throw 'Cannot create Texture2D of format `' + this.format + '` as `WEBGL_depth_texture` extension is unsupported';
+        }
+        // set type
         this.type = spec.type || DEFAULT_TYPE;
+        if ( this.type === 'FLOAT' && !WebGLContext.checkExtension( 'OES_texture_float' ) ) {
+            throw 'Cannot create Texture2D of type `FLOAT` as `OES_texture_float` extension is unsupported';
+        }
         // buffer the data
         this.bufferData( spec.data || null, spec.width, spec.height );
         this.setParameters( this );
@@ -134,6 +153,9 @@
     Texture2D.prototype.push = function( location ) {
         if ( location === undefined ) {
             location = 0;
+        }
+        if ( !Util.isInteger( location ) || location < 0 ) {
+            throw 'Texture unit is invalid';
         }
         // if this texture is already bound, no need to rebind
         if ( this.state.texture2Ds.top( location ) !== this ) {
@@ -158,10 +180,12 @@
         if ( location === undefined ) {
             location = 0;
         }
+        if ( !Util.isInteger( location ) || location < 0 ) {
+            throw 'Texture unit is invalid';
+        }
         var state = this.state;
         if ( state.texture2Ds.top( location ) !== this ) {
-            console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
-            return this;
+            throw 'Texture2D is not the top most element on the stack';
         }
         state.texture2Ds.pop( location );
         var gl;
@@ -197,6 +221,30 @@
         gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
         // premultiply alpha if specified
         gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha );
+        // cast array arg
+        if ( data instanceof Array ) {
+            if ( this.type === 'UNSIGNED_SHORT' ) {
+                data = new Uint16Array( data );
+            } else if ( this.type === 'UNSIGNED_INT' ) {
+                data = new Uint32Array( data );
+            } else if ( this.type === 'FLOAT' ) {
+                data = new Float32Array( data );
+            } else {
+                data = new Uint8Array( data );
+            }
+        }
+        // set ensure type corresponds to data
+        if ( data instanceof Uint8Array ) {
+            this.type = 'UNSIGNED_BYTE';
+        } else if ( data instanceof Uint16Array ) {
+            this.type = 'UNSIGNED_SHORT';
+        } else if ( data instanceof Uint32Array ) {
+            this.type = 'UNSIGNED_INT';
+        } else if ( data instanceof Float32Array ) {
+            this.type = 'FLOAT';
+        } else if ( data && !( data instanceof ArrayBuffer ) ) {
+            throw '`bufferData` requires a null, Array, ArrayBuffer, or ArrayBufferView argument';
+        }
         // store data description
         this.data = data;
         this.width = width || this.width;
@@ -244,7 +292,7 @@
                 this.wrapS = param;
                 gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl[ this.wrapS ] );
             } else {
-                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_S`, command ignored.' );
+                throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_S`';
             }
         }
         // set wrap T parameter
@@ -254,7 +302,7 @@
                 this.wrapT = param;
                 gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl[ this.wrapT ] );
             } else {
-                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_T`, command ignored.' );
+                throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_T`';
             }
         }
         // set mag filter parameter
@@ -264,7 +312,7 @@
                 this.magFilter = param;
                 gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl[ this.magFilter ] );
             } else {
-                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MAG_FILTER`, command ignored.' );
+                throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MAG_FILTER`';
             }
         }
         // set min filter parameter
@@ -279,14 +327,14 @@
                     this.minFilter = param;
                     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
                 } else  {
-                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                    throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`';
                 }
             } else {
                 if ( MIN_FILTERS[ param ] ) {
                     this.minFilter = param;
                     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
                 } else {
-                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                    throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`';
                 }
             }
         }
@@ -304,9 +352,11 @@
      * @returns {Texture2D} The texture object, for chaining.
      */
     Texture2D.prototype.resize = function( width, height ) {
-        if ( !width || !height ) {
-            console.warn( 'Width or height arguments missing, command ignored.' );
-            return this;
+        if ( !Util.isInteger( width ) || ( width <= 0 ) ) {
+            throw '`width` value is invalid';
+        }
+        if ( !Util.isInteger( height ) || ( height <= 0 ) ) {
+            throw '`height` value is invalid';
         }
         this.bufferData( this.data, width, height );
         return this;

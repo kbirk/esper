@@ -200,10 +200,11 @@
     VertexBuffer.prototype.bufferData = function( arg ) {
         var gl = this.gl;
         if ( arg instanceof Array ) {
-            // cast arrays into bufferview
+            // cast array into ArrayBufferView
             arg = new Float32Array( arg );
-        } else if ( !( arg instanceof ArrayBuffer ) &&
-            !ArrayBuffer.isView( arg ) &&
+        } else if (
+            !( arg instanceof ArrayBuffer ) &&
+            !( arg instanceof Float32Array ) &&
             typeof arg !== 'number' ) {
             // if not arraybuffer or a numeric size
             throw '`bufferData` requires an Array, ArrayBuffer, ArrayBufferView, or number argument';

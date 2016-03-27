@@ -103,6 +103,22 @@
                     assert( false );
                 }
             });
+            it('should throw exception if `type` of `UNSIGNED_INT` is not supported by extension', function() {
+                var check = WebGLContext.checkExtension;
+                WebGLContext.checkExtension = function() {
+                    return false;
+                };
+                var result = false;
+                try {
+                    new IndexBuffer( indices, {
+                        type: 'UNSIGNED_INT'
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                WebGLContext.checkExtension = check;
+            });
             it('should infer `UNSIGNED_SHORT` type from Uint16Array argument', function() {
                 try {
                     var ib = new IndexBuffer( new Uint16Array( indices ) );
@@ -119,10 +135,16 @@
                     assert( false );
                 }
             });
-            it('should use provided `type` option to override ArrayBufferView arg type from Uint32Array argument', function() {
+            it('should use override provided `type` option to based on ArrayBufferView type', function() {
                 try {
-                    var ib = new IndexBuffer( new Uint32Array( indices ) );
-                    assert( ib.type === 'UNSIGNED_INT' );
+                    var ib0 = new IndexBuffer( new Uint32Array( indices ), {
+                        type: 'UNSIGNED_SHORT'
+                    });
+                    assert( ib0.type === 'UNSIGNED_INT' );
+                    var ib1 = new IndexBuffer( new Uint16Array( indices ), {
+                        type: 'UNSIGNED_INT'
+                    });
+                    assert( ib1.type === 'UNSIGNED_SHORT' );
                 } catch( err ) {
                     assert( false );
                 }
