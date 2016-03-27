@@ -183,6 +183,35 @@
                 } catch( err ) {
                     result = true;
                 }
+                result = false;
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        'true': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                result = false;
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        '1.3': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                result = false;
+                try {
+                    new VertexPackage({
+                        0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+                        '-1': [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
+                    });
+                } catch( err ) {
+                    result = true;
+                }
                 assert( result );
             });
         });

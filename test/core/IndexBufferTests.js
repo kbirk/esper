@@ -183,7 +183,6 @@
             });
         });
 
-
         describe('#bufferData()', function() {
             it('should accept an Array argument', function() {
                 var ib = new IndexBuffer( null, {

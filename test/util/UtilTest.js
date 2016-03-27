@@ -6,6 +6,24 @@
     var Util = require( '../../src/util/Util' );
 
     describe('Util', function() {
+        describe('#isInteger()', function() {
+            it('should return true if the valid is an integer', function() {
+                assert( Util.isInteger( 0 ) );
+                assert( Util.isInteger( 1 ) );
+                assert( Util.isInteger( 123 ) );
+                assert( Util.isInteger( -123 ) );
+            });
+            it('should return false if the valid is not an integer', function() {
+                assert( !Util.isInteger( undefined ) );
+                assert( !Util.isInteger( null ) );
+                assert( !Util.isInteger( NaN ) );
+                assert( !Util.isInteger( true ) );
+                assert( !Util.isInteger( false ) );
+                assert( !Util.isInteger( 1.23 ) );
+                assert( !Util.isInteger( '12.33' ) );
+                assert( !Util.isInteger( '123' ) );
+            });
+        });
         describe('#isPowerOfTwo()', function() {
             it('should return true if the argument is a power of two, false if not', function() {
                 assert( Util.isPowerOfTwo( 1 ) );

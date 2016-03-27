@@ -2,6 +2,7 @@
 
     'use strict';
 
+    var Util = require('../util/Util');
     var COMPONENT_TYPE = 'FLOAT';
     var BYTES_PER_COMPONENT = 4;
 
@@ -16,9 +17,9 @@
     function parseAttributeMap( attributes ) {
         var goodAttributes = [];
         Object.keys( attributes ).forEach( function( key ) {
-            var index = parseInt( key, 10 );
+            var index = parseFloat( key );
             // check that key is an valid integer
-            if ( isNaN( index ) ) {
+            if ( !Util.isInteger( index ) || index < 0 ) {
                 throw 'Attribute index `' + key + '` does not represent a valid integer';
             }
             var vertices = attributes[key];

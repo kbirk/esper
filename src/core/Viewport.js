@@ -4,6 +4,7 @@
 
     var WebGLContext = require('./WebGLContext');
     var WebGLContextState = require('./WebGLContextState');
+    var Util = require('../util/Util');
 
     /**
      * Bind the viewport to the rendering context.
@@ -58,12 +59,16 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.resize = function( width, height ) {
-        if ( width !== undefined && height !== undefined ) {
-            this.width = width;
-            this.height = height;
-            this.gl.canvas.width = width + this.x;
-            this.gl.canvas.height = height + this.y;
+        if ( !Util.isInteger( width ) || ( width <= 0 ) ) {
+            throw '`width` value is invalid';
         }
+        if ( !Util.isInteger( height ) || ( height <= 0 ) ) {
+            throw '`height` value is invalid';
+        }
+        this.width = width;
+        this.height = height;
+        this.gl.canvas.width = width + this.x;
+        this.gl.canvas.height = height + this.y;
         return this;
     };
 
@@ -77,12 +82,16 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.offset = function( x, y ) {
-        if ( x !== undefined && y !== undefined ) {
-            this.x = x;
-            this.y = y;
-            this.gl.canvas.width = this.width + x;
-            this.gl.canvas.height = this.height + y;
+        if ( !Util.isInteger( x ) ) {
+            throw '`x` value is invalid';
         }
+        if ( !Util.isInteger( y ) ) {
+            throw '`y` value is invalid';
+        }
+        this.x = x;
+        this.y = y;
+        this.gl.canvas.width = this.width + x;
+        this.gl.canvas.height = this.height + y;
         return this;
     };
 
@@ -98,6 +107,18 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.push = function( x, y, width, height ) {
+        if ( x !== undefined && !Util.isInteger( x ) ) {
+            throw '`x` value is invalid';
+        }
+        if ( y !== undefined && !Util.isInteger( y ) ) {
+            throw '`y` value is invalid';
+        }
+        if ( width !== undefined && ( !Util.isInteger( width ) || ( width <= 0 ) ) ) {
+            throw '`width` value is invalid';
+        }
+        if ( height !== undefined && ( !Util.isInteger( height ) || ( height <= 0 ) ) ) {
+            throw '`height` value is invalid';
+        }
         this.state.viewports.push({
             viewport: this,
             x: x,
@@ -117,12 +138,12 @@
      */
     Viewport.prototype.pop = function() {
         var state = this.state;
-        if ( this !== state.viewports.top().viewport ) {
-            console.warn( 'The current viewport is not the top most element on the stack. Command ignored.' );
-            return this;
+        var top = state.viewports.top();
+        if ( !top || this !== top.viewport ) {
+            throw 'The current viewport is not the top most element on the stack';
         }
         state.viewports.pop();
-        var top = state.viewports.top();
+        top = state.viewports.top();
         if ( top ) {
             set( top.viewport, top.x, top.y, top.width, top.height );
         } else {

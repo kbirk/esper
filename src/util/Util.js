@@ -4,6 +4,10 @@
 
     module.exports = {
 
+        isInteger: function( num ) {
+            return ( typeof num === 'number' && ( num % 1 ) === 0 );
+        },
+
         /**
          * Returns true if the provided integer is a power of two.
          *
