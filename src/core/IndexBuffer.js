@@ -55,9 +55,9 @@
      */
     function IndexBuffer( arg, options ) {
         options = options || {};
-        this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( this.gl );
-        this.buffer = 0;
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
+        this.buffer = gl.createBuffer();
         this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
         // check if type is supported
         if ( this.type === 'UNSIGNED_INT' && !WebGLContext.checkExtension( 'OES_element_index_uint' ) ) {
@@ -170,8 +170,8 @@
      */
     IndexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
         var gl = this.gl;
-        if ( !this.buffer ) {
-            throw '`bufferSubData` has not been allocated, use `bufferData`';
+        if ( this.byteLength === 0 ) {
+            throw '`bufferSubData` can not be used on a buffer that has not been allocated';
         }
         // cast array to ArrayBufferView based on provided type
         if ( array instanceof Array ) {

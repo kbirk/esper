@@ -147,9 +147,9 @@
      */
     function VertexBuffer( arg, attributePointers, options ) {
         options = options || {};
-        this.buffer = 0;
-        this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( this.gl );
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
+        this.buffer = gl.createBuffer();
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
         this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
@@ -229,10 +229,6 @@
         } else {
             this.byteLength = arg.length * BYTES_PER_COMPONENT;
         }
-        // create buffer
-        if ( !this.buffer ) {
-            this.buffer = gl.createBuffer();
-        }
         // buffer the data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
@@ -249,8 +245,8 @@
      */
     VertexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
         var gl = this.gl;
-        if ( !this.buffer ) {
-            throw '`bufferSubData` has not been allocated, use `bufferData`';
+        if ( this.byteLength === 0 ) {
+            throw '`bufferSubData` can not be used on a buffer that has not been allocated';
         }
         if ( array instanceof Array ) {
             array = new Float32Array( array );

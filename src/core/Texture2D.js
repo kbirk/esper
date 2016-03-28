@@ -105,10 +105,10 @@
         if ( !Util.isInteger( spec.height ) || spec.height <= 0 ) {
             throw '`width` argument is missing or invalid';
         }
-        this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( this.gl );
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
         // create texture object
-        this.texture = this.gl.createTexture();
+        this.texture = gl.createTexture();
         // get specific params
         spec.wrapS = spec.wrapS || spec.wrap;
         spec.wrapT = spec.wrapT || spec.wrap;
@@ -153,9 +153,8 @@
     Texture2D.prototype.push = function( location ) {
         if ( location === undefined ) {
             location = 0;
-        }
-        if ( !Util.isInteger( location ) || location < 0 ) {
-            throw 'Texture unit is invalid';
+        } else if ( !Util.isInteger( location ) || location < 0 ) {
+            throw 'Texture unit location is invalid';
         }
         // if this texture is already bound, no need to rebind
         if ( this.state.texture2Ds.top( location ) !== this ) {
@@ -179,9 +178,8 @@
     Texture2D.prototype.pop = function( location ) {
         if ( location === undefined ) {
             location = 0;
-        }
-        if ( !Util.isInteger( location ) || location < 0 ) {
-            throw 'Texture unit is invalid';
+        } else if ( !Util.isInteger( location ) || location < 0 ) {
+            throw 'Texture unit location is invalid';
         }
         var state = this.state;
         if ( state.texture2Ds.top( location ) !== this ) {

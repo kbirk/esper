@@ -7,6 +7,28 @@
     var IndexBuffer = require('../core/IndexBuffer');
 
     /**
+     * Iterates over all attribute pointers and throws an exception if an index
+     * occurs mroe than once.
+     * @private
+     *
+     * @param {Array} vertexBuffers - The array of vertexBuffers.
+     */
+    function checkIndexCollisions( vertexBuffers ) {
+        var indices = {};
+        vertexBuffers.forEach( function( buffer ) {
+            Object.keys( buffer.pointers ).forEach( function( index ) {
+                indices[ index ] = indices[ index ] || 0;
+                indices[ index ]++;
+            });
+        });
+        Object.keys( indices ).forEach( function( index ) {
+            if ( indices[ index ] > 1 ) {
+                throw 'More than one attribute pointer exists for index `' + index + '`';
+            }
+        });
+    }
+
+    /**
      * Instantiates an Renderable object.
      * @class Renderable
      * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
@@ -17,37 +39,39 @@
      * @param {VertexBuffer[]} spec.vertexBuffers - Multiple vertex buffers to use.
      * @param {Array|Uint16Array|Uint32Array} spec.indices - The indices to buffer.
      * @param {IndexBuffer} spec.indexbuffer - An existing index buffer to use.
-     * @param {Object} options - The rendering options.
-     * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.offset - The offset into the drawn buffer.
-     * @param {String} options.count - The number of vertices to draw.
+     * @param {String} spec.mode - The draw mode / primitive type.
+     * @param {String} spec.offset - The offset into the drawn buffer.
+     * @param {String} spec.count - The number of vertices to draw.
      */
-    function Renderable( spec, options ) {
+    function Renderable( spec ) {
         spec = spec || {};
-        options = options || {};
         if ( spec.vertexBuffer || spec.vertexBuffers ) {
             // use existing vertex buffer
             this.vertexBuffers = spec.vertexBuffers || [ spec.vertexBuffer ];
-        } else {
+        } else if ( spec.vertices ) {
             // create vertex package
             var vertexPackage = new VertexPackage( spec.vertices );
             // create vertex buffer
             this.vertexBuffers = [ new VertexBuffer( vertexPackage ) ];
+        } else {
+            this.vertexBuffers = [];
         }
         if ( spec.indexBuffer ) {
             // use existing index buffer
             this.indexBuffer = spec.indexBuffer;
+        } else if ( spec.indices ) {
+            // create index buffer
+            this.indexBuffer = new IndexBuffer( spec.indices );
         } else {
-            if ( spec.indices ) {
-                // create index buffer
-                this.indexBuffer = new IndexBuffer( spec.indices );
-            }
+            this.indexBuffer = null;
         }
+        // check that no attribute indices clash
+        checkIndexCollisions( this.vertexBuffers );
         // store rendering options
         this.options = {
-            mode: options.mode,
-            offset: options.offset,
-            count: options.count
+            mode: spec.mode,
+            offset: spec.offset,
+            count: spec.count
         };
     }
 

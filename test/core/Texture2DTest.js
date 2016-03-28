@@ -296,7 +296,6 @@
                     width: width,
                     height: height,
                     callback: function() {
-                        assert( true );
                         done();
                     }
                 });
@@ -366,7 +365,7 @@
                 });
                 tex.bufferData( new Float32Array() );
             });
-            it('should throw an exceptio if the argument is not an Array, ArrayBuffer, ArrayBufferView, or falsey', function() {
+            it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, or falsey', function() {
                 var tex = new Texture2D({
                     width: width,
                     height: height

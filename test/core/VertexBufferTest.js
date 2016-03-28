@@ -130,7 +130,6 @@
                 });
                 try {
                     new VertexBuffer( pkg );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -140,7 +139,6 @@
                     new VertexBuffer( new WebGLBuffer(), separate.pointers, {
                         byteLength: 4
                     });
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -157,7 +155,6 @@
             it('should accept an Array and attribute pointers as arguments', function() {
                 try {
                     new VertexBuffer( separate.buffer, separate.pointers );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -165,7 +162,6 @@
             it('should accept a numeric byte length and attribute pointers as arguments', function() {
                 try {
                     new VertexBuffer( separate.buffer.length * bytesPerComponent, separate.pointers );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -175,7 +171,6 @@
                     new VertexBuffer( null, separate.pointers );
                     new VertexBuffer( undefined, separate.pointers );
                     new VertexBuffer( false, separate.pointers );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -216,7 +211,7 @@
                 var vb1 = new VertexBuffer( null, pointers );
                 assert( vb1.count === 0 );
             });
-            it('should accept mode, count, and offset options for drawing', function() {
+            it('should accept `mode`, `count`, and `offset` options for drawing', function() {
                 var vb = new VertexBuffer( positions, pointers, {
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
@@ -336,7 +331,6 @@
                 var vb = new VertexBuffer( null, pointers );
                 try {
                     vb.bufferData( positions );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -345,7 +339,6 @@
                 var vb = new VertexBuffer( null, pointers );
                 try {
                     vb.bufferData( new Float32Array( positions ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -354,7 +347,6 @@
                 var vb = new VertexBuffer( null, pointers );
                 try {
                     vb.bufferData( new ArrayBuffer( positions.length ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -363,7 +355,6 @@
                 var vb = new VertexBuffer( null, pointers );
                 try {
                     vb.bufferData( positions.length * bytesPerComponent );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -409,7 +400,6 @@
                 var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 try {
                     vb.bufferSubData( positions );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -418,7 +408,6 @@
                 var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 try {
                     vb.bufferSubData( new Float32Array( positions ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -427,7 +416,6 @@
                 var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 try {
                     vb.bufferSubData( new ArrayBuffer( positions.length ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -436,7 +424,6 @@
                 var vb = new VertexBuffer( positions.length * bytesPerComponent * 2, pointers );
                 try {
                     vb.bufferSubData( positions, positions.length * bytesPerComponent );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -507,7 +494,7 @@
                 vb.draw();
                 vb.unbind();
             });
-            it('should accept mode, count, and offset overrides', function() {
+            it('should accept `mode`, `count`, and `offset` overrides', function() {
                 var vb = new VertexBuffer( positions, pointers );
                 vb.bind();
                 vb.draw({

@@ -48,7 +48,6 @@
                     new IndexBuffer( new WebGLBuffer(), {
                         byteLength: 4
                     });
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -67,7 +66,6 @@
                     new IndexBuffer( new ArrayBuffer( indices.length * intBytes ), {
                         type: 'UNSIGNED_INT'
                     });
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -84,7 +82,6 @@
             it('should accept an Array as argument', function() {
                 try {
                     new IndexBuffer( indices );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -154,7 +151,6 @@
                     new IndexBuffer( indices.length * shortBytes, {
                         type: 'UNSIGNED_SHORT'
                     });
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -179,7 +175,6 @@
                     new IndexBuffer( false, {
                         type: 'UNSIGNED_INT'
                     });
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -212,7 +207,6 @@
                 });
                 try {
                     ib.bufferData( indices );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -223,7 +217,6 @@
                 });
                 try {
                     ib.bufferData( new Uint32Array( indices ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -234,7 +227,6 @@
                 });
                 try {
                     ib.bufferData( new ArrayBuffer( indices.length ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -245,7 +237,6 @@
                 });
                 try {
                     ib.bufferData( indices.length * intBytes );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -331,7 +322,6 @@
                 });
                 try {
                     ib.bufferSubData( indices );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -342,7 +332,6 @@
                 });
                 try {
                     ib.bufferSubData( new Uint16Array( indices ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -353,7 +342,6 @@
                 });
                 try {
                     ib.bufferSubData( new ArrayBuffer( indices.length ) );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }
@@ -364,7 +352,6 @@
                 });
                 try {
                     ib.bufferSubData( indices, indices.length * shortBytes );
-                    assert( true );
                 } catch( err ) {
                     assert( false );
                 }

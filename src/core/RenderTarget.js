@@ -4,6 +4,17 @@
 
     var WebGLContext = require('./WebGLContext');
     var WebGLContextState = require('./WebGLContextState');
+    var Util = require('../util/Util');
+
+    var TEXTURE_TARGETS = {
+        TEXTURE_2D: true,
+        TEXTURE_CUBE_MAP: true
+    };
+
+    var DEPTH_FORMATS = {
+        DEPTH_COMPONENT: true,
+        DEPTH_STENCIL: true
+    };
 
     /**
      * Instantiates a RenderTarget object.
@@ -11,9 +22,9 @@
      * @classdesc A renderTarget class to allow rendering to textures.
      */
     function RenderTarget() {
-        this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( this.gl );
-        this.framebuffer = this.gl.createFramebuffer();
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
+        this.framebuffer = gl.createFramebuffer();
         this.textures = {};
     }
 
@@ -42,8 +53,7 @@
         var state = this.state;
         // if there is no render target bound, exit early
         if ( state.renderTargets.top() !== this ) {
-            console.warn( 'The current render target is not the top most element on the stack. Command ignored.' );
-            return this;
+            throw 'The current render target is not the top most element on the stack';
         }
         state.renderTargets.pop();
         var top = state.renderTargets.top();
@@ -70,11 +80,21 @@
      */
     RenderTarget.prototype.setColorTarget = function( texture, index, target ) {
         var gl = this.gl;
-        if ( typeof index === 'string' ) {
-            target = index;
-            index = undefined;
+        if ( !texture ) {
+            throw 'Texture argument is missing';
         }
-        index = ( index !== undefined ) ? index : 0;
+        if ( TEXTURE_TARGETS[ index ] && target === undefined ) {
+            target = index;
+            index = 0;
+        }
+        if ( index === undefined ) {
+            index = 0;
+        } else if ( !Util.isInteger( index ) || index < 0 ) {
+            throw 'Texture color attachment index is invalid';
+        }
+        if ( target && !TEXTURE_TARGETS[ target ] ) {
+            throw 'Texture target is invalid';
+        }
         this.textures[ 'color' + index ] = texture;
         this.push();
         gl.framebufferTexture2D(
@@ -96,6 +116,12 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.setDepthTarget = function( texture ) {
+        if ( !texture ) {
+            throw 'Texture argument is missing';
+        }
+        if ( !DEPTH_FORMATS[ texture.format ] ) {
+            throw 'Provided texture is not of format `DEPTH_COMPONENT` or `DEPTH_STENCIL`';
+        }
         var gl = this.gl;
         this.textures.depth = texture;
         this.push();
@@ -119,9 +145,11 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.resize = function( width, height ) {
-        if ( !width || !height ) {
-            console.warn( 'Width or height arguments missing, command ignored.' );
-            return this;
+        if ( !Util.isInteger( width ) || ( width <= 0 ) ) {
+            throw '`width` value is invalid';
+        }
+        if ( !Util.isInteger( height ) || ( height <= 0 ) ) {
+            throw '`height` value is invalid';
         }
         var textures = this.textures;
         Object.keys( textures ).forEach( function( key ) {
