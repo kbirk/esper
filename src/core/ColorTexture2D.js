@@ -2,7 +2,6 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext');
     var Texture2D = require('./Texture2D');
     var ImageLoader = require('../util/ImageLoader');
     var Util = require('../util/Util');
@@ -189,13 +188,6 @@
                 // rendering phenomena in which the texture 'transforms' at
                 // certain angles / distances to the mipmapped (empty) portions.
                 spec.mipMap = false;
-            }
-            if ( spec.type === 'FLOAT' ) {
-                // floating point texture
-                if( !WebGLContext.checkExtension( 'OES_texture_float' ) ) {
-                    console.warn( 'Cannot create ColorTexture2D of type gl.FLOAT as `OES_texture_float` is unsupported by this browser, defaulting to', DEFAULT_TYPE );
-                    spec.type = DEFAULT_TYPE;
-                }
             }
             spec.type = TYPES[ spec.type ] ? spec.type : DEFAULT_TYPE;
             Texture2D.call( this, spec );

@@ -291,15 +291,6 @@
                 assert( result );
                 WebGLContext.checkExtension = check;
             });
-            it('should execute `callback` option upon instantiation', function( done ) {
-                new Texture2D({
-                    width: width,
-                    height: height,
-                    callback: function() {
-                        done();
-                    }
-                });
-            });
         });
 
         describe('#bufferData()', function() {

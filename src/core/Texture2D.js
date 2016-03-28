@@ -136,10 +136,6 @@
         // buffer the data
         this.bufferData( spec.data || null, spec.width, spec.height );
         this.setParameters( this );
-        // if callback is provided, execute it
-        if ( spec.callback ) {
-            spec.callback( this );
-        }
     }
 
     /**
