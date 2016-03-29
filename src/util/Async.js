@@ -20,23 +20,34 @@
         };
     }
 
+    function once( fn ) {
+        return function() {
+            if ( fn === null ) {
+                return;
+            }
+            fn.apply( this, arguments );
+            fn = null;
+        };
+    }
+
     function each( object, iterator, callback ) {
+        callback = once( callback );
         var key;
         var completed = 0;
 
         function done( err ) {
             completed--;
             if ( err ) {
-                callback(err);
+                callback( err );
             } else if ( key === null && completed <= 0 ) {
                 // check if key is null in case iterator isn't exhausted and done
                 // was resolved synchronously.
-                callback(null);
+                callback( null );
             }
         }
 
         var iter = getIterator(object);
-        while ( (key = iter()) !== null ) {
+        while ( ( key = iter() ) !== null ) {
             completed += 1;
             iterator( object[ key ], key, done );
         }
@@ -59,10 +70,10 @@
          */
         parallel: function (tasks, callback) {
             var results = Array.isArray( tasks ) ? [] : {};
-            each( tasks, function( task, key, callback ) {
+            each( tasks, function( task, key, done ) {
                 task( function( err, res ) {
                     results[ key ] = res;
-                    callback( err );
+                    done( err );
                 });
             }, function( err ) {
                 callback( err, results );

@@ -166,11 +166,9 @@
                     assert( false );
                 }
             });
-            it('should accept a falsey value and attribute pointers as arguments', function() {
+            it('should accept a null value and attribute pointers as arguments', function() {
                 try {
                     new VertexBuffer( null, separate.pointers );
-                    new VertexBuffer( undefined, separate.pointers );
-                    new VertexBuffer( false, separate.pointers );
                 } catch( err ) {
                     assert( false );
                 }

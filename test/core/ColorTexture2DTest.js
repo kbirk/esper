@@ -81,6 +81,24 @@
                     assert( false );
                 }
             });
+
+            it('should execute callback function passing an error as first argument if a `urls` results in an error', function( done ) {
+                var load = ImageLoader.load;
+                var err = new Error( 'error' );
+                ImageLoader.load = function( opts ) {
+                    setTimeout( function() {
+                        opts.error( err );
+                    }, 100 );
+                };
+                new ColorTexture2D({
+                    url: 'path/to/image',
+                }, function( e ) {
+                    assert( e === err );
+                    ImageLoader.load = load;
+                    done();
+                });
+            });
+
             it('should accept an `image` argument', function() {
                 try {
                     new ColorTexture2D({

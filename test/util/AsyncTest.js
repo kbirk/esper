@@ -122,7 +122,7 @@
                     done();
                 });
             });
-            it('should execute the callback upon first indication of error, ignoring other success results for objects', function( done ) {
+            it('should execute the callback upon first indication of error, ignoring other pending results', function( done ) {
                 Async.parallel({
                     a: function( done ) {
                         setTimeout( function() {
@@ -137,32 +137,22 @@
                     },
                     c: function( done ) {
                         done( null, 2 );
-                    }
-                }, function( err ) {
-                    assert( err );
-                    //assert( results === undefined );
-                    done();
-                });
-            });
-            it('should execute the callback upon first indication of error, ignoring other success results for arrays', function( done ) {
-                Async.parallel([
-                    function( done ) {
+                    },
+                    e: function( done ) {
+                        done( {} );
+                    },
+                    f: function( done ) {
                         setTimeout( function() {
                             done( {} );
                         }, 100 );
                     },
-                    function( done ) {
+                    g: function( done ) {
                         setTimeout( function() {
-                            assert(false);
-                            done( null, 1 );
-                        }, 1000 );
-                    },
-                    function( done ) {
-                        done( null, 2 );
+                            done( {} );
+                        }, 500 );
                     }
-                ], function( err ) {
+                }, function( err ) {
                     assert( err );
-                    //assert( results === undefined );
                     done();
                 });
             });

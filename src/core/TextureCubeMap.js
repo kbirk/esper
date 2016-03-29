@@ -93,55 +93,93 @@
     var DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
     /**
-     * If the provided image dimensions are not powers of two, it will redraw
-     * the image to the next highest power of two.
+     * Returns true if the texture MUST be a power-of-two. Otherwise return false.
      * @private
      *
-     * @param {HTMLImageElement} image - The image object.
+     * @param {Object} spec - The texture specification object.
      *
-     * @returns {HTMLImageElement} The new image object.
+     * @return {bool} - Whether or not the texture must be a power of two.
      */
-    function ensurePowerOfTwo( image ) {
-        if ( !Util.isPowerOfTwo( image.width ) ||
-            !Util.isPowerOfTwo( image.height ) ) {
-            var canvas = document.createElement( 'canvas' );
-            canvas.width = Util.nextHighestPowerOfTwo( image.width );
-            canvas.height = Util.nextHighestPowerOfTwo( image.height );
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(
-                image,
-                0, 0,
-                image.width, image.height,
-                0, 0,
-                canvas.width, canvas.height );
-            return canvas;
-        }
-        return image;
+    function mustBePowerOfTwo( spec ) {
+        // According to:
+        // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL#Non_power-of-two_textures
+        // NPOT textures cannot be used with mipmapping and they must not "repeat"
+        return spec.mipMap ||
+            spec.wrapS === 'REPEAT' ||
+            spec.wrapS === 'MIRRORED_REPEAT' ||
+            spec.wrapT === 'REPEAT' ||
+            spec.wrapT === 'MIRRORED_REPEAT';
     }
 
     /**
-     * Returns a function to load and buffer a given cube map face.
+     * Extracts the underlying data buffer from an image element. If texture must be a POT, resizes the texture.
+     * @private
+     *
+     * @param {Object} spec - The texture specification object.
+     * @param {Object} imgs - The map of image objects.
+     */
+    function getImgData( spec, imgs ) {
+        var data = {};
+        var width;
+        var height;
+        // size based on first img
+        var img = imgs[ FACES[0] ];
+        if ( mustBePowerOfTwo( spec ) ) {
+            width = Util.nextHighestPowerOfTwo( img.width );
+            height = Util.nextHighestPowerOfTwo( img.height );
+        } else {
+            width = img.width;
+            height = img.height;
+        }
+        // extract / resize each face
+        FACES.forEach( function( face ) {
+            var img = imgs[ face ];
+            // create an empty canvas element
+            var canvas = document.createElement( 'canvas' );
+            canvas.width = width;
+            canvas.height = height;
+            // copy the image contents to the canvas
+            var ctx = canvas.getContext( '2d' );
+            ctx.drawImage( img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height );
+            var imgData = ctx.getImageData( 0, 0, canvas.width, canvas.height ).data;
+            // add to face
+            data[ face ] = new Uint8Array( imgData );
+        });
+        // return results
+        return {
+            data: data,
+            width: width,
+            height: height
+        };
+    }
+
+    /**
+     * Loads all images from a set of urls.
      * @private
      *
      * @param {TextureCubeMap} cubeMap - The cube map object.
-     * @param {String} url - The url to load the image.
-     * @param {String} face - The face identification string.
+     * @param {String} urls - The urls to load the images from.
+     * @param {Function} callback - The callback function.
      *
      * @returns {Function} The resulting function.
      */
-    function loadAndBufferImage( cubeMap, url, face ) {
-        return function( done ) {
-            ImageLoader.load({
-                url: url,
-                success: function( image ) {
-                    cubeMap.bufferFaceData( face, image );
-                    done( null );
-                },
-                error: function( err ) {
-                    done( err, null );
-                }
-            });
-        };
+    function loadImages( cubeMap, urls, callback ) {
+        var jobs = {};
+        Object.keys( urls ).forEach( function( key ) {
+            // add job to map
+            jobs[ key ] = function( done ) {
+                ImageLoader.load({
+                    url: urls[ key ],
+                    success: function( image ) {
+                        done( null, image );
+                    },
+                    error: function( err ) {
+                        done( err, null );
+                    }
+                });
+            };
+        });
+        Async.parallel( jobs, callback );
     }
 
     /**
@@ -191,9 +229,9 @@
      */
     function TextureCubeMap( spec, callback ) {
         var that = this;
-        this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( this.gl );
-        this.texture = this.gl.createTexture();
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
+        this.texture = gl.createTexture();
         // get specific params
         spec.wrapS = spec.wrapS || spec.wrap;
         spec.wrapT = spec.wrapT || spec.wrap;
@@ -210,40 +248,44 @@
         this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
         // set format and type
         this.format = FORMATS[ spec.format ] ? spec.format : DEFAULT_FORMAT;
-        this.type = DEFAULT_TYPE;
+        this.type = spec.type || DEFAULT_TYPE;
+        if ( this.type === 'FLOAT' && !WebGLContext.checkExtension( 'OES_texture_float' ) ) {
+            throw 'Cannot create Texture2D of type `FLOAT` as `OES_texture_float` extension is unsupported';
+        }
+        // set dimensions
+        this.width = 0;
+        this.height = 0;
         // create cube map based on input
         if ( spec.images ) {
-            // multiple Image objects
-            Object.keys( spec.images ).forEach( function( key ) {
-                // buffer face texture
-                that.bufferFaceData( key, spec.images[ key ] );
-            });
+            // Images
+            var res = getImgData( that, spec.images );
+            that.bufferData( res.data, res.width, res.height );
             this.setParameters( this );
         } else if ( spec.urls ) {
-            // multiple urls
-            var jobs = {};
-            Object.keys( spec.urls ).forEach( function( key ) {
-                // add job to map
-                jobs[ key ] = loadAndBufferImage( that, spec.urls[ key ], key );
-            });
-            Async.parallel( jobs, function( err ) {
+            // urls
+            loadImages( this, spec.urls, function( err, images ) {
                 if ( err ) {
                     if ( callback ) {
                         callback( err, null );
                     }
                     return;
                 }
+                var res = getImgData( that, images );
+                that.bufferData( res.data, res.width, res.height );
                 that.setParameters( that );
                 if ( callback ) {
                     callback( null, that );
                 }
             });
         } else {
-            // arraybuffer
-            FACES.forEach( function( face ) {
-                var data = ( spec.data ? spec.data[face] : spec.data ) || null;
-                that.bufferFaceData( face, data, spec.width, spec.height );
-            });
+            // data or null
+            if ( !Util.isInteger( spec.width ) || spec.width <= 0 ) {
+                throw '`width` argument is missing or invalid';
+            }
+            if ( !Util.isInteger( spec.height ) || spec.height <= 0 ) {
+                throw '`height` argument is missing or invalid';
+            }
+            that.bufferData( spec.data || null, spec.width, spec.height );
             this.setParameters( this );
         }
     }
@@ -259,6 +301,8 @@
     TextureCubeMap.prototype.push = function( location ) {
         if ( location === undefined ) {
             location = 0;
+        } else if ( !Util.isInteger( location ) || location < 0 ) {
+            throw 'Texture unit location is invalid';
         }
         // if this texture is already bound, no need to rebind
         if ( this.state.textureCubeMaps.top( location ) !== this ) {
@@ -283,11 +327,12 @@
     TextureCubeMap.prototype.pop = function( location ) {
         if ( location === undefined ) {
             location = 0;
+        } else if ( !Util.isInteger( location ) || location < 0 ) {
+            throw 'Texture unit location is invalid';
         }
         var state = this.state;
         if ( state.textureCubeMaps.top( location ) !== this ) {
-            console.warn( 'The current texture is not the top most element on the stack. Command ignored.' );
-            return this;
+            throw 'The current texture is not the top most element on the stack';
         }
         state.textureCubeMaps.pop( location );
         var gl;
@@ -311,19 +356,28 @@
      * Buffer data into the respective cube map face.
      * @memberof TextureCubeMap
      *
-     * @param {String} face - The face identification string.
-     * @param {ImageData|ArrayBufferView|HTMLImageElement} data - The data.
+     * @param {Object||null} faces - The map of face data.
      * @param {number} width - The width of the data.
      * @param {number} height - The height of the data.
      *
      * @returns {TextureCubeMap} The texture object, for chaining.
      */
-    TextureCubeMap.prototype.bufferFaceData = function( face, data, width, height ) {
+    TextureCubeMap.prototype.bufferData = function( faces, width, height ) {
         var gl = this.gl;
-        var faceTarget = gl[ FACE_TARGETS[ face ] ];
-        if ( !faceTarget ) {
-            console.warn( 'Invalid face enumeration `' + face + '` provided, ' + 'command ignored.' );
-            return this;
+        // set width and height
+        if ( width !== undefined && height !== undefined ) {
+            if ( !Util.isInteger( width ) || width <= 0 ) {
+                throw '`width` is invalid';
+            }
+            if ( !Util.isInteger( height ) || height <= 0 ) {
+                throw '`height` is invalid';
+            }
+            if ( width !== height ) {
+                throw '`width` must be equal to `height`';
+            }
+            // set width and height
+            this.width = width;
+            this.height = height;
         }
         // buffer face texture
         this.push();
@@ -331,43 +385,54 @@
         gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
         // premultiply alpha if specified
         gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha );
-        if ( data instanceof HTMLImageElement ) {
-            // from image
-            this.images = this.images || {};
-            this.images[ face ] = ensurePowerOfTwo( data );
+        // buffer each face
+        var that = this;
+        FACES.forEach( function( face ) {
+            var target = FACE_TARGETS[ face ];
+            var data = null;
+            if ( faces ) {
+                data = ( faces[ face ] ) ? faces[ face ] : faces;
+            }
+            // cast array arg
+            if ( data instanceof Array ) {
+                if ( that.type === 'UNSIGNED_SHORT' ) {
+                    data = new Uint16Array( data );
+                } else if ( that.type === 'UNSIGNED_INT' ) {
+                    data = new Uint32Array( data );
+                } else if ( that.type === 'FLOAT' ) {
+                    data = new Float32Array( data );
+                } else {
+                    data = new Uint8Array( data );
+                }
+            }
+            // set ensure type corresponds to data
+            if ( data instanceof Uint8Array ) {
+                that.type = 'UNSIGNED_BYTE';
+            } else if ( data instanceof Uint16Array ) {
+                that.type = 'UNSIGNED_SHORT';
+            } else if ( data instanceof Uint32Array ) {
+                that.type = 'UNSIGNED_INT';
+            } else if ( data instanceof Float32Array ) {
+                that.type = 'FLOAT';
+            } else if ( data &&
+                !( data instanceof ArrayBuffer ) ) {
+                throw '`bufferData` requires a null, Array, ArrayBuffer, or ArrayBufferView argument';
+            }
+            // buffer the data
             gl.texImage2D(
-                faceTarget,
+                gl[ target ],
                 0, // level
-                gl[ this.format ], // webgl requires format === internalFormat
-                gl[ this.format ],
-                gl[ this.type ],
-                this.images[ face ] );
-        } else {
-            // from arraybuffer
-            this.data = this.data || {};
-            this.data[ face ] = data;
-            this.width = width || this.width;
-            this.height = height || this.height;
-            gl.texImage2D(
-                faceTarget,
-                0, // level
-                gl[ this.format ], // webgl requires format === internalFormat
-                this.width,
-                this.height,
+                gl[ that.format ], // webgl requires format === internalFormat
+                that.width,
+                that.height,
                 0, // border, must be 0
-                gl[ this.format ],
-                gl[ this.type ],
+                gl[ that.format ],
+                gl[ that.type ],
                 data );
-        }
-        // only generate mipmaps if all faces are buffered
-        this.bufferedFaces = this.bufferedFaces || {};
-        this.bufferedFaces[ face ] = true;
+        });
         // once all faces are buffered
-        if ( this.mipMap &&
-            this.bufferedFaces['-x'] && this.bufferedFaces['+x'] &&
-            this.bufferedFaces['-y'] && this.bufferedFaces['+y'] &&
-            this.bufferedFaces['-z'] && this.bufferedFaces['+z'] ) {
-            // generate mipmaps once all faces are buffered
+        if ( this.mipMap ) {
+            // only generate mipmaps if all faces are buffered
             gl.generateMipmap( gl.TEXTURE_CUBE_MAP );
         }
         this.pop();
@@ -398,7 +463,7 @@
                 this.wrapS = param;
                 gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl[ this.wrapS ] );
             } else {
-                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_S`, command ignored.' );
+                throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_S`';
             }
         }
         // set wrap T parameter
@@ -408,7 +473,7 @@
                 this.wrapT = param;
                 gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl[ this.wrapT ] );
             } else {
-                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_T`, command ignored.' );
+                throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_WRAP_T`';
             }
         }
         // set mag filter parameter
@@ -418,7 +483,7 @@
                 this.magFilter = param;
                 gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl[ this.magFilter ] );
             } else {
-                console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MAG_FILTER`, command ignored.' );
+                throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MAG_FILTER`';
             }
         }
         // set min filter parameter
@@ -433,14 +498,14 @@
                     this.minFilter = param;
                     gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
                 } else  {
-                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                    throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`';
                 }
             } else {
                 if ( MIN_FILTERS[ param ] ) {
                     this.minFilter = param;
                     gl.texParameteri( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl[ this.minFilter ] );
                 } else {
-                    console.warn( 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`, command ignored.' );
+                    throw 'Texture parameter `' + param + '` is not a valid value for `TEXTURE_MIN_FILTER`';
                 }
             }
         }

@@ -103,7 +103,7 @@
             throw '`width` argument is missing or invalid';
         }
         if ( !Util.isInteger( spec.height ) || spec.height <= 0 ) {
-            throw '`width` argument is missing or invalid';
+            throw '`height` argument is missing or invalid';
         }
         var gl = this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( gl );

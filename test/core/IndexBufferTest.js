@@ -164,22 +164,16 @@
                 }
                 assert( result );
             });
-            it('should accept a falsey value as argument', function() {
+            it('should accept a null value as argument', function() {
                 try {
                     new IndexBuffer( null, {
-                        type: 'UNSIGNED_INT'
-                    });
-                    new IndexBuffer( undefined, {
-                        type: 'UNSIGNED_SHORT'
-                    });
-                    new IndexBuffer( false, {
                         type: 'UNSIGNED_INT'
                     });
                 } catch( err ) {
                     assert( false );
                 }
             });
-            it('should throw an exception if a falsey value is not complimented with a corresponding `type` option', function() {
+            it('should throw an exception if a null value is not complimented with a corresponding `type` option', function() {
                 var result = false;
                 try {
                     new IndexBuffer( null );

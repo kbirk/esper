@@ -104,6 +104,23 @@
                     assert( shader );
                 });
             });
+            it('should execute callback function passing an error as first argument if a URL results in an error', function( done ) {
+                var load = XHRLoader.load;
+                var err = new Error( 'error' );
+                XHRLoader.load = function( opts ) {
+                    setTimeout( function() {
+                        opts.error( err );
+                    }, 100 );
+                };
+                new Shader({
+                    vert: 'path/to/vert',
+                    frag: 'path/to/frag'
+                }, function( e ) {
+                    assert( e === err );
+                    XHRLoader.load = load;
+                    done();
+                });
+            });
             it('should accept an `attributes` array argument to override attribute indices', function() {
                 var shader = new Shader({
                     vert: vert,

@@ -2,7 +2,6 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext');
     var Texture2D = require('./Texture2D');
     var MAG_FILTERS = {
         NEAREST: true,

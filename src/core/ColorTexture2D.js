@@ -173,7 +173,6 @@
                     }
                 },
                 error: function( err ) {
-                    Texture2D.call( that, spec );
                     if ( callback ) {
                         callback( err, null );
                     }

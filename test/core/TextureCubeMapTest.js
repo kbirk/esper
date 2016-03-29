@@ -4,65 +4,115 @@
 
     var assert = require('assert');
     var WebGLContext = require('../../src/core/WebGLContext');
-    var Texture2D = require('../../src/core/Texture2D');
+    var TextureCubeMap = require('../../src/core/TextureCubeMap');
+    var ImageLoader = require('../../src/util/ImageLoader');
     require('webgl-mock');
+    var _load;
     var canvas;
     var gl;
     var data;
     var width;
     var height;
+    var faces;
 
-    describe('Texture2D', function() {
+    var potImage = new Image( 256, 256 );
+    var npotImage = new Image( 300, 300 );
+
+    function castTo( faces, Class ) {
+        return {
+            '+x': new Class( faces['+x'] ),
+            '+y': new Class( faces['+y'] ),
+            '+z': new Class( faces['+z'] ),
+            '-x': new Class( faces['-x'] ),
+            '-y': new Class( faces['-y'] ),
+            '-z': new Class( faces['-z'] )
+        };
+    }
+
+    describe('TextureCubeMap', function() {
 
         before( function() {
             canvas = new HTMLCanvasElement();
             gl = WebGLContext.get( canvas );
+            _load = ImageLoader.load;
+            ImageLoader.load = function( opts ) {
+                setTimeout( function() {
+                    opts.success( potImage );
+                }, 100 );
+            };
+            global.document = {
+                createElement: function() {
+                    return new HTMLCanvasElement();
+                }
+            };
         });
 
         after( function() {
             WebGLContext.remove( canvas );
             canvas = null;
             gl = null;
+            ImageLoader.load = _load;
+            global.document = undefined;
         });
 
         beforeEach( function() {
             var dim = Math.pow(2, Math.floor( Math.random() * 4 ) + 1 );
-            data = new Uint8Array( dim * dim * 4 );
+            data = new Array( dim * dim * 4 );
             for ( var i = 0; i<dim * dim * 4; i++ ) {
                 data[i] = 255;
             }
             width = dim;
             height = dim;
+            faces = {};
+            faces['+x'] = data;
+            faces['+y'] = data;
+            faces['+z'] = data;
+            faces['-x'] = data;
+            faces['-y'] = data;
+            faces['-z'] = data;
         });
 
         afterEach( function() {
             data = null;
             width = null;
             height = null;
+            faces = null;
         });
 
         describe('#constructor()', function() {
-            it('should be provided `width` and `height` arguments', function() {
+            it('should be accept an Array type argument complimented with `width` and `height` arguments', function() {
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
-                        height: height
+                        height: height,
+                        data: data
                     });
                 } catch( err ) {
                     assert( false );
                 }
             });
-            it('should throw an exception if `width` is missing or invalid', function() {
+            it('should be accept a `null` data argument complimented with `width` and `height` arguments', function() {
+                try {
+                    new TextureCubeMap({
+                        width: width,
+                        height: height,
+                        data: null
+                    });
+                } catch( err ) {
+                    assert( false );
+                }
+            });
+            it('should throw an exception if `data` argument is not complimented with a valid `width` argument', function() {
                 var result = false;
                 try {
-                    new Texture2D();
+                    new TextureCubeMap();
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
                 result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: null,
                         height: height
                     });
@@ -72,7 +122,7 @@
                 assert( result );
                 result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: -23,
                         height: height
                     });
@@ -82,7 +132,7 @@
                 assert( result );
                 result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: 'invalid',
                         height: height
                     });
@@ -91,10 +141,10 @@
                 }
                 assert( result );
             });
-            it('should throw an exception if `height` is missing or invalid', function() {
+            it('should throw an exception if `data` argument is not complimented with a valid `height` argument', function() {
                 var result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width
                     });
                 } catch( err ) {
@@ -103,7 +153,7 @@
                 assert( result );
                 result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
                         height: null
                     });
@@ -113,7 +163,7 @@
                 assert( result );
                 result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
                         height: -23
                     });
@@ -123,7 +173,7 @@
                 assert( result );
                 result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
                         height: 'invalid'
                     });
@@ -132,9 +182,100 @@
                 }
                 assert( result );
             });
+            it('should accept a `urls` object argument', function( done ) {
+                try {
+                    new TextureCubeMap({
+                        urls: {
+                            '+x': 'path/to/x-pos',
+                            '+y': 'path/to/y-pos',
+                            '+z': 'path/to/z-pos',
+                            '-x': 'path/to/x-neg',
+                            '-y': 'path/to/y-neg',
+                            '-z': 'path/to/z-neg'
+                        }
+                    }, function() {
+                        done();
+                    });
+                } catch( err ) {
+                    assert( false );
+                }
+            });
+            it('should execute callback function passing an error as first argument if a `urls` results in an error', function( done ) {
+                var load = ImageLoader.load;
+                var err = new Error( 'error' );
+                ImageLoader.load = function( opts ) {
+                    setTimeout( function() {
+                        opts.error( err );
+                    }, 100 );
+                };
+                new TextureCubeMap({
+                    urls: {
+                        '+x': 'path/to/x-pos',
+                        '+y': 'path/to/y-pos',
+                        '+z': 'path/to/z-pos',
+                        '-x': 'path/to/x-neg',
+                        '-y': 'path/to/y-neg',
+                        '-z': 'path/to/z-neg'
+                    }
+                }, function( e ) {
+                    assert( e === err );
+                    ImageLoader.load = load;
+                    done();
+                });
+            });
+            it('should accept an `images` object argument', function() {
+                try {
+                    new TextureCubeMap({
+                        images: {
+                            '+x': potImage,
+                            '+y': potImage,
+                            '+z': potImage,
+                            '-x': potImage,
+                            '-y': potImage,
+                            '-z': potImage
+                        }
+                    });
+                } catch( err ) {
+                    assert( false );
+                }
+            });
+            it('should accept non-POT images if POT texture is not required', function() {
+                try {
+                    new TextureCubeMap({
+                        images: {
+                            '+x': npotImage,
+                            '+y': npotImage,
+                            '+z': npotImage,
+                            '-x': npotImage,
+                            '-y': npotImage,
+                            '-z': npotImage
+                        },
+                        mipMap: false,
+                        wrap: 'CLAMP_TO_EDGE'
+                    });
+                } catch( err ) {
+                    assert( false );
+                }
+            });
+            it('should convert non-POT images to POT images if POT texture is required', function() {
+                try {
+                    new TextureCubeMap({
+                        images: {
+                            '+x': npotImage,
+                            '+y': npotImage,
+                            '+z': npotImage,
+                            '-x': npotImage,
+                            '-y': npotImage,
+                            '-z': npotImage
+                        }
+                    });
+                } catch( err ) {
+                    assert( false );
+                }
+            });
             it('should accept generic `wrap` and `filter` parameters', function() {
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
                         height: height,
                         filter: 'LINEAR',
@@ -146,7 +287,7 @@
             });
             it('should accept `wrapS`, `wrapT`, `minFilter`, and `magFilter` parameters', function() {
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
                         height: height,
                         minFilter: 'LINEAR',
@@ -158,16 +299,16 @@
                     assert( false );
                 }
             });
-            it('should default `wrapS` and `wrapT` parameters to `REPEAT`', function() {
-                var tex = new Texture2D({
+            it('should default `wrapS` and `wrapT` parameters to `CLAMP_TO_EDGE`', function() {
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                assert( tex.wrapS === 'REPEAT' );
-                assert( tex.wrapT === 'REPEAT' );
+                assert( tex.wrapS === 'CLAMP_TO_EDGE' );
+                assert( tex.wrapT === 'CLAMP_TO_EDGE' );
             });
             it('should default `minFilter` and `magFilter` parameters to `LINEAR` with mip-mapping disabled', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false
@@ -176,7 +317,7 @@
                 assert( tex.magFilter === 'LINEAR' );
             });
             it('should default `minFilter` to `LINEAR_MIPMAP_LINEAR` and `magFilter` to `LINEAR` with mip-mapping enabled', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -184,7 +325,7 @@
                 assert( tex.magFilter === 'LINEAR' );
             });
             it('should accept `mipMap`, `invertY`, and `preMultiplyAlpha` boolean parameters`', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false,
@@ -196,21 +337,21 @@
                 assert( tex.preMultiplyAlpha === false );
             });
             it('should default `mipMap` to `true`', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 assert( tex.mipMap );
             });
             it('should default `invertY` to `true`', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 assert( tex.invertY );
             });
             it('should default `preMultiplyAlpha` to `true`', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -218,7 +359,7 @@
             });
             it('should accept `format`, and `type` options`', function() {
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         data: data,
                         width: width,
                         height: height,
@@ -231,43 +372,14 @@
                 }
             });
             it('should default `format` to `RGBA`', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 assert( tex.format === 'RGBA' );
             });
-            it('should throw exception if `format` is `DEPTH_COMPONENT` or `DEPTH_STENCIL` but not supported by extension', function() {
-                var check = WebGLContext.checkExtension;
-                WebGLContext.checkExtension = function() {
-                    return false;
-                };
-                var result = false;
-                try {
-                    new Texture2D({
-                        width: width,
-                        height: height,
-                        format: 'DEPTH_COMPONENT'
-                    });
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    new Texture2D({
-                        width: width,
-                        height: height,
-                        format: 'DEPTH_STENCIL'
-                    });
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                WebGLContext.checkExtension = check;
-            });
             it('should default `type` to `UNSIGNED_BYTE`', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -280,7 +392,7 @@
                 };
                 var result = false;
                 try {
-                    new Texture2D({
+                    new TextureCubeMap({
                         width: width,
                         height: height,
                         type: 'FLOAT'
@@ -291,83 +403,133 @@
                 assert( result );
                 WebGLContext.checkExtension = check;
             });
-            it('should execute `callback` option upon instantiation', function( done ) {
-                new Texture2D({
-                    width: width,
-                    height: height,
-                    callback: function() {
-                        assert( true );
-                        done();
-                    }
-                });
-            });
         });
 
         describe('#bufferData()', function() {
+            it('should accept a `faces` object argument of data to buffer', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                tex.bufferData( faces );
+            });
+            it('should accept a single `faces` argument of data to buffer all faces with', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                tex.bufferData( faces['+x'] );
+            });
+            it('should accept options `width` and `height` arguments', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                tex.bufferData( faces, width, height );
+            });
+            it('should throw exception if `width` is invalid', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                var result = false;
+                try {
+                    tex.bufferData( faces, 'invalid', height );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw exception if `height` is invalid', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                var result = false;
+                try {
+                    tex.bufferData( faces, width, 'invalid' );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw exception if `width` and `height` are not equal', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                var result = false;
+                try {
+                    tex.bufferData( faces, width * 2, height );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
             it('should accept a `null` argument', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData( null );
             });
-            it('should accept an Array argument', function() {
-                var tex = new Texture2D({
+            it('should accept Array face arguments', function() {
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( new Array( data ) );
+                tex.bufferData( faces );
             });
             it('should cast an Array to the corresponding ArrayBufferView based on the `type`', function() {
-                var tex0 = new Texture2D({
+                var tex0 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_SHORT'
                 });
-                tex0.bufferData( new Array( data ) );
-                var tex1 = new Texture2D({
+                tex0.bufferData( faces );
+                var tex1 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_INT'
                 });
-                tex1.bufferData( new Array( data ) );
-                var tex2 = new Texture2D({
+                tex1.bufferData( faces );
+                var tex2 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'FLOAT'
                 });
-                tex2.bufferData( new Array( data ) );
+                tex2.bufferData( faces );
             });
             it('should accept a Uint8Array argument', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( new Uint8Array() );
+                tex.bufferData( castTo( faces, Uint8Array ) );
             });
             it('should accept a Uint16Array argument', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( new Uint16Array() );
+                tex.bufferData( castTo( faces, Uint16Array ) );
             });
             it('should accept a Uint32Array argument', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( new Uint32Array() );
+                tex.bufferData( castTo( faces, Uint32Array ) );
             });
             it('should accept a Float32Array argument', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( new Float32Array() );
+                tex.bufferData( castTo( faces, Float32Array ) );
             });
-            it('should throw an exceptio if the argument is not an Array, ArrayBuffer, ArrayBufferView, or falsey', function() {
-                var tex = new Texture2D({
+            it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, or null', function() {
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -383,7 +545,7 @@
 
         describe('#setParameters()', function() {
             it('should accept `wrap`, `wrapS`, and `wrapT` parameters', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -404,7 +566,7 @@
                 }
             });
             it('should accept `filter`, `minFilter`, and `magFilter` parameters', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false
@@ -426,7 +588,7 @@
                 }
             });
             it('should default `minFilter` suffix to `_MIPMAP_LINEAR` if mip-mapping enabled', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -444,7 +606,7 @@
                 }
             });
             it('should throw an exception if parameter values are invalid', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -466,7 +628,7 @@
                     result = true;
                 }
                 result = false;
-                tex = new Texture2D({
+                tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false
@@ -520,7 +682,7 @@
 
         describe('#push()', function() {
             it('should push the texture onto the stack for a provided unit', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -528,7 +690,7 @@
                 tex.pop( 0 );
             });
             it('should default unit to 0 if not provided', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -536,7 +698,7 @@
                 tex.pop();
             });
             it('should throw an exception if unit is not valid', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -559,11 +721,11 @@
 
         describe('#pop()', function() {
             it('should pop the texture off the stack for a provided unit', function() {
-                var tex0 = new Texture2D({
+                var tex0 = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                var tex1 = new Texture2D({
+                var tex1 = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -573,7 +735,7 @@
                 tex0.pop( 0 );
             });
             it('should default unit to 0 if not provided', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -583,7 +745,7 @@
                 tex.pop();
             });
             it('should throw an exception if the texture is not the top of the stack', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -596,7 +758,7 @@
                 assert( result );
             });
             it('should throw an exception if unit is not valid', function() {
-                var tex = new Texture2D({
+                var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -616,84 +778,6 @@
                 }
                 assert( result );
                 tex.pop( 0 );
-            });
-        });
-
-        describe('#resize()', function() {
-            it('should resize the underlying data', function() {
-                var tex = new Texture2D({
-                    width: width,
-                    height: height
-                });
-                tex.resize( width / 2, height / 2 );
-            });
-            it('should throw an exception if the `width` is missing or invalid', function() {
-                var tex = new Texture2D({
-                    width: width,
-                    height: height
-                });
-                var result = false;
-                try {
-                    tex.resize( undefined, 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    tex.resize( null, 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    tex.resize( -14, 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    tex.resize( 'invalid', 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should throw an exception if the `height` is missing or invalid', function() {
-                var tex = new Texture2D({
-                    width: width,
-                    height: height
-                });
-                var result = false;
-                try {
-                    tex.resize( 200, undefined );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    tex.resize( 200, null );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    tex.resize( 200, -14 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    tex.resize( 200, 'invalid' );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
             });
         });
 

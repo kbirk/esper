@@ -149,10 +149,6 @@
         } else {
             this.byteLength = arg.length * BYTES_PER_TYPE[ this.type ];
         }
-        // create buffer
-        if ( !this.buffer ) {
-            this.buffer = gl.createBuffer();
-        }
         // buffer the data
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, arg, gl.STATIC_DRAW );
