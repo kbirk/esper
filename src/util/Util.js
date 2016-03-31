@@ -4,8 +4,15 @@
 
     module.exports = {
 
+        /**
+         * Returns true if the value is a number and is an integer.
+         *
+         * @param {integer} num - The number to test.
+         *
+         * @returns {boolean} - Whether or not the value is a number.
+         */
         isInteger: function( num ) {
-            return ( typeof num === 'number' && ( num % 1 ) === 0 );
+            return typeof num === 'number' && ( num % 1 ) === 0;
         },
 
         /**

@@ -31,6 +31,8 @@
         'uniform sampler2D uDiffuseTextureSampler;',
         'uniform highp vec4 uSpecularColor;',
         'uniform highp float uSpecularComponent;',
+        'uniform highp mat2 uMat2Array[16];',
+        'uniform highp mat3 uMat3Array[16];',
         'void main() {',
             '...',
         '}'
@@ -89,6 +91,40 @@
                 }
                 assert( result );
             });
+            it('should throw an exception if there is a compilation error', function() {
+                var getShaderParameter = gl.getShaderParameter;
+                gl.getShaderParameter = function() {
+                    return false;
+                };
+                var result = false;
+                try {
+                    new Shader({
+                        vert: vert,
+                        frag: frag
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                gl.getShaderParameter = getShaderParameter;
+            });
+            it('should throw an exception if there is a linking error', function() {
+                var getProgramParameter = gl.getProgramParameter;
+                gl.getProgramParameter = function() {
+                    return false;
+                };
+                var result = false;
+                try {
+                    new Shader({
+                        vert: vert,
+                        frag: frag
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                gl.getProgramParameter = getProgramParameter;
+            });
             it('should accept shader arguments as glsl source', function() {
                 var shader = new Shader({
                     vert: vert,
@@ -122,7 +158,7 @@
                 });
             });
             it('should accept an `attributes` array argument to override attribute indices', function() {
-                var shader = new Shader({
+                var shader0 = new Shader({
                     vert: vert,
                     frag: frag,
                     attributes: [
@@ -131,10 +167,20 @@
                         'aVertexPosition'
                     ]
                 });
-                assert( shader.attributes.aTextureCoord.index === 0 );
-                assert( shader.attributes.aVertexNormal.index === 1 );
-                assert( shader.attributes.aVertexPosition.index === 2 );
-                assert( shader );
+                assert( shader0.attributes.aTextureCoord.index === 0 );
+                assert( shader0.attributes.aVertexNormal.index === 1 );
+                assert( shader0.attributes.aVertexPosition.index === 2 );
+                var shader1 = new Shader({
+                    vert: vert,
+                    frag: frag,
+                    attributes: [
+                        'aTextureCoord',
+                        'aVertexPosition'
+                    ]
+                });
+                assert( shader1.attributes.aTextureCoord.index === 0 );
+                assert( shader1.attributes.aVertexPosition.index === 1 );
+                assert( shader1.attributes.aVertexNormal.index === 2 );
             });
         });
 
@@ -145,6 +191,8 @@
                     frag: frag
                 });
                 shader.push();
+                shader.push();
+                shader.pop();
                 shader.pop();
             });
         });
@@ -214,6 +262,8 @@
                 });
                 shader.push();
                 shader.setUniform( 'uModelMatrix', new Float32Array( identity ) );
+                shader.setUniform( 'uMat2Array', new Float32Array( identity ) );
+                shader.setUniform( 'uMat3Array', new Float32Array( identity ) );
                 shader.pop();
             });
             it('should accept value of of object with `toArray` method', function() {

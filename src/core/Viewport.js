@@ -4,7 +4,6 @@
 
     var WebGLContext = require('./WebGLContext');
     var WebGLContextState = require('./WebGLContextState');
-    var Util = require('../util/Util');
 
     /**
      * Bind the viewport to the rendering context.
@@ -59,10 +58,10 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.resize = function( width, height ) {
-        if ( !Util.isInteger( width ) || ( width <= 0 ) ) {
+        if ( typeof width !== 'number' || ( width <= 0 ) ) {
             throw '`width` value is invalid';
         }
-        if ( !Util.isInteger( height ) || ( height <= 0 ) ) {
+        if ( typeof height !== 'number' || ( height <= 0 ) ) {
             throw '`height` value is invalid';
         }
         this.width = width;
@@ -82,10 +81,10 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.offset = function( x, y ) {
-        if ( !Util.isInteger( x ) ) {
+        if ( typeof x !== 'number' ) {
             throw '`x` value is invalid';
         }
-        if ( !Util.isInteger( y ) ) {
+        if (  typeof y !== 'number' ) {
             throw '`y` value is invalid';
         }
         this.x = x;
@@ -107,16 +106,16 @@
      * @returns {Viewport} The viewport object, for chaining.
      */
     Viewport.prototype.push = function( x, y, width, height ) {
-        if ( x !== undefined && !Util.isInteger( x ) ) {
+        if ( x !== undefined && typeof x !== 'number' ) {
             throw '`x` value is invalid';
         }
-        if ( y !== undefined && !Util.isInteger( y ) ) {
+        if ( y !== undefined && typeof y !== 'number' ) {
             throw '`y` value is invalid';
         }
-        if ( width !== undefined && ( !Util.isInteger( width ) || ( width <= 0 ) ) ) {
+        if ( width !== undefined && ( typeof width !== 'number' || ( width <= 0 ) ) ) {
             throw '`width` value is invalid';
         }
-        if ( height !== undefined && ( !Util.isInteger( height ) || ( height <= 0 ) ) ) {
+        if ( height !== undefined && ( typeof height !== 'number' || ( height <= 0 ) ) ) {
             throw '`height` value is invalid';
         }
         this.state.viewports.push({

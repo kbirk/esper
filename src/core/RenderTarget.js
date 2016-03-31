@@ -145,10 +145,10 @@
      * @returns {RenderTarget} The renderTarget object, for chaining.
      */
     RenderTarget.prototype.resize = function( width, height ) {
-        if ( !Util.isInteger( width ) || ( width <= 0 ) ) {
+        if ( typeof width !== 'number' || ( width <= 0 ) ) {
             throw '`width` value is invalid';
         }
-        if ( !Util.isInteger( height ) || ( height <= 0 ) ) {
+        if ( typeof height !== 'number' || ( height <= 0 ) ) {
             throw '`height` value is invalid';
         }
         var textures = this.textures;

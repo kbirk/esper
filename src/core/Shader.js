@@ -54,22 +54,8 @@
         if ( attributes[ declaration.name ] ) {
             return attributes[ declaration.name ].index;
         }
-        // convert attribute map to array
-        var arr = Object.keys( attributes ).map( function( key ) {
-            return attributes[ key ];
-        });
-        // sort attributes by index, ascending order
-        arr.sort( function( a, b ) {
-            return a.index - b.index;
-        });
-        // find the lowest available index
-        var lowestIndex = 0;
-        arr.forEach( function( attribute ) {
-            if ( attribute.index === lowestIndex ) {
-                lowestIndex++;
-            }
-        });
-        return lowestIndex;
+        // return next available index
+        return Object.keys( attributes ).length;
     }
 
     /**

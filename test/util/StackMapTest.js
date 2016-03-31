@@ -45,9 +45,9 @@
             });
             it('should return undefined if there are no elements under the given key', function() {
                 var s = new StackMap();
-                assert( s.pop( 0 ) == undefined );
-                assert( s.pop( 0 ) == undefined );
-                assert( s.pop( 0 ) == undefined );
+                assert( s.pop( 0 ) === undefined );
+                assert( s.pop( 0 ) === undefined );
+                assert( s.pop( 0 ) === undefined );
             });
         });
         describe('#top()', function() {
@@ -62,7 +62,7 @@
             });
             it('should return undefined if there are no elements under the given key', function() {
                 var s = new StackMap();
-                assert( s.top( 'b' ) == undefined );
+                assert( s.top( 'b' ) === undefined );
             });
         });
     });

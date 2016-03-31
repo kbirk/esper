@@ -45,9 +45,9 @@
             });
             it('should return undefined if there are no elements on the stack', function() {
                 var s = new Stack();
-                assert( s.pop() == undefined );
-                assert( s.pop() == undefined );
-                assert( s.pop() == undefined );
+                assert( s.pop() === undefined );
+                assert( s.pop() === undefined );
+                assert( s.pop() === undefined );
             });
         });
         describe('#top()', function() {
@@ -62,7 +62,7 @@
             });
             it('should return undefined if there are no elements on the stack', function() {
                 var s = new Stack();
-                assert( s.top() == undefined );
+                assert( s.top() === undefined );
             });
         });
     });

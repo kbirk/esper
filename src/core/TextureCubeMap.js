@@ -279,10 +279,10 @@
             });
         } else {
             // data or null
-            if ( !Util.isInteger( spec.width ) || spec.width <= 0 ) {
+            if ( typeof spec.width !== 'number' || spec.width <= 0 ) {
                 throw '`width` argument is missing or invalid';
             }
-            if ( !Util.isInteger( spec.height ) || spec.height <= 0 ) {
+            if ( typeof spec.height !== 'number' || spec.height <= 0 ) {
                 throw '`height` argument is missing or invalid';
             }
             that.bufferData( spec.data || null, spec.width, spec.height );
@@ -366,10 +366,10 @@
         var gl = this.gl;
         // set width and height
         if ( width !== undefined && height !== undefined ) {
-            if ( !Util.isInteger( width ) || width <= 0 ) {
+            if ( typeof width !== 'number' || width <= 0 ) {
                 throw '`width` is invalid';
             }
-            if ( !Util.isInteger( height ) || height <= 0 ) {
+            if ( typeof height !== 'number' || height <= 0 ) {
                 throw '`height` is invalid';
             }
             if ( width !== height ) {
