@@ -1,6 +1,6 @@
 {
   "name": "esper",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A low-level WebGL rendering framework",
   "author": "Kevin Birk <birk.kevin@gmail.com>",
   "main": "src/exports.js",
@@ -32,7 +32,7 @@
     "run-sequence": "1.1.5",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
-    "webgl-mock": "0.1.4"
+    "webgl-mock": "0.1.5"
   },
   "scripts": {
     "build": "./node_modules/.bin/gulp build",

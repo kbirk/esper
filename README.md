@@ -55,8 +55,10 @@ try {
 // only continue if WebGL is available
 if ( gl ) {
 	// viewport
-	viewport = new esper.Viewport();
-	viewport.resize( window.innerWidth, window.innerHeight );
+	viewport = new esper.Viewport({
+		width: window.innerWidth,
+		height: window.innerHeight
+	});
 	// shader
 	shader = new esper.Shader({
 		vert: phong.vert,
@@ -64,12 +66,12 @@ if ( gl ) {
 	});
 	// texture
 	texture = new esper.ColorTexture2D({
-		data: new Uint8Array([
+		data: [
 			255, 0, 0, 255,
 			0, 255, 0, 255,
 			0, 0, 255, 255,
 			255, 255, 0, 255
-		]),
+		],
 		width: 2,
 		height: 2,
 		wrap: 'CLAMP_TO_EDGE',
@@ -91,7 +93,7 @@ if ( gl ) {
 }
 ```
 
-[Full JSFiddle Example](https://jsfiddle.net/340dLd1e/)
+[Full JSFiddle Example](https://jsfiddle.net/tpaxvquh/)
 
 ## Documentation
 
@@ -157,6 +159,12 @@ esper.WebGLContext.unsupportedExtensions().forEach( function( extension ) {
 });
 ```
 
+Contexts can be removed via the `esper.WebGLContext.remove` method.
+
+```javascript
+esper.WebGLContext.remove( 'canvas-id' );
+```
+
 ### Shaders
 
 Shaders are programs that execute on the GPU and are essential to 3D programming. WebGL currently supports two types of shaders: vertex and fragment. Vertex shaders execute on each vertex of the primitive being rendered while fragment shaders execute for each rasterized fragment. The `esper.Shader` constructor accepts both URLs to source files and source code as strings.
@@ -216,28 +224,35 @@ shader.setUniform( 'uHasTexture', false ); // booleans are converted to float
 
 ### Viewports
 
-An `esper.Viewport` defines a rendering resolution and pixel offset within the canvas element. By default, the viewport will be set to the size and resolution of the canvas element with no offset.
+An `esper.Viewport` defines a rendering resolution and pixel offset within the canvas element. By default, the viewport will be set to the current dimensions of the canvas element with no offset.
 
 ```javascript
 // Create the viewport.
-var viewport = new esper.Viewport();
+var viewport = new esper.Viewport({
+	width: window.innerWidth,
+	height: window.innerHeight
+});
 
-// Push the viewport dimensions and offsets onto the stack.
-viewport.push();
-
-// Push a viewport override onto the stack, this will give a 10px border.
-viewport.push( 10, 10, canvas.height - 20, canvas.width - 20 );
-
-// Pop the override off the stack.
-viewport.pop();
-
-// Set the viewport to the window dimensions.
+// Have the viewport always fit to the window.
 window.addEventListener( 'resize', function() {
     viewport.resize( window.innerWidth, window.innerHeight );
 }
 
-// Set the x and y offset.
-viewport.offset( 100, 200 );
+// Push the viewport onto the stack at its current size.
+viewport.push();
+
+// Push viewport overrides onto the stack, this will give a 10px border.
+viewport.push( 10, 10, canvas.height - 20, canvas.width - 20 );
+
+// Pop the override off the stack.
+viewport.pop();
+```
+
+Using the `resize` method will resize the underlying canvas element along with the implicit dimensions of the viewport.
+
+```javascript
+// Resize the viewport. This resizes the underlying canvas.
+viewport.resize( 460, 460 );
 ```
 
 Modifying the viewport is the recommended way to mimic multiple rendering contexts as it requires no duplication of WebGL constructs.
