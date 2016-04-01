@@ -59,10 +59,10 @@
      */
     Viewport.prototype.resize = function( width, height ) {
         if ( typeof width !== 'number' || ( width <= 0 ) ) {
-            throw '`width` value is invalid';
+            throw 'Provided `width` of ' + width + ' is invalid';
         }
         if ( typeof height !== 'number' || ( height <= 0 ) ) {
-            throw '`height` value is invalid';
+            throw 'Provided `height` of ' + height + ' is invalid';
         }
         this.width = width;
         this.height = height;
@@ -82,10 +82,10 @@
      */
     Viewport.prototype.offset = function( x, y ) {
         if ( typeof x !== 'number' ) {
-            throw '`x` value is invalid';
+            throw 'Provided `x` of ' + x + ' is invalid';
         }
         if (  typeof y !== 'number' ) {
-            throw '`y` value is invalid';
+            throw 'Provided `y` of ' + y + ' is invalid';
         }
         this.x = x;
         this.y = y;
@@ -107,16 +107,16 @@
      */
     Viewport.prototype.push = function( x, y, width, height ) {
         if ( x !== undefined && typeof x !== 'number' ) {
-            throw '`x` value is invalid';
+            throw 'Provided `x` of ' + x + ' is invalid';
         }
         if ( y !== undefined && typeof y !== 'number' ) {
-            throw '`y` value is invalid';
+            throw 'Provided `y` of ' + y + ' is invalid';
         }
         if ( width !== undefined && ( typeof width !== 'number' || ( width <= 0 ) ) ) {
-            throw '`width` value is invalid';
+            throw 'Provided `width` of ' + width + ' is invalid';
         }
         if ( height !== undefined && ( typeof height !== 'number' || ( height <= 0 ) ) ) {
-            throw '`height` value is invalid';
+            throw 'Provided `height` of ' + height + ' is invalid';
         }
         this.state.viewports.push({
             viewport: this,

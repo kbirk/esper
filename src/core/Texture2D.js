@@ -237,7 +237,7 @@
         } else if ( data instanceof Float32Array ) {
             this.type = 'FLOAT';
         } else if ( data && !( data instanceof ArrayBuffer ) ) {
-            throw '`bufferData` requires a null, Array, ArrayBuffer, or ArrayBufferView argument';
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`, or null';
         }
         // store data description
         this.data = data;
@@ -347,10 +347,10 @@
      */
     Texture2D.prototype.resize = function( width, height ) {
         if ( typeof width !== 'number' || ( width <= 0 ) ) {
-            throw '`width` value is invalid';
+            throw 'Provided `width` of ' + width + ' is invalid';
         }
         if ( typeof height !== 'number' || ( height <= 0 ) ) {
-            throw '`height` value is invalid';
+            throw 'Provided `height` of ' + height + ' is invalid';
         }
         this.bufferData( this.data, width, height );
         return this;

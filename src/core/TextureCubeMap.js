@@ -367,13 +367,13 @@
         // set width and height
         if ( width !== undefined && height !== undefined ) {
             if ( typeof width !== 'number' || width <= 0 ) {
-                throw '`width` is invalid';
+                throw 'Provided `width` of ' + width + ' is invalid';
             }
             if ( typeof height !== 'number' || height <= 0 ) {
-                throw '`height` is invalid';
+                throw 'Provided `height` of ' + height + ' is invalid';
             }
             if ( width !== height ) {
-                throw '`width` must be equal to `height`';
+                throw 'Provided `width` must be equal to `height`';
             }
             // set width and height
             this.width = width;
@@ -416,7 +416,7 @@
                 that.type = 'FLOAT';
             } else if ( data &&
                 !( data instanceof ArrayBuffer ) ) {
-                throw '`bufferData` requires a null, Array, ArrayBuffer, or ArrayBufferView argument';
+                throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or null';
             }
             // buffer the data
             gl.texImage2D(

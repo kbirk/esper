@@ -207,7 +207,7 @@
             !( arg instanceof Float32Array ) &&
             typeof arg !== 'number' ) {
             // if not arraybuffer or a numeric size
-            throw '`bufferData` requires an Array, ArrayBuffer, ArrayBufferView, or number argument';
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `number`';
         }
         // don't overwrite the count if it is already set
         if ( this.count === DEFAULT_COUNT ) {
@@ -246,12 +246,12 @@
     VertexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
         var gl = this.gl;
         if ( this.byteLength === 0 ) {
-            throw '`bufferSubData` can not be used on a buffer that has not been allocated';
+            throw 'Buffer has not yet been allocated';
         }
         if ( array instanceof Array ) {
             array = new Float32Array( array );
         } else if ( !( array instanceof ArrayBuffer ) && !ArrayBuffer.isView( array ) ) {
-            throw '`bufferSubData` requires an Array, ArrayBuffer, or ArrayBufferView argument';
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
         }
         byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_OFFSET;
         // get the total number of attribute components from pointers
@@ -350,7 +350,7 @@
         }
         var bufferCount = this.byteLength / BYTES_PER_COMPONENT;
         if ( count + offset > bufferCount ) {
-            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' overflows the total count of the buffer ' + bufferCount;
+            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' overflows the total count of the buffer (' + bufferCount + ')';
         }
         // draw elements
         gl.drawArrays( mode, offset, count );

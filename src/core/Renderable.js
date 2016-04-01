@@ -23,7 +23,7 @@
         });
         Object.keys( indices ).forEach( function( index ) {
             if ( indices[ index ] > 1 ) {
-                throw 'More than one attribute pointer exists for index `' + index + '`';
+                throw 'More than one attribute pointer exists for index ' + index;
             }
         });
     }

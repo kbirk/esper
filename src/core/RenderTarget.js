@@ -146,10 +146,10 @@
      */
     RenderTarget.prototype.resize = function( width, height ) {
         if ( typeof width !== 'number' || ( width <= 0 ) ) {
-            throw '`width` value is invalid';
+            throw 'Provided `width` of ' + width + ' is invalid';
         }
         if ( typeof height !== 'number' || ( height <= 0 ) ) {
-            throw '`height` value is invalid';
+            throw 'Provided `height` of ' + height + ' is invalid';
         }
         var textures = this.textures;
         Object.keys( textures ).forEach( function( key ) {

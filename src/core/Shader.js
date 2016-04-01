@@ -266,10 +266,10 @@
         spec = spec || {};
         // check source arguments
         if ( !spec.vert ) {
-            throw 'Vertex shader argument has not been provided, shader initialization aborted';
+            throw 'Vertex shader argument has not been provided';
         }
         if ( !spec.frag ) {
-            throw 'Fragment shader argument has not been provided, shader initialization aborted';
+            throw 'Fragment shader argument has not been provided';
         }
         this.program = 0;
         this.gl = WebGLContext.get();

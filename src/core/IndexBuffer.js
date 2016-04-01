@@ -61,7 +61,7 @@
         this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
         // check if type is supported
         if ( this.type === 'UNSIGNED_INT' && !WebGLContext.checkExtension( 'OES_element_index_uint' ) ) {
-            throw 'Cannot create IndexBuffer of type gl.UNSIGNED_INT as extension `OES_element_index_uint` is not supported';
+            throw 'Cannot create IndexBuffer of type `UNSIGNED_INT` as extension `OES_element_index_uint` is not supported';
         }
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
@@ -130,7 +130,7 @@
         } else if ( arg instanceof Uint32Array ) {
             this.type = 'UNSIGNED_INT';
         } else if ( !( arg instanceof ArrayBuffer ) && typeof arg !== 'number' ) {
-            throw '`bufferData` requires an Array, ArrayBuffer, ArrayBufferView or numberic argument';
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `number`';
         }
         // don't overwrite the count if it is already set
         if ( this.count === DEFAULT_COUNT ) {
@@ -167,7 +167,7 @@
     IndexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
         var gl = this.gl;
         if ( this.byteLength === 0 ) {
-            throw '`bufferSubData` can not be used on a buffer that has not been allocated';
+            throw 'Buffer has not been allocated';
         }
         // cast array to ArrayBufferView based on provided type
         if ( array instanceof Array ) {
@@ -183,7 +183,7 @@
             !( array instanceof Uint16Array ) &&
             !( array instanceof Uint32Array ) &&
             !( array instanceof ArrayBuffer ) ) {
-            throw '`bufferSubData` requires an Array, ArrayBuffer, or ArrayBufferView argument';
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
         }
         byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_OFFSET;
         // get the total number of attribute components from pointers
@@ -219,7 +219,7 @@
         }
         var bufferCount = this.byteLength / BYTES_PER_TYPE[ this.type ];
         if ( offset + count > this.count ) {
-            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' overflows the total count of the buffer ' + bufferCount;
+            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' which overflows the total count of the buffer (' + bufferCount + ')';
         }
         // if this buffer is already bound, exit early
         if ( this.state.boundIndexBuffer !== this.buffer ) {
