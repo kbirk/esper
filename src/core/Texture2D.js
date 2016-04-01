@@ -139,7 +139,7 @@
     }
 
     /**
-     * Binds the texture object and pushes it to the front of the stack.
+     * Binds the texture object and pushes it onto the stack.
      * @memberof Texture2D
      *
      * @param {number} location - The texture unit location index. Default to 0.

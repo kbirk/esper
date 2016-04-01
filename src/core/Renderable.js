@@ -76,7 +76,7 @@
     }
 
     /**
-     * Execute the draw command for the bound buffer.
+     * Execute the draw command for the underlying buffers.
      * @memberof Renderable
      *
      * @param {Object} options - The options to pass to 'drawElements'. Optional.
