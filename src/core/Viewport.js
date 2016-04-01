@@ -11,13 +11,13 @@
      * @param {Viewport} viewport - The viewport object.
      * @param {number} width - The width override.
      * @param {number} height - The height override.
-     * @param {number} x - The horizontal offset override.
-     * @param {number} y - The vertical offset override.
+     * @param {number} x - The horizontal offset.
+     * @param {number} y - The vertical offset.
      */
     function set( viewport, x, y, width, height ) {
         var gl = viewport.gl;
-        x = ( x !== undefined ) ? x : viewport.x;
-        y = ( y !== undefined ) ? y : viewport.y;
+        x = ( x !== undefined ) ? x : 0;
+        y = ( y !== undefined ) ? y : 0;
         width = ( width !== undefined ) ? width : viewport.width;
         height = ( height !== undefined ) ? height : viewport.height;
         gl.viewport( x, y, width, height );
@@ -31,8 +31,6 @@
      * @param {Object} spec - The viewport specification object.
      * @param {number} spec.width - The width of the viewport.
      * @param {number} spec.height - The height of the viewport.
-     * @param {number} spec.x - The horizontal offset of the viewport.
-     * @param {number} spec.y - The vertical offset of the viewport.
      */
     function Viewport( spec ) {
         spec = spec || {};
@@ -42,14 +40,10 @@
         this.resize(
             spec.width || this.gl.canvas.width,
             spec.height || this.gl.canvas.height );
-        // set offset
-        this.offset(
-            spec.x !== undefined ? spec.x : 0,
-            spec.y !== undefined ? spec.y : 0 );
     }
 
     /**
-     * Updates the viewport objects width and height.
+     * Updates the viewports width and height. This resizes the underlying canvas element.
      * @memberof Viewport
      *
      * @param {number} width - The width of the viewport.
@@ -66,36 +60,13 @@
         }
         this.width = width;
         this.height = height;
-        this.gl.canvas.width = width + this.x;
-        this.gl.canvas.height = height + this.y;
+        this.gl.canvas.width = width;
+        this.gl.canvas.height = height;
         return this;
     };
 
     /**
-     * Updates the viewport objects x and y offsets.
-     * @memberof Viewport
-     *
-     * @param {number} x - The horizontal offset of the viewport.
-     * @param {number} y - The vertical offset of the viewport.
-     *
-     * @returns {Viewport} The viewport object, for chaining.
-     */
-    Viewport.prototype.offset = function( x, y ) {
-        if ( typeof x !== 'number' ) {
-            throw 'Provided `x` of ' + x + ' is invalid';
-        }
-        if (  typeof y !== 'number' ) {
-            throw 'Provided `y` of ' + y + ' is invalid';
-        }
-        this.x = x;
-        this.y = y;
-        this.gl.canvas.width = this.width + x;
-        this.gl.canvas.height = this.height + y;
-        return this;
-    };
-
-    /**
-     * Sets the viewport object and pushes it to the front of the stack. Any provided overrides are only temporarily pushed onto the stack.
+     * Activates the viewport and pushes it onto the stack with the provided arguments. The underlying canvas element is not affected.
      * @memberof Viewport
      *
      * @param {number} width - The width override.
@@ -130,7 +101,7 @@
     };
 
     /**
-     * Pops current the viewport object and sets the viewport beneath it.
+     * Pops current the viewport object and activates the viewport beneath it.
      * @memberof Viewport
      *
      * @returns {Viewport} The viewport object, for chaining.

@@ -23,17 +23,13 @@
         });
 
         describe('#constructor()', function() {
-            it('should accept an object with `width`, `height`, `x`, and `y` numberic arguments', function() {
+            it('should accept an object with `width`, `height` numeric arguments', function() {
                 var viewport = new Viewport({
                     width: 100,
-                    height: 200,
-                    x: 20,
-                    y: 30
+                    height: 200
                 });
                 assert( viewport.width === 100 );
                 assert( viewport.height === 200 );
-                assert( viewport.x === 20 );
-                assert( viewport.y === 30 );
             });
             it('should resize the underlying context canvas element', function() {
                 new Viewport({
@@ -47,11 +43,6 @@
                 var viewport = new Viewport();
                 assert( gl.canvas.width === viewport.width );
                 assert( gl.canvas.height === viewport.height );
-            });
-            it('should default `x` and `y` to 0', function() {
-                var viewport = new Viewport();
-                assert( viewport.x === 0 );
-                assert( viewport.y === 0 );
             });
         });
 
@@ -128,65 +119,6 @@
             });
         });
 
-        describe('#offset()', function() {
-            it('should resize the underlying context canvas element', function() {
-                var viewport = new Viewport();
-                viewport.offset( 10, 20 );
-                assert( viewport.x === 10 );
-                assert( viewport.y === 20 );
-                assert( gl.canvas.width === viewport.width + viewport.x );
-                assert( gl.canvas.height === viewport.height + viewport.y );
-            });
-            it('should throw an exception if the `x` is missing or invalid', function() {
-                var viewport = new Viewport();
-                var result = false;
-                try {
-                    viewport.offset( undefined, 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    viewport.offset( null, 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    viewport.offset( 'invalid', 200 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should throw an exception if the `y` is missing or invalid', function() {
-                var viewport = new Viewport();
-                var result = false;
-                try {
-                    viewport.offset( 200, undefined );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    viewport.offset( 200, null );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-                result = false;
-                try {
-                    viewport.offset( 200, 'invalid' );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-        });
-
         describe('#push()', function() {
             it('should push the viewport on the stack', function() {
                 var viewport = new Viewport();
@@ -211,11 +143,6 @@
                 assert( gl.canvas.width === 500 );
                 assert( gl.canvas.height === 500 );
                 viewport.pop();
-            });
-            it('should default `x` and `y` to 0', function() {
-                var viewport = new Viewport();
-                assert( viewport.x === 0 );
-                assert( viewport.y === 0 );
             });
             it('should throw an exception if the `x` is invalid', function() {
                 var viewport = new Viewport();
