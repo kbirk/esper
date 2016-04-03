@@ -202,7 +202,7 @@
      * Buffer data into the texture.
      * @memberof Texture2D
      *
-     * @param {ArrayBufferView} data - The data array to buffer.
+     * @param {Array|ArrayBufferView|null} data - The data array to buffer.
      * @param {number} width - The width of the data.
      * @param {number} height - The height of the data.
      *

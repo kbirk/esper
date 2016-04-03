@@ -13,6 +13,7 @@
     var del = require('del');
     var jshint = require('gulp-jshint');
     var coveralls = require('gulp-coveralls');
+    var shell = require('gulp-shell');
 
     var project = 'esper';
     var paths = {
@@ -23,6 +24,7 @@
         tests: [
             'test/**/*.js'
         ],
+        docs: 'src/core/*.js',
         coverage: [
             'src/**/*.js',
             '!src/util/XHRLoader.js',
@@ -69,7 +71,7 @@
     }
 
     gulp.task('clean', function () {
-        del([ 'build/*']);
+        del( paths.build );
     });
 
     gulp.task('lint', function() {
@@ -103,10 +105,14 @@
         return build( paths.root, project + '.js', false );
     });
 
+    gulp.task('docs', shell.task([
+      './node_modules/.bin/jsdoc ' + paths.docs + ' --readme README.md --destination docs --template node_modules/minami'
+    ]));
+
     gulp.task('build', function( done ) {
         runSequence(
             [ 'clean', 'lint' ],
-            [ 'build-js', 'build-min-js' ],
+            [ 'build-js', 'build-min-js', 'docs' ],
             done );
     });
 

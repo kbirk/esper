@@ -6,17 +6,23 @@ A low-level WebGL rendering framework.
 
 ## Installation
 
-Requires [bower](http://bower.io/) or [node](http://nodejs.org/).
+Requires [node](http://nodejs.org/) or [bower](http://bower.io/).
 
-```bash
-bower install esper
-```
-or
 ```bash
 npm install esper
 ```
+or
+```bash
+bower install esper
+```
 
-## Usage
+## Documentation
+
+* [API Documentation](https://kbirk.github.io/esper/)
+
+## Example
+
+* [Full JSFiddle Example](https://jsfiddle.net/tpaxvquh/)
 
 ```javascript
 
@@ -93,9 +99,7 @@ if ( gl ) {
 }
 ```
 
-[Full JSFiddle Example](https://jsfiddle.net/tpaxvquh/)
-
-## Documentation
+## Usage
 
 ### WebGLContext
 

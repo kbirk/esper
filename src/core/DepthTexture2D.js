@@ -50,6 +50,7 @@
      * Instantiates a DepthTexture2D object.
      * @class DepthTexture2D
      * @classdesc A texture class to represent a 2D depth texture.
+     * @augments Texture2D
      *
      * @param {Object} spec - The specification arguments.
      * @param {Uint8Array|Uint16Array|Uint32Array} spec.data - The data to buffer.

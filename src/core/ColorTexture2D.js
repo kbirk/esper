@@ -72,7 +72,7 @@
      *
      * @param {Object} spec - The texture specification object.
      *
-     * @return {bool} - Whether or not the texture must be a power of two.
+     * @returns {bool} - Whether or not the texture must be a power of two.
      */
     function mustBePowerOfTwo( spec ) {
         // According to:
@@ -115,6 +115,7 @@
      * Instantiates a ColorRexture2D object.
      * @class ColorRexture2D
      * @classdesc A texture class to represent a 2D color texture.
+     * @augments Texture2D
      *
      * @param {Object} spec - The specification arguments.
      * @param {Image} spec.image - The HTMLImageElement to buffer.

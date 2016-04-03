@@ -98,7 +98,7 @@
      *
      * @param {Object} spec - The texture specification object.
      *
-     * @return {bool} - Whether or not the texture must be a power of two.
+     * @returns {bool} - Whether or not the texture must be a power of two.
      */
     function mustBePowerOfTwo( spec ) {
         // According to:
@@ -117,6 +117,8 @@
      *
      * @param {Object} spec - The texture specification object.
      * @param {Object} imgs - The map of image objects.
+     *
+     * @returns {Object} The image data.
      */
     function getImgData( spec, imgs ) {
         var data = {};
@@ -188,33 +190,11 @@
      * @classdesc A texture class to represent a cube map texture.
      *
      * @param {Object} spec - The specification arguments
-     *
-     * @param {Object} spec.images - The HTMLImageElements to buffer.
-     * @param {HTMLImageElement} spec.images[+x] - The positive x image to buffer.
-     * @param {HTMLImageElement} spec.images[-x] - The negative x image to buffer.
-     * @param {HTMLImageElement} spec.images[+y] - The positive y image to buffer.
-     * @param {HTMLImageElement} spec.images[-y] - The negative y image to buffer.
-     * @param {HTMLImageElement} spec.images[+z] - The positive z image to buffer.
-     * @param {HTMLImageElement} spec.images[-z] - The negative z image to buffer.
-     *
-     * @param {Object} spec.urls - The HTMLImageElement URLs to buffer.
-     * @param {String} spec.urls[+x] - The positive x URL to buffer.
-     * @param {String} spec.urls[-x] - The negative x URL to buffer.
-     * @param {String} spec.urls[+y] - The positive y URL to buffer.
-     * @param {String} spec.urls[-y] - The negative y URL to buffer.
-     * @param {String} spec.urls[+z] - The positive z URL to buffer.
-     * @param {String} spec.urls[-z] - The negative z URL to buffer.
-     *
-     * @param {Object} spec.data - The data to buffer.
-     * @param {Uint8Array|Float32Array} spec.data[+x] - The positive x data to buffer.
-     * @param {Uint8Array|Float32Array} spec.data[-x] - The negative x data to buffer.
-     * @param {Uint8Array|Float32Array} spec.data[+y] - The positive y data to buffer.
-     * @param {Uint8Array|Float32Array} spec.data[-y] - The negative y data to buffer.
-     * @param {Uint8Array|Float32Array} spec.data[+z] - The positive z data to buffer.
-     * @param {Uint8Array|Float32Array} spec.data[-z] - The negative z data to buffer.
-     *
-     * @param {number} width - The width of the faces.
-     * @param {number} height - The height of the faces.
+     * @param {Object} spec.images - The HTMLImageElements to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.
+     * @param {Object} spec.urls - The HTMLImageElement URLs to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.
+     * @param {Object} spec.data - The data to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.
+     * @param {number} spec.width - The width of the faces.
+     * @param {number} spec.height - The height of the faces.
      * @param {String} spec.wrap - The wrapping type over both S and T dimension.
      * @param {String} spec.wrapS - The wrapping type over the S dimension.
      * @param {String} spec.wrapT - The wrapping type over the T dimension.
@@ -356,7 +336,7 @@
      * Buffer data into the respective cube map face.
      * @memberof TextureCubeMap
      *
-     * @param {Object||null} faces - The map of face data.
+     * @param {Object|null} faces - The map of face data.
      * @param {number} width - The width of the data.
      * @param {number} height - The height of the data.
      *

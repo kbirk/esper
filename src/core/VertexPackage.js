@@ -220,6 +220,7 @@
 
     /**
      * Set the data to be interleaved inside the package. This clears any previously existing data.
+     * @memberof VertexPackage
      *
      * @param {Object} attributes - The attributes to interleaved, keyed by index.
      *

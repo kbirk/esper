@@ -1,6 +1,6 @@
 {
   "name": "esper",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A low-level WebGL rendering framework",
   "homepage": "https://github.com/kbirk/esper",
   "authors": [

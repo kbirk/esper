@@ -27,8 +27,20 @@
         3: true,
         4: true
     };
+
+    /**
+     * The default render mode (primitive type).
+     */
     var DEFAULT_MODE = 'TRIANGLES';
+
+    /**
+     * The default index offset to render from.
+     */
     var DEFAULT_OFFSET = 0;
+
+    /**
+     * The default count of indices to render.
+     */
     var DEFAULT_COUNT = 0;
 
     /**
@@ -37,7 +49,7 @@
      *
      * @param {Object} attributePointers - The attribute pointer map.
      *
-     * @return {number} - The stride of the buffer.
+     * @returns {number} - The stride of the buffer.
      */
     function getStride( attributePointers ) {
         // if there is only one attribute pointer assigned to this buffer,
@@ -79,7 +91,7 @@
      *
      * @param {Object} attributePointers - The attribute pointer map.
      *
-     * @return {Object} - The validated attribute pointer map.
+     * @returns {Object} - The validated attribute pointer map.
      */
     function getAttributePointers( attributePointers ) {
         // ensure there are pointers provided
@@ -123,7 +135,7 @@
      *
      * @param {Object} attributePointers - The attribute pointer map.
      *
-     * @return {number} - The number of components in the buffer.
+     * @returns {number} - The number of components in the buffer.
      */
     function getNumComponents( attributePointers ) {
         var size = 0;

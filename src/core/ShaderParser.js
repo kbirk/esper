@@ -36,7 +36,7 @@
      *
      * @param {String} str - The string to strip comments from.
      *
-     * @return {String} The commentless string.
+     * @returns {String} The commentless string.
      */
     function stripComments( str ) {
         // regex source: https://github.com/moagrius/stripcomments
@@ -49,7 +49,7 @@
      *
      * @param {String} str - The string to normalize whitespace from.
      *
-     * @return {String} The normalized string.
+     * @returns {String} The normalized string.
      */
     function normalizeWhitespace( str ) {
         return str.replace( ENDLINE_REGEXP, ' ' ) // remove line endings
@@ -66,6 +66,8 @@
      * @param {String} precision - The precision string.
      * @param {String} type - The type string.
      * @param {String} entry - The variable declaration string.
+     *
+     * @returns {Object} The declaration object.
      */
     function parseNameAndCount( qualifier, precision, type, entry ) {
         // determine name and size of variable
