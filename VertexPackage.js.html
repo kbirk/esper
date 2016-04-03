@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>VertexPackage.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">VertexPackage.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function () {
+
+    'use strict';
+
+    var Util = require('../util/Util');
+    var COMPONENT_TYPE = 'FLOAT';
+    var BYTES_PER_COMPONENT = 4;
+
+    /**
+     * Removes invalid attribute arguments. A valid argument must be an Array of length > 0 key by a string representing an int.
+     * @private
+     *
+     * @param {Object} attributes - The map of vertex attributes.
+     *
+     * @returns {Array} The valid array of arguments.
+     */
+    function parseAttributeMap( attributes ) {
+        var goodAttributes = [];
+        Object.keys( attributes ).forEach( function( key ) {
+            var index = parseFloat( key );
+            // check that key is an valid integer
+            if ( !Util.isInteger( index ) || index &lt; 0 ) {
+                throw 'Attribute index `' + key + '` does not represent a valid integer';
+            }
+            var vertices = attributes[key];
+            // ensure attribute is valid
+            if ( vertices &amp;&amp;
+                vertices instanceof Array &amp;&amp;
+                vertices.length > 0 ) {
+                // add attribute data and index
+                goodAttributes.push({
+                    index: index,
+                    data: vertices
+                });
+            } else {
+                throw 'Error parsing attribute of index `' + key + '`';
+            }
+        });
+        // sort attributes ascending by index
+        goodAttributes.sort(function(a,b) {
+            return a.index - b.index;
+        });
+        return goodAttributes;
+    }
+
+    /**
+     * Returns a component's byte size.
+     * @private
+     *
+     * @param {Object|Array} component - The component to measure.
+     *
+     * @returns {integer} The byte size of the component.
+     */
+    function getComponentSize( component ) {
+        // check if vector
+        if ( component.x !== undefined ) {
+            // 1 component vector
+            if ( component.y !== undefined ) {
+                // 2 component vector
+                if ( component.z !== undefined ) {
+                    // 3 component vector
+                    if ( component.w !== undefined ) {
+                        // 4 component vector
+                        return 4;
+                    }
+                    return 3;
+                }
+                return 2;
+            }
+            return 1;
+        }
+        // check if array
+        if ( component instanceof Array ) {
+            return component.length;
+        }
+        // default to 1 otherwise
+        return 1;
+    }
+
+    /**
+     * Calculates the type, size, and offset for each attribute in the attribute array along with the length and stride of the package.
+     * @private
+     *
+     * @param {VertexPackage} vertexPackage - The VertexPackage object.
+     * @param {Array} attributes - The array of vertex attributes.
+     */
+    function setPointersAndStride( vertexPackage, attributes ) {
+        var shortestArray = Number.MAX_VALUE;
+        var offset = 0;
+        // clear pointers
+        vertexPackage.pointers = {};
+        // for each attribute
+        attributes.forEach( function( vertices ) {
+            // set size to number of components in the attribute
+            var size = getComponentSize( vertices.data[0] );
+            // length of the package will be the shortest attribute array length
+            shortestArray = Math.min( shortestArray, vertices.data.length );
+            // store pointer under index
+            vertexPackage.pointers[ vertices.index ] = {
+                type : COMPONENT_TYPE,
+                size : size,
+                offset : offset * BYTES_PER_COMPONENT
+            };
+            // accumulate attribute offset
+            offset += size;
+        });
+        // set stride to total offset
+        vertexPackage.stride = offset * BYTES_PER_COMPONENT;
+        // set length of package to the shortest attribute array length
+        vertexPackage.length = shortestArray;
+    }
+
+    /**
+     * Fill the arraybuffer with a single component attribute.
+     * @private
+     *
+     * @param {Float32Array} buffer - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set1ComponentAttr( buffer, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i&lt;length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            if ( vertex.x !== undefined ) {
+                buffer[j] = vertex.x;
+            } else if ( vertex[0] !== undefined ) {
+                buffer[j] = vertex[0];
+            } else {
+                buffer[j] = vertex;
+            }
+        }
+    }
+
+    /**
+     * Fill the arraybuffer with a double component attribute.
+     * @private
+     *
+     * @param {Float32Array} buffer - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set2ComponentAttr( buffer, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i&lt;length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            buffer[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            buffer[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+        }
+    }
+
+    /**
+     * Fill the arraybuffer with a triple component attribute.
+     * @private
+     *
+     * @param {Float32Array} buffer - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set3ComponentAttr( buffer, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i&lt;length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            buffer[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            buffer[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            buffer[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+        }
+    }
+
+    /**
+     * Fill the arraybuffer with a quadruple component attribute.
+     * @private
+     *
+     * @param {Float32Array} buffer - The arraybuffer to fill.
+     * @param {Array} vertices - The vertex attribute array to copy from.
+     * @param {number} length - The length of the buffer to copy from.
+     * @param {number} offset - The offset to the attribute.
+     * @param {number} stride - The of stride of the buffer.
+     */
+    function set4ComponentAttr( buffer, vertices, length, offset, stride ) {
+        var vertex, i, j;
+        for ( i=0; i&lt;length; i++ ) {
+            vertex = vertices[i];
+            // get the index in the buffer to the particular vertex
+            j = offset + ( stride * i );
+            buffer[j] = ( vertex.x !== undefined ) ? vertex.x : vertex[0];
+            buffer[j+1] = ( vertex.y !== undefined ) ? vertex.y : vertex[1];
+            buffer[j+2] = ( vertex.z !== undefined ) ? vertex.z : vertex[2];
+            buffer[j+3] = ( vertex.w !== undefined ) ? vertex.w : vertex[3];
+        }
+    }
+
+    /**
+     * Instantiates an VertexPackage object.
+     * @class VertexPackage
+     * @classdesc A vertex package object.
+     *
+     * @param {Object} attributes - The attributes to interleave keyed by index.
+     */
+    function VertexPackage( attributes ) {
+        if ( attributes !== undefined ) {
+            this.set( attributes );
+        } else {
+            this.buffer = new Float32Array(0);
+            this.pointers = {};
+        }
+    }
+
+    /**
+     * Set the data to be interleaved inside the package. This clears any previously existing data.
+     * @memberof VertexPackage
+     *
+     * @param {Object} attributes - The attributes to interleaved, keyed by index.
+     *
+     * @returns {VertexPackage} - The vertex package object, for chaining.
+     */
+    VertexPackage.prototype.set = function( attributes ) {
+        // remove bad attributes
+        attributes = parseAttributeMap( attributes );
+        // set attribute pointers and stride
+        setPointersAndStride( this, attributes );
+        // set size of data vector
+        var length = this.length;
+        var stride = this.stride / BYTES_PER_COMPONENT;
+        var pointers = this.pointers;
+        var buffer = this.buffer = new Float32Array( length * stride );
+        // for each vertex attribute array
+        attributes.forEach( function( vertices ) {
+            // get the pointer
+            var pointer = pointers[ vertices.index ];
+            // get the pointers offset
+            var offset = pointer.offset / BYTES_PER_COMPONENT;
+            // copy vertex data into arraybuffer
+            switch ( pointer.size ) {
+                case 2:
+                    set2ComponentAttr( buffer, vertices.data, length, offset, stride );
+                    break;
+                case 3:
+                    set3ComponentAttr( buffer, vertices.data, length, offset, stride );
+                    break;
+                case 4:
+                    set4ComponentAttr( buffer, vertices.data, length, offset, stride );
+                    break;
+                default:
+                    set1ComponentAttr( buffer, vertices.data, length, offset, stride );
+                    break;
+            }
+        });
+        return this;
+    };
+
+    module.exports = VertexPackage;
+
+}());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

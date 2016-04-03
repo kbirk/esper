@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Shader.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Shader.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function () {
+
+    'use strict';
+
+    var WebGLContext = require('./WebGLContext');
+    var ShaderParser = require('./ShaderParser');
+    var WebGLContextState = require('./WebGLContextState');
+    var Async = require('../util/Async');
+    var XHRLoader = require('../util/XHRLoader');
+    var UNIFORM_FUNCTIONS = {
+        'bool': 'uniform1i',
+        'bool[]': 'uniform1iv',
+        'float': 'uniform1f',
+        'float[]': 'uniform1fv',
+        'int': 'uniform1i',
+        'int[]': 'uniform1iv',
+        'uint': 'uniform1i',
+        'uint[]': 'uniform1iv',
+        'vec2': 'uniform2fv',
+        'vec2[]': 'uniform2fv',
+        'ivec2': 'uniform2iv',
+        'ivec2[]': 'uniform2iv',
+        'vec3': 'uniform3fv',
+        'vec3[]': 'uniform3fv',
+        'ivec3': 'uniform3iv',
+        'ivec3[]': 'uniform3iv',
+        'vec4': 'uniform4fv',
+        'vec4[]': 'uniform4fv',
+        'ivec4': 'uniform4iv',
+        'ivec4[]': 'uniform4iv',
+        'mat2': 'uniformMatrix2fv',
+        'mat2[]': 'uniformMatrix2fv',
+        'mat3': 'uniformMatrix3fv',
+        'mat3[]': 'uniformMatrix3fv',
+        'mat4': 'uniformMatrix4fv',
+        'mat4[]': 'uniformMatrix4fv',
+        'sampler2D': 'uniform1i',
+        'samplerCube': 'uniform1i'
+    };
+
+    /**
+     * Given a map of existing attributes, find the lowest index that is not
+     * already used. If the attribute ordering was already provided, use that
+     * instead.
+     * @private
+     *
+     * @param {Object} attributes - The existing attributes object.
+     * @param {Object} declaration - The attribute declaration object.
+     *
+     * @returns {number} The attribute index.
+     */
+    function getAttributeIndex( attributes, declaration ) {
+        // check if attribute is already declared, if so, use that index
+        if ( attributes[ declaration.name ] ) {
+            return attributes[ declaration.name ].index;
+        }
+        // return next available index
+        return Object.keys( attributes ).length;
+    }
+
+    /**
+     * Given vertex and fragment shader source, parses the declarations and appends information pertaining to the uniforms and attribtues declared.
+     * @private
+     *
+     * @param {Shader} shader - The shader object.
+     * @param {String} vertSource - The vertex shader source.
+     * @param {String} fragSource - The fragment shader source.
+     *
+     * @returns {Object} The attribute and uniform information.
+     */
+    function setAttributesAndUniforms( shader, vertSource, fragSource ) {
+        var declarations = ShaderParser.parseDeclarations(
+            [ vertSource, fragSource ],
+            [ 'uniform', 'attribute' ]
+        );
+        // for each declaration in the shader
+        declarations.forEach( function( declaration ) {
+            // check if its an attribute or uniform
+            if ( declaration.qualifier === 'attribute' ) {
+                // if attribute, store type and index
+                var index = getAttributeIndex( shader.attributes, declaration );
+                shader.attributes[ declaration.name ] = {
+                    type: declaration.type,
+                    index: index
+                };
+            } else if ( declaration.qualifier === 'uniform' ) {
+                // if uniform, store type and buffer function name
+                shader.uniforms[ declaration.name ] = {
+                    type: declaration.type,
+                    func: UNIFORM_FUNCTIONS[ declaration.type + (declaration.count > 1 ? '[]' : '') ]
+                };
+            }
+        });
+    }
+
+    /**
+     * Given a shader source string and shader type, compiles the shader and returns the resulting WebGLShader object.
+     * @private
+     *
+     * @param {WebGLRenderingContext} gl - The webgl rendering context.
+     * @param {String} shaderSource - The shader source.
+     * @param {String} type - The shader type.
+     *
+     * @returns {WebGLShader} The compiled shader object.
+     */
+    function compileShader( gl, shaderSource, type ) {
+        var shader = gl.createShader( gl[ type ] );
+        gl.shaderSource( shader, shaderSource );
+        gl.compileShader( shader );
+        if ( !gl.getShaderParameter( shader, gl.COMPILE_STATUS ) ) {
+            throw 'An error occurred compiling the shaders:\n' + gl.getShaderInfoLog( shader );
+        }
+        return shader;
+    }
+
+    /**
+     * Binds the attribute locations for the Shader object.
+     * @private
+     *
+     * @param {Shader} shader - The Shader object.
+     */
+    function bindAttributeLocations( shader ) {
+        var gl = shader.gl;
+        var attributes = shader.attributes;
+        Object.keys( attributes ).forEach( function( key ) {
+            // bind the attribute location
+            gl.bindAttribLocation(
+                shader.program,
+                attributes[ key ].index,
+                key );
+        });
+    }
+
+    /**
+     * Queries the webgl rendering context for the uniform locations.
+     * @private
+     *
+     * @param {Shader} shader - The Shader object.
+     */
+    function getUniformLocations( shader ) {
+        var gl = shader.gl;
+        var uniforms = shader.uniforms;
+        Object.keys( uniforms ).forEach( function( key ) {
+            // get the uniform location
+            uniforms[ key ].location = gl.getUniformLocation( shader.program, key );
+        });
+    }
+
+    /**
+     * Returns a function to load shader source from a url.
+     * @private
+     *
+     * @param {String} url - The url to load the resource from.
+     *
+     * @returns {Function} The function to load the shader source.
+     */
+    function loadShaderSource( url ) {
+        return function( done ) {
+            XHRLoader.load({
+                url: url,
+                responseType: 'text',
+                success: function( res ) {
+                    done( null, res );
+                },
+                error: function( err ) {
+                    done( err, null );
+                }
+            });
+        };
+    }
+
+    /**
+     * Returns a function to pass through the shader source.
+     * @private
+     *
+     * @param {String} source - The source of the shader.
+     *
+     * @returns {Function} The function to pass through the shader source.
+     */
+    function passThroughSource( source ) {
+        return function( done ) {
+            done( null, source );
+        };
+    }
+
+    /**
+     * Returns a function that takes an array of GLSL source strings and URLs, and resolves them into and array of GLSL source.
+     * @private
+     *
+     * @param {Array} sources - The shader sources.
+     *
+     * @returns - A function to resolve the shader sources.
+     */
+    function resolveSources( sources ) {
+        return function( done ) {
+            var jobs = [];
+            sources = sources || [];
+            sources = ( !( sources instanceof Array ) ) ? [ sources ] : sources;
+            sources.forEach( function( source ) {
+                if ( ShaderParser.isGLSL( source ) ) {
+                    jobs.push( passThroughSource( source ) );
+                } else {
+                    jobs.push( loadShaderSource( source ) );
+                }
+            });
+            Async.parallel( jobs, done );
+        };
+    }
+
+    /**
+     * Creates the shader program object from source strings. This includes:
+     *    1) Compiling and linking the shader program.
+     *    2) Parsing shader source for attribute and uniform information.
+     *    3) Binding attribute locations, by order of delcaration.
+     *    4) Querying and storing uniform location.
+     * @private
+     *
+     * @param {Shader} shader - The Shader object.
+     * @param {Object} sources - A map containing sources under 'vert' and 'frag' attributes.
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    function createProgram( shader, sources ) {
+        var gl = shader.gl;
+        var common = sources.common.join( '' );
+        var vert = sources.vert.join( '' );
+        var frag = sources.frag.join( '' );
+        // compile shaders
+        var vertexShader = compileShader( gl, common + vert, 'VERTEX_SHADER' );
+        var fragmentShader = compileShader( gl, common + frag, 'FRAGMENT_SHADER' );
+        // parse source for attribute and uniforms
+        setAttributesAndUniforms( shader, vert, frag );
+        // create the shader program
+        shader.program = gl.createProgram();
+        // attach vertex and fragment shaders
+        gl.attachShader( shader.program, vertexShader );
+        gl.attachShader( shader.program, fragmentShader );
+        // bind vertex attribute locations BEFORE linking
+        bindAttributeLocations( shader );
+        // link shader
+        gl.linkProgram( shader.program );
+        // If creating the shader program failed, alert
+        if ( !gl.getProgramParameter( shader.program, gl.LINK_STATUS ) ) {
+            throw 'An error occured linking the shader:\n' + gl.getProgramInfoLog( shader.program );
+        }
+        // get shader uniform locations
+        getUniformLocations( shader );
+    }
+
+    /**
+     * Instantiates a Shader object.
+     * @class Shader
+     * @classdesc A shader class to assist in compiling and linking webgl
+     * shaders, storing attribute and uniform locations, and buffering uniforms.
+     *
+     * @param {Object} spec - The shader specification object.
+     * @param {String|String[]|Object} spec.common - Sources / URLs to be shared by both vvertex and fragment shaders.
+     * @param {String|String[]|Object} spec.vert - The vertex shader sources / URLs.
+     * @param {String|String[]|Object} spec.frag - The fragment shader sources / URLs.
+     * @param {String[]} spec.attributes - The attribute index orderings.
+     * @param {Function} callback - The callback function to execute once the shader
+     *     has been successfully compiled and linked.
+     */
+    function Shader( spec, callback ) {
+        var that = this;
+        spec = spec || {};
+        // check source arguments
+        if ( !spec.vert ) {
+            throw 'Vertex shader argument has not been provided';
+        }
+        if ( !spec.frag ) {
+            throw 'Fragment shader argument has not been provided';
+        }
+        this.program = 0;
+        this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
+        this.version = spec.version || '1.00';
+        this.attributes = {};
+        this.uniforms = {};
+        // if attribute ordering is provided, use those indices
+        if ( spec.attributes ) {
+            spec.attributes.forEach( function( attr, index ) {
+                that.attributes[ attr ] = {
+                    index: index
+                };
+            });
+        }
+        // create the shader
+        Async.parallel({
+            common: resolveSources( spec.common ),
+            vert: resolveSources( spec.vert ),
+            frag: resolveSources( spec.frag ),
+        }, function( err, sources ) {
+            if ( err ) {
+                if ( callback ) {
+                    callback( err, null );
+                }
+                return;
+            }
+            // once all shader sources are loaded
+            createProgram( that, sources );
+            if ( callback ) {
+                callback( null, that );
+            }
+        });
+    }
+
+    /**
+     * Binds the shader object and pushes it to the front of the stack.
+     * @memberof Shader
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    Shader.prototype.push = function() {
+        // if this shader is already bound, no need to rebind
+        if ( this.state.shaders.top() !== this ) {
+            this.gl.useProgram( this.program );
+        }
+        this.state.shaders.push( this );
+        return this;
+    };
+
+    /**
+     * Unbinds the shader object and binds the shader beneath it on this stack. If there is no underlying shader, bind the backbuffer.
+     * @memberof Shader
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    Shader.prototype.pop = function() {
+        var state = this.state;
+        // if there is no shader bound, exit early
+        if ( state.shaders.top() !== this ) {
+            throw 'Shader is not the top most element on the stack';
+        }
+        // pop shader off stack
+        state.shaders.pop();
+        // if there is an underlying shader, bind it
+        var top = state.shaders.top();
+        if ( top &amp;&amp; top !== this ) {
+            top.gl.useProgram( top.program );
+        } else {
+            // unbind the shader
+            this.gl.useProgram( null );
+        }
+        return this;
+    };
+
+    /**
+     * Buffer a uniform value by name.
+     * @memberof Shader
+     *
+     * @param {String} name - The uniform name in the shader source.
+     * @param {*} value - The uniform value to buffer.
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    Shader.prototype.setUniform = function( name, value ) {
+        // ensure shader is bound
+        if ( this !== this.state.shaders.top() ) {
+            throw 'Attempting to set uniform `' + name + '` for an unbound shader';
+        }
+        var uniform = this.uniforms[ name ];
+        // ensure that the uniform spec exists for the name
+        if ( !uniform ) {
+            throw 'No uniform found under name `' + name + '`';
+        }
+        // ensure that the uniform argument is defined
+        if ( value === undefined ) {
+            throw 'Argument passed for uniform `' + name + '` is undefined';
+        }
+        // if toArray function is present, convert to array
+        if ( value.toArray ) {
+            value = value.toArray();
+        }
+        // convert Array to Float32Array
+        if ( value instanceof Array ) {
+            value = new Float32Array( value );
+        }
+        // convert boolean's to 0 or 1
+        if ( typeof value === 'boolean' ) {
+            value = value ? 1 : 0;
+        }
+        // pass the arguments depending on the type
+        switch ( uniform.type ) {
+            case 'mat2':
+            case 'mat3':
+            case 'mat4':
+                this.gl[ uniform.func ]( uniform.location, false, value );
+                break;
+            default:
+                this.gl[ uniform.func ]( uniform.location, value );
+                break;
+        }
+        return this;
+    };
+
+    module.exports = Shader;
+
+}());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

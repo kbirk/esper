@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IndexBuffer.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">IndexBuffer.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function () {
+
+    'use strict';
+
+    var WebGLContext = require('./WebGLContext');
+    var WebGLContextState = require('./WebGLContextState');
+    var TYPES = {
+        UNSIGNED_SHORT: true,
+        UNSIGNED_INT: true
+    };
+    var MODES = {
+        POINTS: true,
+        LINES: true,
+        LINE_STRIP: true,
+        LINE_LOOP: true,
+        TRIANGLES: true,
+        TRIANGLE_STRIP: true,
+        TRIANGLE_FAN: true
+    };
+    var BYTES_PER_TYPE = {
+        UNSIGNED_SHORT: 2,
+        UNSIGNED_INT: 4
+    };
+
+    /**
+     * The default component type.
+     */
+    var DEFAULT_TYPE = 'UNSIGNED_SHORT';
+
+    /**
+     * The default render mode (primitive type).
+     */
+    var DEFAULT_MODE = 'TRIANGLES';
+
+    /**
+     * The default index offset to render from.
+     */
+    var DEFAULT_OFFSET = 0;
+
+    /**
+     * The default count of indices to render.
+     */
+    var DEFAULT_COUNT = 0;
+
+    /**
+     * Instantiates an IndexBuffer object.
+     * @class IndexBuffer
+     * @classdesc An index buffer object.
+     *
+     * @param {Uint16Array|Uin32Array|Array} arg - The index data to buffer.
+     * @param {Object} options - The rendering options.
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
+     */
+    function IndexBuffer( arg, options ) {
+        options = options || {};
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
+        this.buffer = gl.createBuffer();
+        this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
+        // check if type is supported
+        if ( this.type === 'UNSIGNED_INT' &amp;&amp; !WebGLContext.checkExtension( 'OES_element_index_uint' ) ) {
+            throw 'Cannot create IndexBuffer of type `UNSIGNED_INT` as extension `OES_element_index_uint` is not supported';
+        }
+        this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
+        this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
+        this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
+        this.byteLength = 0;
+        if ( arg ) {
+            if ( arg instanceof WebGLBuffer ) {
+                // WebGLBuffer argument
+                if ( options.byteLength === undefined ) {
+                    throw 'Argument of type `WebGLBuffer` must be complimented with a corresponding `options.byteLength`';
+                }
+                this.byteLength = options.byteLength;
+                this.buffer = arg;
+            } else if ( typeof arg === 'number' ) {
+                // byte length argument
+                if ( options.type === undefined ) {
+                    throw 'Argument of type `number` must be complimented with a corresponding `options.type`';
+                }
+                this.bufferData( arg );
+            } else if ( arg instanceof ArrayBuffer ) {
+                // ArrayBuffer arg
+                if ( options.type === undefined ) {
+                    throw 'Argument of type `ArrayBuffer` must be complimented with a corresponding `options.type`';
+                }
+                this.bufferData( arg );
+            } else {
+                // Array or ArrayBufferView argument
+                this.bufferData( arg );
+            }
+        } else {
+            if ( options.type === undefined ) {
+                throw 'Empty buffer must be complimented with a corresponding `options.type`';
+            }
+        }
+        // ensure there isn't an overflow
+        var bufferCount = ( this.byteLength / BYTES_PER_TYPE[ this.type ] );
+        if ( this.count + this.offset > bufferCount ) {
+            throw 'IndexBuffer `count` of ' + this.count + ' and `offset` of ' + this.offset + ' overflows the total count of the buffer ' + bufferCount;
+        }
+    }
+
+    /**
+     * Upload index data to the GPU.
+     * @memberof IndexBuffer
+     *
+     * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer.
+     *
+     * @returns {IndexBuffer} The index buffer object for chaining.
+     */
+    IndexBuffer.prototype.bufferData = function( arg ) {
+        var gl = this.gl;
+        // cast array to ArrayBufferView based on provided type
+        if ( arg instanceof Array ) {
+            // check for type support
+            if ( this.type === 'UNSIGNED_INT' ) {
+                // uint32 is supported
+                arg = new Uint32Array( arg );
+            } else {
+                // buffer to uint16
+                arg = new Uint16Array( arg );
+            }
+        }
+        // set ensure type corresponds to data
+        if ( arg instanceof Uint16Array ) {
+            this.type = 'UNSIGNED_SHORT';
+        } else if ( arg instanceof Uint32Array ) {
+            this.type = 'UNSIGNED_INT';
+        } else if ( !( arg instanceof ArrayBuffer ) &amp;&amp; typeof arg !== 'number' ) {
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `number`';
+        }
+        // don't overwrite the count if it is already set
+        if ( this.count === DEFAULT_COUNT ) {
+            if ( typeof arg === 'number' ) {
+                this.count = ( arg / BYTES_PER_TYPE[ this.type ] );
+            } else {
+                this.count = arg.length;
+            }
+        }
+        // set byte length
+        if ( typeof arg === 'number' ) {
+            if ( arg % BYTES_PER_TYPE[ this.type ] ) {
+                throw 'Byte length must be multiple of ' + BYTES_PER_TYPE[ this.type ];
+            }
+            this.byteLength = arg;
+        } else {
+            this.byteLength = arg.length * BYTES_PER_TYPE[ this.type ];
+        }
+        // buffer the data
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
+        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, arg, gl.STATIC_DRAW );
+        return this;
+    };
+
+    /**
+     * Upload partial index data to the GPU.
+     * @memberof IndexBuffer
+     *
+     * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
+     * @param {number} byteOffset - The byte offset at which to buffer.
+     *
+     * @returns {IndexBuffer} The vertex buffer object for chaining.
+     */
+    IndexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
+        var gl = this.gl;
+        if ( this.byteLength === 0 ) {
+            throw 'Buffer has not been allocated';
+        }
+        // cast array to ArrayBufferView based on provided type
+        if ( array instanceof Array ) {
+            // check for type support
+            if ( this.type === 'UNSIGNED_INT' ) {
+                // uint32 is supported
+                array = new Uint32Array( array );
+            } else {
+                // buffer to uint16
+                array = new Uint16Array( array );
+            }
+        } else if (
+            !( array instanceof Uint16Array ) &amp;&amp;
+            !( array instanceof Uint32Array ) &amp;&amp;
+            !( array instanceof ArrayBuffer ) ) {
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
+        }
+        byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_OFFSET;
+        // get the total number of attribute components from pointers
+        var byteLength = array.length * BYTES_PER_TYPE[ this.type ];
+        if ( byteOffset + byteLength > this.byteLength ) {
+            throw 'Argument of length ' + byteLength + ' bytes and offset of ' + byteOffset + ' bytes overflows the buffer length of ' + this.byteLength + ' bytes';
+        }
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
+        gl.bufferSubData( gl.ELEMENT_ARRAY_BUFFER, byteOffset, array );
+        return this;
+    };
+
+    /**
+     * Execute the draw command for the bound buffer.
+     * @memberof IndexBuffer
+     *
+     * @param {Object} options - The options to pass to 'drawElements'. Optional.
+     * @param {String} options.mode - The draw mode / primitive type.
+     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.count - The number of vertices to draw.
+     *
+     * @returns {IndexBuffer} Returns the index buffer object for chaining.
+     */
+    IndexBuffer.prototype.draw = function( options ) {
+        options = options || {};
+        var gl = this.gl;
+        var mode = gl[ options.mode || this.mode ];
+        var type = gl[ this.type ];
+        var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
+        var count = ( options.count !== undefined ) ? options.count : this.count;
+        if ( count === 0 ) {
+            throw 'Attempting to draw with a count of 0';
+        }
+        var bufferCount = this.byteLength / BYTES_PER_TYPE[ this.type ];
+        if ( offset + count > this.count ) {
+            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' which overflows the total count of the buffer (' + bufferCount + ')';
+        }
+        // if this buffer is already bound, exit early
+        if ( this.state.boundIndexBuffer !== this.buffer ) {
+            gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
+            this.state.boundIndexBuffer = this.buffer;
+        }
+        // draw elements
+        gl.drawElements( mode, count, type, offset );
+        return this;
+    };
+
+    module.exports = IndexBuffer;
+
+}());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

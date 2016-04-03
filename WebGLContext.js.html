@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WebGLContext.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">WebGLContext.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function() {
+
+    'use strict';
+
+    var EXTENSIONS = [
+        // ratified
+        'OES_texture_float',
+        'OES_texture_half_float',
+        'WEBGL_lose_context',
+        'OES_standard_derivatives',
+        'OES_vertex_array_object',
+        'WEBGL_debug_renderer_info',
+        'WEBGL_debug_shaders',
+        'WEBGL_compressed_texture_s3tc',
+        'WEBGL_depth_texture',
+        'OES_element_index_uint',
+        'EXT_texture_filter_anisotropic',
+        'EXT_frag_depth',
+        'WEBGL_draw_buffers',
+        'ANGLE_instanced_arrays',
+        'OES_texture_float_linear',
+        'OES_texture_half_float_linear',
+        'EXT_blend_minmax',
+        'EXT_shader_texture_lod',
+        // community
+        'WEBGL_compressed_texture_atc',
+        'WEBGL_compressed_texture_pvrtc',
+        'EXT_color_buffer_half_float',
+        'WEBGL_color_buffer_float',
+        'EXT_sRGB',
+        'WEBGL_compressed_texture_etc1'
+    ];
+    var _boundContext = null;
+    var _contexts = {};
+
+    /**
+     * Returns an rfc4122 version 4 compliant UUID.
+     * @private
+     *
+     * @returns {String} The UUID string.
+     */
+    function getUUID() {
+        var replace = function( c ) {
+            var r = Math.random() * 16 | 0;
+            var v = ( c === 'x' ) ? r : ( r &amp; 0x3 | 0x8 );
+            return v.toString( 16 );
+        };
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, replace );
+    }
+
+    /**
+     * Returns the id of the HTMLCanvasElement element. If there is no id, it
+     * generates one and appends it.
+     * @private
+     *
+     * @param {HTMLCanvasElement} canvas - The Canvas object.
+     *
+     * @returns {String} The Canvas id string.
+     */
+    function getId( canvas ) {
+        if ( !canvas.id ) {
+            canvas.id = getUUID();
+        }
+        return canvas.id;
+    }
+
+    /**
+     * Returns a Canvas element object from either an existing object, or identification string.
+     * @private
+     *
+     * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas id or selector string.
+     *
+     * @returns {HTMLCanvasElement} The Canvas element object.
+     */
+    function getCanvas( arg ) {
+        if ( arg instanceof HTMLCanvasElement ) {
+            return arg;
+        } else if ( typeof arg === 'string' ) {
+            return document.getElementById( arg ) ||
+                document.querySelector( arg );
+        }
+        return null;
+    }
+
+    /**
+     * Attempts to retreive a wrapped WebGLRenderingContext.
+     * @private
+     *
+     * @param {HTMLCanvasElement} The Canvas element object to create the context under.
+     *
+     * @returns {Object} The context wrapper.
+     */
+    function getContextWrapper( arg ) {
+        if ( arg === undefined ) {
+            if ( _boundContext ) {
+                // return last bound context
+                return _boundContext;
+            }
+        } else {
+            var canvas = getCanvas( arg );
+            if ( canvas ) {
+                return _contexts[ getId( canvas ) ];
+            }
+        }
+        // no bound context or argument
+        return null;
+    }
+
+    /**
+     * Attempts to load all known extensions for a provided WebGLRenderingContext. Stores the results in the context wrapper for later queries.
+     * @private
+     *
+     * @param {Object} contextWrapper - The context wrapper.
+     */
+    function loadExtensions( contextWrapper ) {
+        var gl = contextWrapper.gl;
+        EXTENSIONS.forEach( function( id ) {
+            contextWrapper.extensions[ id ] = gl.getExtension( id );
+        });
+    }
+
+    /**
+     * Attempts to create a WebGLRenderingContext wrapped inside an object which will also store the extension query results.
+     * @private
+     *
+     * @param {HTMLCanvasElement} The Canvas element object to create the context under.
+     * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
+     *
+     * @returns {Object} The context wrapper.
+     */
+    function createContextWrapper( canvas, options ) {
+        var gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
+        // wrap context
+        var contextWrapper = {
+            id: getId( canvas ),
+            gl: gl,
+            extensions: {}
+        };
+        // load WebGL extensions
+        loadExtensions( contextWrapper );
+        // add context wrapper to map
+        _contexts[ getId( canvas ) ] = contextWrapper;
+        // bind the context
+        _boundContext = contextWrapper;
+        return contextWrapper;
+    }
+
+    module.exports = {
+
+        /**
+         * Retrieves an existing WebGL context associated with the provided argument and binds it. While bound, the active context will be used implicitly by any instantiated `esper` constructs.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string.
+         *
+         * @returns {WebGLContext} This namespace, used for chaining.
+         */
+        bind: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                _boundContext = wrapper;
+                return this;
+            }
+            throw 'No context exists for provided argument `' + arg + '`';
+        },
+
+        /**
+         * Retrieves an existing WebGL context associated with the provided argument. If no context exists, one is created.
+         * During creation attempts to load all extensions found at: https://www.khronos.org/registry/webgl/extensions/.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
+         *
+         * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
+         */
+        get: function( arg, options ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+               // return the native WebGLRenderingContext
+               return wrapper.gl;
+            }
+            // get canvas element
+            var canvas = getCanvas( arg );
+            // try to find or create context
+            if ( !canvas ) {
+                throw 'Context could not be associated with argument of type `' + ( typeof arg ) + '`';
+            }
+            // create context
+            return createContextWrapper( canvas, options ).gl;
+        },
+
+        /**
+         * Removes an existing WebGL context object for the provided or currently bound object.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
+         *
+         * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
+         */
+        remove: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                // delete the context
+                delete _contexts[ wrapper.id ];
+                // remove if currently bound
+                if ( wrapper === _boundContext ) {
+                    _boundContext = null;
+                }
+            } else {
+                throw 'Context could not be found or deleted for argument of type `' + ( typeof arg ) + '`';
+            }
+        },
+
+        /**
+         * Returns an array of all supported extensions for the provided or currently bound context object. If no context is bound, it will return an empty array.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         *
+         * @returns {Array} All supported extensions.
+         */
+        supportedExtensions: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                var supported = [];
+                Object.keys( extensions ).forEach( function( key ) {
+                    if ( extensions[ key ] ) {
+                        supported.push( key );
+                    }
+                });
+                return supported;
+            }
+            throw 'No context is currently bound or could be associated with the provided argument';
+        },
+
+        /**
+         * Returns an array of all unsupported extensions for the provided or currently bound context object. If no context is bound, it will return an empty array.
+         * an empty array.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         *
+         * @returns {Array} All unsupported extensions.
+         */
+        unsupportedExtensions: function( arg ) {
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                var unsupported = [];
+                Object.keys( extensions ).forEach( function( key ) {
+                    if ( !extensions[ key ] ) {
+                        unsupported.push( key );
+                    }
+                });
+                return unsupported;
+            }
+            throw 'No context is currently bound or could be associated with the provided argument';
+        },
+
+        /**
+         * Checks if an extension has been successfully loaded for the provided or currently bound context object.
+         * 'false'.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         * @param {String} extension - The extension name.
+         *
+         * @returns {boolean} Whether or not the provided extension has been loaded successfully.
+         */
+        checkExtension: function( arg, extension ) {
+            if ( !extension ) {
+                // shift parameters if no canvas arg is provided
+                extension = arg;
+                arg = undefined;
+            }
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                return extensions[ extension ] ? true : false;
+            }
+            throw 'No context is currently bound or could be associated with the provided argument';
+        }
+    };
+
+}());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
