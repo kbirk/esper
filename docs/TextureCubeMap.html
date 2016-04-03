@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TextureCubeMap - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">TextureCubeMap</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        TextureCubeMap
+        </h2>
+        
+            <div class="class-description">A texture class to represent a cube map texture.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="TextureCubeMap"><span class="type-signature"></span>new TextureCubeMap<span class="signature">(spec)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Instantiates a TextureCubeMap object.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>spec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The specification arguments
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>images</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTMLImageElements to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>urls</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTMLImageElement URLs to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The data to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>width</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The width of the faces.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>height</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The height of the faces.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The wrapping type over both S and T dimension.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wrapS</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The wrapping type over the S dimension.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wrapT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The wrapping type over the T dimension.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>filter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The min / mag filter used during scaling.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minFilter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The minification filter used during scaling.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>magFilter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The magnification filter used during scaling.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mipMap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">bool</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether or not mip-mapping is enabled.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>invertY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">bool</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether or not invert-y is enabled.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preMultiplyAlpha</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">bool</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether or not alpha premultiplying is enabled.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>format</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The texture pixel format.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The texture pixel component type.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="TextureCubeMap.js.html">TextureCubeMap.js</a>, <a href="TextureCubeMap.js.html#line187">line 187</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="bufferData"><span class="type-signature"></span>bufferData<span class="signature">(faces, width, height)</span><span class="type-signature"> &rarr; {<a href="TextureCubeMap.html">TextureCubeMap</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Buffer data into the respective cube map face.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>faces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The map of face data.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>width</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The width of the data.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>height</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The height of the data.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="TextureCubeMap.js.html">TextureCubeMap.js</a>, <a href="TextureCubeMap.js.html#line345">line 345</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The texture object, for chaining.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="TextureCubeMap.html">TextureCubeMap</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="pop"><span class="type-signature"></span>pop<span class="signature">(location)</span><span class="type-signature"> &rarr; {<a href="TextureCubeMap.html">TextureCubeMap</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Unbinds the texture object and binds the texture beneath it onthis stack. If there is no underlying texture, unbinds the unit.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>location</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The texture unit location index.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="TextureCubeMap.js.html">TextureCubeMap.js</a>, <a href="TextureCubeMap.js.html#line307">line 307</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The texture object, for chaining.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="TextureCubeMap.html">TextureCubeMap</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="push"><span class="type-signature"></span>push<span class="signature">(location)</span><span class="type-signature"> &rarr; {<a href="TextureCubeMap.html">TextureCubeMap</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Binds the texture object and pushes it to onto the stack.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>location</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The texture unit location index.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="TextureCubeMap.js.html">TextureCubeMap.js</a>, <a href="TextureCubeMap.js.html#line281">line 281</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The texture object, for chaining.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="TextureCubeMap.html">TextureCubeMap</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setParameters"><span class="type-signature"></span>setParameters<span class="signature">(params)</span><span class="type-signature"> &rarr; {<a href="TextureCubeMap.html">TextureCubeMap</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Set the texture parameters.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The parameters by name.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>wrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The wrapping type over both S and T dimension.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wrapS</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The wrapping type over the S dimension.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wrapT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The wrapping type over the T dimension.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>filter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The min / mag filter used during scaling.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minFilter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The minification filter used during scaling.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>magFilter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The magnification filter used during scaling.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="TextureCubeMap.js.html">TextureCubeMap.js</a>, <a href="TextureCubeMap.js.html#line436">line 436</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The texture object, for chaining.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="TextureCubeMap.html">TextureCubeMap</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

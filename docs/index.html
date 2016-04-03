@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>esper.js</h1><p><a href="http://badge.fury.io/js/esper"><img src="https://badge.fury.io/js/esper.svg" alt="npm version"></a> <a href="http://badge.fury.io/bo/esper"><img src="https://badge.fury.io/bo/esper.svg" alt="Bower version"></a> <a href="https://travis-ci.org/kbirk/esper"><img src="https://travis-ci.org/kbirk/esper.svg?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/r/kbirk/esper"><img src="https://coveralls.io/repos/kbirk/esper/badge.svg" alt="Coverage Status"></a>  <a href="https://david-dm.org/kbirk/esper"><img src="https://david-dm.org/kbirk/esper.svg" alt="Dependency Status"></a></p>
+<p>A low-level WebGL rendering framework.</p>
+<h2>Installation</h2><p>Requires <a href="http://nodejs.org/">node</a> or <a href="http://bower.io/">bower</a>.</p>
+<pre class="prettyprint source lang-bash"><code>npm install esper</code></pre><p>or</p>
+<pre class="prettyprint source lang-bash"><code>bower install esper</code></pre><h2>Documentation</h2><ul>
+<li><a href="https://kbirk.github.io/esper/">API Documentation</a></li>
+</ul>
+<h2>Example</h2><ul>
+<li><a href="https://jsfiddle.net/tpaxvquh/">Full JSFiddle Example</a></li>
+</ul>
+<pre class="prettyprint source lang-javascript"><code>
+var shader;
+var viewport;
+var renderable;
+var texture;
+
+function render() {
+    // setup
+    viewport.push();
+    shader.push();
+    shader.setUniform( 'uLightPosition', light );
+    shader.setUniform( 'uModelMatrix', model );
+    shader.setUniform( 'uViewMatrix', view );
+    shader.setUniform( 'uProjectionMatrix', projection );
+    shader.setUniform( 'uTextureSampler', 0 );
+    texture.push( 0 );
+    // draw
+    renderable.draw();
+    // teardown
+    texture.pop( 0 );
+    viewport.pop();
+    shader.pop();
+    // continue to next frame
+    requestAnimationFrame(render);
+}
+
+// create webgl context
+try {
+    gl = esper.WebGLContext.get( &quot;glcanvas&quot; );
+} catch( err ) {
+    console.err( err.message );
+}
+
+// only continue if WebGL is available
+if ( gl ) {
+    // viewport
+    viewport = new esper.Viewport({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+    // shader
+    shader = new esper.Shader({
+        vert: phong.vert,
+        frag: phong.frag
+    });
+    // texture
+    texture = new esper.ColorTexture2D({
+        data: [
+            255, 0, 0, 255,
+            0, 255, 0, 255,
+            0, 0, 255, 255,
+            255, 255, 0, 255
+        ],
+        width: 2,
+        height: 2,
+        wrap: 'CLAMP_TO_EDGE',
+        filter: 'NEAREST'
+    })
+    // renderable
+    renderable = new esper.Renderable({
+        vertices: {
+            0: cube.positions,
+            1: cube.normals,
+            2: cube.uvs
+        },
+        indices: cube.indices
+    });
+    // enable depth testing
+    gl.enable( gl.DEPTH_TEST );
+    // start render loop
+    render();
+}</code></pre><h2>Usage</h2><h3>WebGLContext</h3><p>In order to access the WebGL API you need a canvas element from which a WebGL rendering context can be created. The <code>esper.WebGLContext</code> namespace wraps the typical process of instantiating a context and provides facilities for handling multiple contexts within a single application. The object returned is a native WebGLRenderingContext object.</p>
+<pre class="prettyprint source lang-javascript"><code>// Get WebGL context and load all available extensions.
+var gl;
+try {
+    gl = esper.WebGLContext.get( 'canvas-id' );
+} catch( err ) {
+    console.error( err.message );
+}</code></pre><p>Options can be provided via the second parameter.</p>
+<pre class="prettyprint source lang-javascript"><code>var gl;
+try {
+    gl = esper.WebGLContext.get( canvasDOMElement, {
+        antialias: false
+        depth: false
+    });
+} catch( err ) {
+    console.error( err.message );
+}</code></pre><p>Once a context has been created, it is bound internally and can be accessed throughout the application by calling <code>esper.WebGLContext.get</code>. It is important to note that all esper classes will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL constructs cannot be shared between contexts and result in redundant buffers and textures.</p>
+<pre class="prettyprint source lang-javascript"><code>var gl = esper.WebGLContext.get();</code></pre><p>The <code>esper.WebGLContext.bind</code> method can be used to manually bind a context. Once again, if only one context is ever used, this is unnecessary as the context is bound upon creation.</p>
+<pre class="prettyprint source lang-javascript"><code>esper.WebGLContext.bind( 'canvas-id' );
+esper.WebGLContext.bind( canvasDOMElement );</code></pre><p>During the creation of the context, esper will automatically attempt to load all known WebGL extensions. To check whether or not a specific extension has been successfully loaded use <code>esper.WebGLContext.checkExtension</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>// Check if the bound WebGL context supports depth textures.
+if ( esper.WebGLContext.checkExtension( 'WEBGL_depth_texture' ) ) {
+    console.log( 'Depth textures are supported' );
+}</code></pre><p>All supported or unsupported extensions can also be queried.</p>
+<pre class="prettyprint source lang-javascript"><code>esper.WebGLContext.supportedExtensions().forEach( function( extension ) {
+    console.log( extensions + ' is supported.');
+});
+
+esper.WebGLContext.unsupportedExtensions().forEach( function( extension ) {
+    console.log( extensions + ' is not supported.');
+});</code></pre><p>Contexts can be removed via the <code>esper.WebGLContext.remove</code> method.</p>
+<pre class="prettyprint source lang-javascript"><code>esper.WebGLContext.remove( 'canvas-id' );</code></pre><h3>Shaders</h3><p>Shaders are programs that execute on the GPU and are essential to 3D programming. WebGL currently supports two types of shaders: vertex and fragment. Vertex shaders execute on each vertex of the primitive being rendered while fragment shaders execute for each rasterized fragment. The <code>esper.Shader</code> constructor accepts both URLs to source files and source code as strings.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create shader object and using source URLs (also supports source code strings).
+var shader = new esper.Shader({
+    vert: 'shaders/phong.vert',
+    frag: 'shaders/phong.frag'
+}, function( err, shader ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
+    // Shader completion callback.
+    console.log( 'Shader sources loaded and program instantiated' );
+});</code></pre><p>Multiple source arguments can be provided as arrays and are concatenated together in the respective order. Common code can also be shared between shader types and is appended at the top of the source.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create shader object and using source URLs (also supports source code strings).
+var shader = new esper.Shader({
+    common: 'uniform highp float uTime;'
+    vert: [
+        'shaders/noise.vert',
+        'attribute highp vec3 aVertexPosition;' +
+        'void main() {' +
+        '    gl_Position = vec4( aVertexPosition * noise( uTime ), 1.0 );' +
+        '    vPosition = aVertexPosition.xyz;' +
+        '}'
+    ],
+    frag:
+        'void main() {' +
+        '    gl_FragColor = vec4( 1*uTime, 1*uTime, 1*uTime, 1.0 );' +
+        '}'
+}, function( err shader ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
+    console.log( 'Shader sources loaded and program instantiated' );
+});</code></pre><p>During shader initialization the shader source code is parsed and analyzed. All vertex attribute locations are bound in the order in which they are declared and all uniform types and locations are retrieved and stored based upon name. This is used to greatly simplify the process of uploading uniforms to the GPU.</p>
+<p>When uploading uniforms to the GPU, arguments are automatically casted (within reason) into the appropriate format.</p>
+<pre class="prettyprint source lang-javascript"><code>// Upload uniforms to the GPU
+shader.setUniform( 'uProjectionMatrix', projectionMatrixArray );
+shader.setUniform( 'uAlpha', 0.25 );
+shader.setUniform( 'uHasTexture', false ); // booleans are converted to float</code></pre><h3>Viewports</h3><p>An <code>esper.Viewport</code> defines a rendering resolution and pixel offset within the canvas element. By default, the viewport will be set to the current dimensions of the canvas element with no offset.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create the viewport.
+var viewport = new esper.Viewport({
+    width: window.innerWidth,
+    height: window.innerHeight
+});
+
+// Have the viewport always fit to the window.
+window.addEventListener( 'resize', function() {
+    viewport.resize( window.innerWidth, window.innerHeight );
+}
+
+// Push the viewport onto the stack at its current size.
+viewport.push();
+
+// Push viewport overrides onto the stack, this will give a 10px border.
+viewport.push( 10, 10, canvas.height - 20, canvas.width - 20 );
+
+// Pop the override off the stack.
+viewport.pop();</code></pre><p>Using the <code>resize</code> method will resize the underlying canvas element along with the implicit dimensions of the viewport.</p>
+<pre class="prettyprint source lang-javascript"><code>// Resize the viewport. This resizes the underlying canvas.
+viewport.resize( 460, 460 );</code></pre><p>Modifying the viewport is the recommended way to mimic multiple rendering contexts as it requires no duplication of WebGL constructs.</p>
+<pre class="prettyprint source lang-javascript"><code>var viewport = new esper.Viewport({
+    width: 1000,
+    height: 500
+});
+viewport.push( 0, 0, 500, 500 );
+
+// ... render to left half of canvas
+
+viewport.pop();
+viewport.push( 500, 0, 500, 500 );
+
+// .. render to right half of canvas
+
+viewport.pop();</code></pre><h3>VertexBuffers</h3><p>An <code>esper.VertexBuffer</code> is used to store vertex attribute information. Common attributes include positions, normals, texture coordinates, skeletal animation joint ids and skinning weights. Attributes can be stored in separate isolated buffers or together in a single buffer either accessed at offsets or interleaved with each other to take advantage of cache locality (recommended).</p>
+<pre class="prettyprint source lang-javascript"><code>// Create separate vertex buffers for each attributes.
+var positionBuffer = new esper.VertexBuffer( positions, {
+    0: {
+        size: 3,
+        type: 'FLOAT'
+    }
+});
+var normalBuffer = new esper.VertexBuffer( normals, {
+    1: {
+        size: 3,
+        type: 'FLOAT'
+    }
+});
+var uvBuffer = new esper.VertexBuffer( uvs, {
+    2: {
+        size: 2,
+        type: 'FLOAT'
+    }
+});
+
+// Create interleaved buffer from an existing Array or Float32Array.
+var vertexBuffer = new esper.VertexBuffer( array, {
+    0: {
+        size: 3,
+        type: 'FLOAT',
+        offset: 0
+    },
+    1: {
+        size: 3,
+        type: 'FLOAT',
+        offset: 12
+    },
+    2: {
+        size: 2,
+        type: 'FLOAT',
+        offset: 26
+    }
+);</code></pre><p>Drawing with <code>esper.VertexBuffers</code> is easy, simply bind it, and draw.</p>
+<pre class="prettyprint source lang-javascript"><code>// Bind vertex buffer.
+vertexBuffer.bind();
+
+// Draw triangles.
+vertexBuffer.draw({
+    mode: TRIANGLES
+});
+
+// Draw points from an offset.
+vertexBuffer.draw({
+    mode: POINTS,
+    offset: 100
+});
+
+// Draw n lines.
+vertexBuffer.draw({
+    mode: LINES,
+    count: n * 2
+});
+
+// Unbind
+vertexBuffer.unbind();</code></pre><h3>VertexPackages</h3><p>Interleaving vertex attributes and manually defining the attribute pointers is tedious and prone to frustrating user error. The <code>esper.VertexPackage</code> class simplifies this and coalesces multiple arrays into a single interleaved Float32Array while calculating the correct attribute pointers.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create interleaved vertex buffers using vertex packages.
+var vertexPackage = new esper.VertexPackage({
+    0: positions,
+    1: normals,
+    2: uvs
+});</code></pre><p>An instantiated <code>esper.VertexPackage</code> can then be passed to a <code>esper.VertexBuffer</code> constructor for simple instantiation.</p>
+<pre class="prettyprint source lang-javascript"><code>var vertexBuffer = new esper.VertexBuffer( vertexPackage );</code></pre><h3>IndexBuffers</h3><p>Due to the nature of tessellation, single vertices may referenced by multiple geometric primitives. Solely using vertex buffers can result in a large amount of redundancy as these vertices may be repeated within the buffer. For example a simple cube is composed of 12 triangles, requiring 36 vertices if only using a vertex buffer. With flat shading this cube be represented with only 8 vertices when using an index buffer. The <code>esper.IndexBuffer</code> class allows the user to specify the ordering of vertex attributes inside a vertex buffer, which allows re-use of vertices and smaller, more efficient buffers.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create index buffer from an array of indices.
+var indexBuffer = new esper.IndexBuffer( indices );</code></pre><p>Rendering using an <code>esper.IndexBuffer</code> is easy as well, simply bind any referenced vertex buffers, then bind the index buffer and draw.</p>
+<pre class="prettyprint source lang-javascript"><code>// Bind vertex buffer.
+vertexBuffer.bind();
+
+// Draw triangles.
+indexBuffer.draw({
+    mode: TRIANGLES
+});
+
+// Draw points from an offset.
+indexBuffer.draw({
+    mode: POINTS,
+    offset: 100
+});
+
+// Draw n lines.
+indexBuffer.draw({
+    mode: LINES,
+    count: n * 2
+});
+
+vertexBuffer.unbind();</code></pre><h3>Renderables</h3><p>While working at the level of <code>esper.VertexBuffers</code> and <code>esper.IndexBuffers</code> can give you low level control, it is often tedious and unnecessary. The <code>esper.Renderable</code> class encapsulates this behavior with a simplified interface while still retaining the same low level control.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create a renderable from vertex and index arrays.
+var renderable = new esper.Renderable({
+    vertices: {
+        0: positions,
+        1: normals,
+        2: uvs
+    },
+    indices: indices
+});
+
+// Create a renderable without an index buffer
+var renderable = new esper.Renderable({
+    vertices: {
+        0: positions,
+        1: normals,
+        2: uvs
+    }
+});
+
+// Draw the renderable.
+renderable.draw({
+    mode: 'LINES', // render lines instead of triangles
+    offset: 100 * 2, // exclude the first 100 lines
+    count: 500 * 2 // only render 500 lines
+});</code></pre><h3>Textures</h3><p>Textures can be used to store and sample many different types of information. Typically a texture stores color values but can also be used to store depth values or any other types of encoded information. An <code>esper.Texture2D</code> is a low level construct for interfacing directly with the WebGL texture API.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create texture from image URL.
+var texture = new esper.Texture2D({
+    data: new Uint8Array([
+        255, 0, 0, 255,
+        0, 255, 0, 255,
+        0, 0, 255, 255,
+        0, 255, 0, 255,
+    ]),
+    width: 2,
+    height: 2,
+    format: 'RGBA',
+    type: 'UNSIGNED_BYTE',
+    wrapS: 'REPEAT',
+    wrapT: 'REPEAT',
+    minFlter: 'LINEAR',
+    magFilter: 'LINEAR',
+    invertY: false,
+    premultiplyAlpha: false,
+    mipMap: false
+});</code></pre><p>Using textures is easy, simply push the texture onto the stack, providing the texture unit number, then set the texture sampler unit in the shader.</p>
+<pre class="prettyprint source lang-javascript"><code>// Bind to texture unit 0
+texture.push( 0 );
+
+// Bind texture sampler to the same unit.
+shader.setUniform( 'uTextureSampler', 0 );
+
+// .. draw using texture
+
+// Unbind from texture unit 0.
+texture.pop( 0 );</code></pre><h3>ColorTextures</h3><p>Color textures are the most commonly used type of texture and are used to store RGB or RGBA values. An <code>esper.ColorTexture2D</code> can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, ArrayBufferViews, or no data at all.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create texture from image URL.
+var texture = new esper.ColorTexture2D({
+    url: 'images/checkerboard.png'
+}, function( err, texture ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
+    console.log( 'Texture2D image successfully created.' );
+});
+
+// Create empty color texture buffer to be written to.
+var colorTexture = new esper.Texture2D({
+    height: 256,
+    width: 256
+});</code></pre><p>WebGL 1.0 requires that any texture with mipmapping enabled or repeating wrap modes (<code>REPEAT</code> or <code>MIRRORED_REPEAT</code>), <em>must</em> have dimensions that are powers of two. <code>esper.ColorTexture2D</code> will automatically resize any non power of two textures to the next highest power of two. Ex. 129 becomes 256, 15 becomes 16, etc.</p>
+<h3>DepthTextures</h3><p>Depth textures can be used to store depth values and are commonly used in conjunction with RenderTargets. The <code>esper.DepthTexture2D</code> class is only available if the <code>WEBGL_depth_texture</code> extension is supported.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create a depth texture. (Only works if depth texture extension is supported).
+var depthTexture = new esper.DepthTexture2D({
+    width: 1024,
+    height: 1024
+});</code></pre><h3>TextureCubeMaps</h3><p>Cubemap textures are a specific type of texture typically used for skyboxes and reflections. An <code>esper.TextureCubeMap</code> can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, buffered with no data at all. The faces of the cube are specified during instantiation.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create cube map from image URLs.
+var cubeMapTexture = new esper.TextureCubeMap({
+    urls: {
+        '+x': 'images/sky/posx.png',
+        '-x': 'images/sky/negx.png',
+        '+y': 'images/sky/posy.png',
+        '-y': 'images/sky/negy.png',
+        '+z': 'images/sky/posz.png',
+        '-z': 'images/sky/negz.png'
+    }
+}, function( err, texture ) {
+    if ( err ) {
+        console.error( err );
+        return;
+    }
+    console.log( 'TextureCubeMap successfully created.' );
+});
+
+// Create empty cube map to be written to.
+var cubeMapTexture = new TextureCubeMap({
+    width: 512,
+    height: 512
+});</code></pre><p>Using cubemap textures is easy, simply push the texture onto the stack, providing the texture unit number, then set the texture sampler unit in the shader.</p>
+<pre class="prettyprint source lang-javascript"><code>// Bind to texture unit 0.
+cubeMapTexture.push( 0 );
+// Bind texture sampler to the same unit.
+shader.setUniform( 'uTextureSampler', 0 );
+
+// .. draw using cubemap texture
+
+// Unbind from texture unit 0.
+cubeMapTexture.pop( 0 );</code></pre><h3>RenderTargets</h3><p>When compositing more complex scenes, intermediate render states may need to be written to an additional buffer. The <code>esper.RenderTarget</code> class provides an interface to allow you to draw to textures.</p>
+<pre class="prettyprint source lang-javascript"><code>// Create a shadow map texture.
+var shadowTexture = new esper.ColorTexture2D({
+    width: 512,
+    height: 512
+});
+
+// Create a depth texture for the render target.
+var depthTexture = new esper.DepthTexture2D({
+    width: 512,
+    height: 512
+});
+
+// Create a render target and attach the textures.
+var renderTarget = new esper.RenderTarget();
+renderTarget.setColorTarget( shadowTexture, 0 ); // Bind to color attachment 0
+renderTarget.setDepthTarget( depthTexture );</code></pre><p>Drawing to the texture unit is simple:</p>
+<pre class="prettyprint source lang-javascript"><code>// Bind the render target.
+renderTarget.push();
+
+// Clear the bound color and depth textures.
+gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+// .. render to the render target
+
+// Unbind the the render target.
+renderTarget.pop();
+
+// Now use the bound textures as you would normally.
+
+// Bind shadow map to texture unit 0.
+shadowTexture.push( 0 );
+
+// Bind texture sampler to the same unit.
+shader.setUniform( 'uShadowTextureSampler', 0 );
+
+// ... render using the texture
+
+// Unbind from texture unit 0.
+shadowTexture.pop( 0 );</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Viewport.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ColorRexture2D.html">ColorRexture2D</a><ul class='methods'><li data-type='method'><a href="ColorRexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="ColorRexture2D.html#pop">pop</a></li><li data-type='method'><a href="ColorRexture2D.html#push">push</a></li><li data-type='method'><a href="ColorRexture2D.html#resize">resize</a></li><li data-type='method'><a href="ColorRexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="DepthTexture2D.html">DepthTexture2D</a><ul class='methods'><li data-type='method'><a href="DepthTexture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="DepthTexture2D.html#pop">pop</a></li><li data-type='method'><a href="DepthTexture2D.html#push">push</a></li><li data-type='method'><a href="DepthTexture2D.html#resize">resize</a></li><li data-type='method'><a href="DepthTexture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="IndexBuffer.html">IndexBuffer</a><ul class='methods'><li data-type='method'><a href="IndexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="IndexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="IndexBuffer.html#draw">draw</a></li></ul></li><li><a href="Renderable.html">Renderable</a><ul class='methods'><li data-type='method'><a href="Renderable.html#draw">draw</a></li></ul></li><li><a href="RenderTarget.html">RenderTarget</a><ul class='methods'><li data-type='method'><a href="RenderTarget.html#pop">pop</a></li><li data-type='method'><a href="RenderTarget.html#push">push</a></li><li data-type='method'><a href="RenderTarget.html#resize">resize</a></li><li data-type='method'><a href="RenderTarget.html#setColorTarget">setColorTarget</a></li><li data-type='method'><a href="RenderTarget.html#setDepthTarget">setDepthTarget</a></li></ul></li><li><a href="Shader.html">Shader</a><ul class='methods'><li data-type='method'><a href="Shader.html#pop">pop</a></li><li data-type='method'><a href="Shader.html#push">push</a></li><li data-type='method'><a href="Shader.html#setUniform">setUniform</a></li></ul></li><li><a href="Texture2D.html">Texture2D</a><ul class='methods'><li data-type='method'><a href="Texture2D.html#bufferData">bufferData</a></li><li data-type='method'><a href="Texture2D.html#pop">pop</a></li><li data-type='method'><a href="Texture2D.html#push">push</a></li><li data-type='method'><a href="Texture2D.html#resize">resize</a></li><li data-type='method'><a href="Texture2D.html#setParameters">setParameters</a></li></ul></li><li><a href="TextureCubeMap.html">TextureCubeMap</a><ul class='methods'><li data-type='method'><a href="TextureCubeMap.html#bufferData">bufferData</a></li><li data-type='method'><a href="TextureCubeMap.html#pop">pop</a></li><li data-type='method'><a href="TextureCubeMap.html#push">push</a></li><li data-type='method'><a href="TextureCubeMap.html#setParameters">setParameters</a></li></ul></li><li><a href="VertexBuffer.html">VertexBuffer</a><ul class='methods'><li data-type='method'><a href="VertexBuffer.html#bind">bind</a></li><li data-type='method'><a href="VertexBuffer.html#bufferData">bufferData</a></li><li data-type='method'><a href="VertexBuffer.html#bufferSubData">bufferSubData</a></li><li data-type='method'><a href="VertexBuffer.html#draw">draw</a></li><li data-type='method'><a href="VertexBuffer.html#unbind">unbind</a></li></ul></li><li><a href="VertexPackage.html">VertexPackage</a><ul class='methods'><li data-type='method'><a href="VertexPackage.html#set">set</a></li></ul></li><li><a href="Viewport.html">Viewport</a><ul class='methods'><li data-type='method'><a href="Viewport.html#pop">pop</a></li><li data-type='method'><a href="Viewport.html#push">push</a></li><li data-type='method'><a href="Viewport.html#resize">resize</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Viewport.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function() {
+
+    'use strict';
+
+    var WebGLContext = require('./WebGLContext');
+    var WebGLContextState = require('./WebGLContextState');
+
+    /**
+     * Bind the viewport to the rendering context.
+     *
+     * @param {Viewport} viewport - The viewport object.
+     * @param {number} width - The width override.
+     * @param {number} height - The height override.
+     * @param {number} x - The horizontal offset.
+     * @param {number} y - The vertical offset.
+     */
+    function set( viewport, x, y, width, height ) {
+        var gl = viewport.gl;
+        x = ( x !== undefined ) ? x : 0;
+        y = ( y !== undefined ) ? y : 0;
+        width = ( width !== undefined ) ? width : viewport.width;
+        height = ( height !== undefined ) ? height : viewport.height;
+        gl.viewport( x, y, width, height );
+    }
+
+    /**
+     * Instantiates an Viewport object.
+     * @class Viewport
+     * @classdesc A viewport object.
+     *
+     * @param {Object} spec - The viewport specification object.
+     * @param {number} spec.width - The width of the viewport.
+     * @param {number} spec.height - The height of the viewport.
+     */
+    function Viewport( spec ) {
+        spec = spec || {};
+        this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( this.gl );
+        // set size
+        this.resize(
+            spec.width || this.gl.canvas.width,
+            spec.height || this.gl.canvas.height );
+    }
+
+    /**
+     * Updates the viewports width and height. This resizes the underlying canvas element.
+     * @memberof Viewport
+     *
+     * @param {number} width - The width of the viewport.
+     * @param {number} height - The height of the viewport.
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+    Viewport.prototype.resize = function( width, height ) {
+        if ( typeof width !== 'number' || ( width &lt;= 0 ) ) {
+            throw 'Provided `width` of ' + width + ' is invalid';
+        }
+        if ( typeof height !== 'number' || ( height &lt;= 0 ) ) {
+            throw 'Provided `height` of ' + height + ' is invalid';
+        }
+        this.width = width;
+        this.height = height;
+        this.gl.canvas.width = width;
+        this.gl.canvas.height = height;
+        return this;
+    };
+
+    /**
+     * Activates the viewport and pushes it onto the stack with the provided arguments. The underlying canvas element is not affected.
+     * @memberof Viewport
+     *
+     * @param {number} width - The width override.
+     * @param {number} height - The height override.
+     * @param {number} x - The horizontal offset override.
+     * @param {number} y - The vertical offset override.
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+    Viewport.prototype.push = function( x, y, width, height ) {
+        if ( x !== undefined &amp;&amp; typeof x !== 'number' ) {
+            throw 'Provided `x` of ' + x + ' is invalid';
+        }
+        if ( y !== undefined &amp;&amp; typeof y !== 'number' ) {
+            throw 'Provided `y` of ' + y + ' is invalid';
+        }
+        if ( width !== undefined &amp;&amp; ( typeof width !== 'number' || ( width &lt;= 0 ) ) ) {
+            throw 'Provided `width` of ' + width + ' is invalid';
+        }
+        if ( height !== undefined &amp;&amp; ( typeof height !== 'number' || ( height &lt;= 0 ) ) ) {
+            throw 'Provided `height` of ' + height + ' is invalid';
+        }
+        this.state.viewports.push({
+            viewport: this,
+            x: x,
+            y: y,
+            width: width,
+            height: height
+        });
+        set( this, x, y, width, height );
+        return this;
+    };
+
+    /**
+     * Pops current the viewport object and activates the viewport beneath it.
+     * @memberof Viewport
+     *
+     * @returns {Viewport} The viewport object, for chaining.
+     */
+    Viewport.prototype.pop = function() {
+        var state = this.state;
+        var top = state.viewports.top();
+        if ( !top || this !== top.viewport ) {
+            throw 'Viewport is not the top most element on the stack';
+        }
+        state.viewports.pop();
+        top = state.viewports.top();
+        if ( top ) {
+            set( top.viewport, top.x, top.y, top.width, top.height );
+        } else {
+            set( this );
+        }
+        return this;
+    };
+
+    module.exports = Viewport;
+
+}());
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
