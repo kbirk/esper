@@ -40,7 +40,7 @@
      * @param {Array|Uint16Array|Uint32Array} spec.indices - The indices to buffer.
      * @param {IndexBuffer} spec.indexbuffer - An existing index buffer to use.
      * @param {String} spec.mode - The draw mode / primitive type.
-     * @param {String} spec.offset - The offset into the drawn buffer.
+     * @param {String} spec.byteOffset - The byte offset into the drawn buffer.
      * @param {String} spec.count - The number of vertices to draw.
      */
     function Renderable( spec ) {
@@ -70,7 +70,7 @@
         // store rendering options
         this.options = {
             mode: spec.mode,
-            offset: spec.offset,
+            byteOffset: spec.byteOffset,
             count: spec.count
         };
     }
@@ -81,7 +81,7 @@
      *
      * @param {Object} options - The options to pass to 'drawElements'. Optional.
      * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.byteOffset - The byteOffset into the drawn buffer.
      * @param {String} options.count - The number of vertices to draw.
      *
      * @returns {Renderable} Returns the renderable object for chaining.
@@ -90,7 +90,7 @@
         var overrides = options || {};
         // override options if provided
         overrides.mode = overrides.mode || this.options.mode;
-        overrides.offset = ( overrides.offset !== undefined ) ? overrides.offset : this.options.offset;
+        overrides.byteOffset = ( overrides.byteOffset !== undefined ) ? overrides.byteOffset : this.options.byteOffset;
         overrides.count = ( overrides.count !== undefined ) ? overrides.count : this.options.count;
         // draw the renderable
         if ( this.indexBuffer ) {

@@ -228,7 +228,7 @@ shader.setUniform( 'uHasTexture', false ); // booleans are converted to float
 
 ### Viewports
 
-An `esper.Viewport` defines a rendering resolution and pixel offset within the canvas element. By default, the viewport will be set to the current dimensions of the canvas element with no offset.
+An `esper.Viewport` defines a rendering resolution within the canvas element. By default, the viewport will be set to the current dimensions of the canvas element.
 
 ```javascript
 // Create the viewport.
@@ -280,7 +280,7 @@ viewport.pop();
 
 ### VertexBuffers
 
-An `esper.VertexBuffer` is used to store vertex attribute information. Common attributes include positions, normals, texture coordinates, skeletal animation joint ids and skinning weights. Attributes can be stored in separate isolated buffers or together in a single buffer either accessed at offsets or interleaved with each other to take advantage of cache locality (recommended).
+An `esper.VertexBuffer` is used to store vertex attribute information. Common attributes include positions, normals, texture coordinates, skeletal animation joint ids and skinning weights. Attributes can be stored in separate isolated buffers or together in a single buffer either accessed at byte offsets or interleaved with each other to take advantage of cache locality (recommended).
 
 ```javascript
 // Create separate vertex buffers for each attributes.
@@ -308,17 +308,17 @@ var vertexBuffer = new esper.VertexBuffer( array, {
     0: {
         size: 3,
         type: 'FLOAT',
-        offset: 0
+        byteOffset: 0
     },
     1: {
         size: 3,
         type: 'FLOAT',
-        offset: 12
+        byteOffset: 12
     },
     2: {
         size: 2,
         type: 'FLOAT',
-        offset: 26
+        byteOffset: 26
     }
 );
 ```
@@ -334,10 +334,10 @@ vertexBuffer.draw({
     mode: TRIANGLES
 });
 
-// Draw points from an offset.
+// Draw points from a byte offset.
 vertexBuffer.draw({
     mode: POINTS,
-    offset: 100
+    byteOffset: 100 * 4 * 2
 });
 
 // Draw n lines.
@@ -392,7 +392,7 @@ indexBuffer.draw({
 // Draw points from an offset.
 indexBuffer.draw({
     mode: POINTS,
-    offset: 100
+    byteOffset: 100 * 4 * 2
 });
 
 // Draw n lines.
@@ -431,7 +431,7 @@ var renderable = new esper.Renderable({
 // Draw the renderable.
 renderable.draw({
     mode: 'LINES', // render lines instead of triangles
-    offset: 100 * 2, // exclude the first 100 lines
+    byteOffset: 100 * 4 * 2, // exclude the first 100 lines
     count: 500 * 2 // only render 500 lines
 });
 ```

@@ -262,15 +262,15 @@
                 }
                 assert( result );
             });
-            it('should accept mode, count, and offset options for drawing', function() {
+            it('should accept `mode`, `count`, and `byteOffset` options for drawing', function() {
                 var ib = new IndexBuffer( indices, {
                     mode: 'POINTS',
                     count: indices.length / 2,
-                    offset: indices.length / 2
+                    byteOffset: indices.length / 2 * shortBytes
                 });
                 assert( ib.mode === 'POINTS' );
                 assert( ib.count === indices.length / 2 );
-                assert( ib.offset === indices.length / 2 );
+                assert( ib.byteOffset === indices.length / 2 * shortBytes );
             });
             it('should throw an exception if byte length is not multiple of component byte size', function() {
                 var ib0 = new IndexBuffer( null, {
@@ -294,13 +294,13 @@
                 }
                 assert( result );
             });
-            it('should throw an exception if count and offset overflows the buffer', function() {
+            it('should throw an exception if `count` and `byteOffset` overflows the buffer', function() {
                 var result = false;
                 try {
                     new IndexBuffer( indices, {
                         mode: 'POINTS',
                         count: indices.length,
-                        offset: 1
+                        byteOffset: 1 * shortBytes
                     });
                 } catch( err ) {
                     result = true;
@@ -381,7 +381,7 @@
                 }
                 assert( result );
             });
-            it('should throw an exception when provided offset and argument length overflow the buffer size', function() {
+            it('should throw an exception when provided byte offset and argument length overflow the buffer size', function() {
                 var ib = new IndexBuffer( indices.length * shortBytes, {
                     type: 'UNSIGNED_SHORT'
                 });
@@ -401,12 +401,12 @@
                 ib.draw();
                 ib.draw();
             });
-            it('should accept mode, count, and offset overrides', function() {
+            it('should accept `mode`, `count`, and `byteOffset` overrides', function() {
                 var ib = new IndexBuffer( indices );
                 ib.draw({
                     mode: 'POINTS',
                     count: indices.length / 2,
-                    offset: indices.length / 2
+                    byteOffset: indices.length / 2 * shortBytes
                 });
             });
             it('should throw an exception if the count is zero', function() {
@@ -421,13 +421,13 @@
                 }
                 assert( result );
             });
-            it('should throw an exception if the count and offset overflow the buffer', function() {
+            it('should throw an exception if the `count` and `byteOffset` overflow the buffer', function() {
                 var ib = new IndexBuffer( indices );
                 var result = false;
                 try {
                     ib.draw({
                         count: indices.length,
-                        offset: 1
+                        byteOffset: 1 * shortBytes
                     });
                 } catch( err ) {
                     result = true;

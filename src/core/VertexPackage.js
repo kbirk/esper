@@ -99,13 +99,13 @@
             vertexPackage.pointers[ vertices.index ] = {
                 type : COMPONENT_TYPE,
                 size : size,
-                offset : offset * BYTES_PER_COMPONENT
+                byteOffset : offset * BYTES_PER_COMPONENT
             };
             // accumulate attribute offset
             offset += size;
         });
         // set stride to total offset
-        vertexPackage.stride = offset * BYTES_PER_COMPONENT;
+        vertexPackage.byteStride = offset * BYTES_PER_COMPONENT;
         // set length of package to the shortest attribute array length
         vertexPackage.length = shortestArray;
     }
@@ -233,7 +233,7 @@
         setPointersAndStride( this, attributes );
         // set size of data vector
         var length = this.length;
-        var stride = this.stride / BYTES_PER_COMPONENT;
+        var stride = this.byteStride / BYTES_PER_COMPONENT;
         var pointers = this.pointers;
         var buffer = this.buffer = new Float32Array( length * stride );
         // for each vertex attribute array
@@ -241,7 +241,7 @@
             // get the pointer
             var pointer = pointers[ vertices.index ];
             // get the pointers offset
-            var offset = pointer.offset / BYTES_PER_COMPONENT;
+            var offset = pointer.byteOffset / BYTES_PER_COMPONENT;
             // copy vertex data into arraybuffer
             switch ( pointer.size ) {
                 case 2:

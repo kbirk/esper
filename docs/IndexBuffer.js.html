@@ -73,9 +73,9 @@
     var DEFAULT_MODE = 'TRIANGLES';
 
     /**
-     * The default index offset to render from.
+     * The default byte offset to render from.
      */
-    var DEFAULT_OFFSET = 0;
+    var DEFAULT_BYTE_OFFSET = 0;
 
     /**
      * The default count of indices to render.
@@ -90,7 +90,7 @@
      * @param {Uint16Array|Uin32Array|Array} arg - The index data to buffer.
      * @param {Object} options - The rendering options.
      * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.byteOffset - The byte offset into the drawn buffer.
      * @param {String} options.count - The number of vertices to draw.
      */
     function IndexBuffer( arg, options ) {
@@ -105,7 +105,7 @@
         }
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
-        this.offset = ( options.offset !== undefined ) ? options.offset : DEFAULT_OFFSET;
+        this.byteOffset = ( options.byteOffset !== undefined ) ? options.byteOffset : DEFAULT_BYTE_OFFSET;
         this.byteLength = 0;
         if ( arg ) {
             if ( arg instanceof WebGLBuffer ) {
@@ -137,9 +137,8 @@
             }
         }
         // ensure there isn't an overflow
-        var bufferCount = ( this.byteLength / BYTES_PER_TYPE[ this.type ] );
-        if ( this.count + this.offset > bufferCount ) {
-            throw 'IndexBuffer `count` of ' + this.count + ' and `offset` of ' + this.offset + ' overflows the total count of the buffer ' + bufferCount;
+        if ( this.count * BYTES_PER_TYPE[ this.type ] + this.byteOffset > this.byteLength ) {
+            throw 'IndexBuffer `count` of ' + this.count + ' and `byteOffset` of ' + this.byteOffset + ' overflows the length of the buffer (' + this.byteLength + ')';
         }
     }
 
@@ -225,11 +224,11 @@
             !( array instanceof ArrayBuffer ) ) {
             throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
         }
-        byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_OFFSET;
+        byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_BYTE_OFFSET;
         // get the total number of attribute components from pointers
         var byteLength = array.length * BYTES_PER_TYPE[ this.type ];
         if ( byteOffset + byteLength > this.byteLength ) {
-            throw 'Argument of length ' + byteLength + ' bytes and offset of ' + byteOffset + ' bytes overflows the buffer length of ' + this.byteLength + ' bytes';
+            throw 'Argument of length ' + byteLength + ' bytes and byte offset of ' + byteOffset + ' bytes overflows the buffer length of ' + this.byteLength + ' bytes';
         }
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferSubData( gl.ELEMENT_ARRAY_BUFFER, byteOffset, array );
@@ -242,7 +241,7 @@
      *
      * @param {Object} options - The options to pass to 'drawElements'. Optional.
      * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.offset - The offset into the drawn buffer.
+     * @param {String} options.byteOffset - The byteOffset into the drawn buffer.
      * @param {String} options.count - The number of vertices to draw.
      *
      * @returns {IndexBuffer} Returns the index buffer object for chaining.
@@ -252,14 +251,13 @@
         var gl = this.gl;
         var mode = gl[ options.mode || this.mode ];
         var type = gl[ this.type ];
-        var offset = ( options.offset !== undefined ) ? options.offset : this.offset;
+        var byteOffset = ( options.byteOffset !== undefined ) ? options.byteOffset : this.byteOffset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
         if ( count === 0 ) {
             throw 'Attempting to draw with a count of 0';
         }
-        var bufferCount = this.byteLength / BYTES_PER_TYPE[ this.type ];
-        if ( offset + count > this.count ) {
-            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' which overflows the total count of the buffer (' + bufferCount + ')';
+        if ( byteOffset + count * BYTES_PER_TYPE[ this.type ] > this.byteLength ) {
+            throw 'Attempting to draw with `count` of ' + count + ' and `byteOffset` of ' + byteOffset + ' which overflows the total byte length of the buffer (' + this.byteLength + ')';
         }
         // if this buffer is already bound, exit early
         if ( this.state.boundIndexBuffer !== this.buffer ) {
@@ -267,7 +265,7 @@
             this.state.boundIndexBuffer = this.buffer;
         }
         // draw elements
-        gl.drawElements( mode, count, type, offset );
+        gl.drawElements( mode, count, type, byteOffset );
         return this;
     };
 
@@ -286,7 +284,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Apr 03 2016 15:28:42 GMT-0400 (EDT) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Apr 04 2016 18:59:06 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

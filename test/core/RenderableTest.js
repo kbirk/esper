@@ -153,16 +153,16 @@
                 }
                 assert( result );
             });
-            it('should accept `mode`, `count`, and `offset` options for drawing', function() {
+            it('should accept `mode`, `count`, and `byteOffset` options for drawing', function() {
                 var renderable = new Renderable({
                     vertexBuffer: vertexBuffer,
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    offset: ( positions.length / 3 ) / 2
+                    byteOffset: ( positions.length / 3 ) / 2 * 4
                 });
                 assert( renderable.options.mode === 'POINTS' );
                 assert( renderable.options.count === ( positions.length / 3 ) / 2 );
-                assert( renderable.options.offset === ( positions.length / 3 ) / 2 );
+                assert( renderable.options.byteOffset === ( positions.length / 3 ) / 2 * 4 );
             });
         });
 
@@ -174,14 +174,14 @@
                 });
                 renderable.draw();
             });
-            it('should accept `mode`, `count`, and `offset` overrides', function() {
+            it('should accept `mode`, `count`, and `byteOffset` overrides', function() {
                 var renderable = new Renderable({
                     vertexBuffer: vertexBuffer
                 });
                 renderable.draw({
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    offset: ( positions.length / 3 ) / 2
+                    byteOffset: ( positions.length / 3 ) / 2 * 4
                 });
             });
         });

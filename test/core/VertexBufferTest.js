@@ -50,17 +50,17 @@
                     0: {
                         size: 3,
                         type: 'FLOAT',
-                        offset: 0
+                        byteOffset: 0
                     },
                     1: {
                         size: 3,
                         type: 'FLOAT',
-                        offset: ( 3 * bytesPerComponent )
+                        byteOffset: ( 3 * bytesPerComponent )
                     },
                     2: {
                         size: 2,
                         type: 'FLOAT',
-                        offset: ( 3 * bytesPerComponent ) + ( 3 * bytesPerComponent )
+                        byteOffset: ( 3 * bytesPerComponent ) + ( 3 * bytesPerComponent )
                     }
                 }
             };
@@ -96,17 +96,17 @@
                     0: {
                         size: 3,
                         type: 'FLOAT',
-                        offset: 0
+                        byteOffset: 0
                     },
                     1: {
                         size: 3,
                         type: 'FLOAT',
-                        offset: ( positions.length * 3 )
+                        byteOffset: ( positions.length * 3 ) * bytesPerComponent
                     },
                     2: {
                         size: 2,
                         type: 'FLOAT',
-                        offset: ( positions.length * 3 ) + ( normals.length * 3 )
+                        byteOffset: ( positions.length * 3 ) + ( normals.length * 3 ) * bytesPerComponent
                     }
                 }
             };
@@ -173,21 +173,21 @@
                     assert( false );
                 }
             });
-            it('should set stride to 0 for a buffer with separate attributes', function() {
+            it('should set byteStride to 0 for a buffer with separate attributes', function() {
                 var vb = new VertexBuffer( separate.buffer, separate.pointers );
-                assert( vb.stride === 0 );
+                assert( vb.byteStride === 0 );
             });
-            it('should set stride to 0 for a buffer with separate attributes', function() {
+            it('should set byteStride to 0 for a buffer with separate attributes', function() {
                 var vb = new VertexBuffer( separate.buffer, separate.pointers );
-                assert( vb.stride === 0 );
+                assert( vb.byteStride === 0 );
             });
-            it('should set stride to 0 if given only a single attribute', function() {
+            it('should set byteStride to 0 if given only a single attribute', function() {
                 var vb = new VertexBuffer( positions, pointers );
-                assert( vb.stride === 0 );
+                assert( vb.byteStride === 0 );
             });
-            it('should calculate stride from an interleaved buffer', function() {
+            it('should calculate byteStride from an interleaved buffer', function() {
                 var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
-                assert( vb.stride === (( 3 * bytesPerComponent ) + ( 3 * bytesPerComponent ) + ( 2 * bytesPerComponent )) );
+                assert( vb.byteStride === (( 3 * bytesPerComponent ) + ( 3 * bytesPerComponent ) + ( 2 * bytesPerComponent )) );
             });
             it('should calculate the byteLength from an Array or ArrayBuffer argument', function() {
                 var vb0 = new VertexBuffer( interleaved.buffer, interleaved.pointers );
@@ -199,9 +199,9 @@
                 var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
                 assert( vb.mode === 'TRIANGLES' );
             });
-            it('should default offset to 0', function() {
+            it('should default `byteOffset` to 0', function() {
                 var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
-                assert( vb.offset === 0 );
+                assert( vb.byteOffset === 0 );
             });
             it('should default count to length of the attribute arrays, or 0', function() {
                 var vb0 = new VertexBuffer( interleaved.buffer, interleaved.pointers );
@@ -209,22 +209,22 @@
                 var vb1 = new VertexBuffer( null, pointers );
                 assert( vb1.count === 0 );
             });
-            it('should accept `mode`, `count`, and `offset` options for drawing', function() {
+            it('should accept `mode`, `count`, and `byteOffset` options for drawing', function() {
                 var vb = new VertexBuffer( positions, pointers, {
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    offset: ( positions.length / 3 ) / 2
+                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent
                 });
                 assert( vb.mode === 'POINTS' );
                 assert( vb.count === ( positions.length / 3 ) / 2 );
-                assert( vb.offset === ( positions.length / 3 ) / 2 );
+                assert( vb.byteOffset === ( positions.length / 3 ) / 2 * bytesPerComponent );
             });
-            it('should throw an exception if count + offset overflows the buffer', function() {
+            it('should throw an exception if count + byteOffset overflows the buffer', function() {
                 var result = false;
                 try {
                     new VertexBuffer( positions, pointers, {
                         count: positions.length / 3,
-                        offset: 1
+                        byteOffset: 4
                     });
                 } catch( err ) {
                     result = true;
@@ -247,7 +247,7 @@
                         'invalid': {
                             size: 3,
                             type: 'FLOAT',
-                            offset: 0
+                            byteOffset: 0
                         }
                     });
                 } catch( err ) {
@@ -262,7 +262,7 @@
                         0: {
                             size: 12,
                             type: 'FLOAT',
-                            offset: 0
+                            byteOffset: 0
                         }
                     });
                 } catch( err ) {
@@ -275,7 +275,7 @@
                         0: {
                             size: 'str',
                             type: 'FLOAT',
-                            offset: 0
+                            byteOffset: 0
                         }
                     });
                 } catch( err ) {
@@ -287,7 +287,7 @@
                     new VertexBuffer( positions, {
                         0: {
                             type: 'FLOAT',
-                            offset: 0
+                            byteOffset: 0
                         }
                     });
                 } catch( err ) {
@@ -302,7 +302,7 @@
                         0: {
                             size: 3,
                             type: 'invalid',
-                            offset: 0
+                            byteOffset: 0
                         }
                     });
                 } catch( err ) {
@@ -314,7 +314,7 @@
                     new VertexBuffer( positions, {
                         0: {
                             size: 3,
-                            offset: 0
+                            byteOffset: 0
                         }
                     });
                 } catch( err ) {
@@ -453,7 +453,7 @@
                 }
                 assert( result );
             });
-            it('should throw an exception when provided offset and argument length overflow the buffer size', function() {
+            it('should throw an exception when provided byte offset and argument length overflow the buffer size', function() {
                 var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 var result = false;
                 try {
@@ -492,13 +492,13 @@
                 vb.draw();
                 vb.unbind();
             });
-            it('should accept `mode`, `count`, and `offset` overrides', function() {
+            it('should accept `mode`, `count`, and `byteOffset` overrides', function() {
                 var vb = new VertexBuffer( positions, pointers );
                 vb.bind();
                 vb.draw({
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    offset: ( positions.length / 3 ) / 2
+                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent
                 });
                 vb.unbind();
             });
@@ -526,14 +526,14 @@
                 vb.unbind();
                 assert( result );
             });
-            it('should throw an exception if the count and offset overflow the buffer', function() {
+            it('should throw an exception if the `count` and `byteOffset` overflow the buffer', function() {
                 var vb = new VertexBuffer( positions, pointers );
                 var result = false;
                 try {
                     vb.bind();
                     vb.draw({
                         count: positions.length,
-                        offset: 1
+                        byteOffset: 1 * bytesPerComponent
                     });
                     vb.unbind();
                 } catch( err ) {

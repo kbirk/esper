@@ -224,24 +224,25 @@
                     2: [ [0,0,0], [0,0,0], [0,0,0], [0,0,0] ],
                     3: [ [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0] ]
                 });
+                var bytesPerComponent = 4;
                 var pointers = p.pointers;
                 var type = 'FLOAT';
                 // first
                 assert( pointers['0'].size === 1 );
                 assert( pointers['0'].type === type );
-                assert( pointers['0'].offset === 0 );
+                assert( pointers['0'].byteOffset === 0 );
                 // second
                 assert( pointers['1'].size === 2 );
                 assert( pointers['1'].type === type );
-                assert( pointers['1'].offset === 1*4 );
+                assert( pointers['1'].byteOffset === 1 * bytesPerComponent );
                 // third
                 assert( pointers['2'].size === 3 );
                 assert( pointers['2'].type === type );
-                assert( pointers['2'].offset === (1 + 2) * 4 );
+                assert( pointers['2'].byteOffset === (1 + 2) * bytesPerComponent );
                 // fourth
                 assert( pointers['3'].size === 4 );
                 assert( pointers['3'].type === type );
-                assert( pointers['3'].offset === (1 + 2 + 3) * 4 );
+                assert( pointers['3'].byteOffset === (1 + 2 + 3) * bytesPerComponent );
             });
             it('should be an empty object if no data as been set', function() {
                 var p = new VertexPackage();
