@@ -1,6 +1,6 @@
 {
   "name": "esper",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "A low-level WebGL rendering framework",
   "homepage": "https://github.com/kbirk/esper",
   "authors": [
@@ -22,6 +22,7 @@
     "node_modules",
     "src",
     "test",
+    "docs",
     "gulpfile.js",
     "package.json"
   ]

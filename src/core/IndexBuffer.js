@@ -218,7 +218,7 @@
             throw 'Attempting to draw with a count of 0';
         }
         var bufferCount = this.byteLength / BYTES_PER_TYPE[ this.type ];
-        if ( offset + count > this.count ) {
+        if ( offset + count > bufferCount ) {
             throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + offset + ' which overflows the total count of the buffer (' + bufferCount + ')';
         }
         // if this buffer is already bound, exit early
