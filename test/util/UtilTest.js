@@ -6,6 +6,43 @@
     var Util = require( '../../src/util/Util' );
 
     describe('Util', function() {
+        describe('#isArrayType()', function() {
+            it('should return true argument is of type Array, ArrayBuffer, or ArrayBufferView', function() {
+                assert( Util.isArrayType( new Array( 32 ) ) );
+                assert( Util.isArrayType( new ArrayBuffer( 32 ) ) );
+                assert( Util.isArrayType( new Float32Array( new ArrayBuffer( 32 ) ) ) );
+                assert( Util.isArrayType( new Uint32Array( new ArrayBuffer( 32 ) ) ) );
+                assert( Util.isArrayType( new Uint8Array( new ArrayBuffer( 32 ) ) ) );
+            });
+            it('should return false if the argument is not type ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement', function() {
+                assert( !Util.isArrayType( undefined ) );
+                assert( !Util.isArrayType( null ) );
+                assert( !Util.isArrayType( NaN ) );
+                assert( !Util.isArrayType( true ) );
+                assert( !Util.isArrayType( false ) );
+                assert( !Util.isArrayType( 1.23 ) );
+                assert( !Util.isArrayType( '12.33' ) );
+                assert( !Util.isArrayType( '123' ) );
+            });
+        });
+        describe('#isCanvasType()', function() {
+            it('should return true argument is of type ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement', function() {
+                assert( Util.isCanvasType( new ImageData() ) );
+                assert( Util.isCanvasType( new HTMLImageElement() ) );
+                assert( Util.isCanvasType( new HTMLCanvasElement() ) );
+                assert( Util.isCanvasType( new HTMLVideoElement() ) );
+            });
+            it('should return false if the argument is not type ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement', function() {
+                assert( !Util.isCanvasType( undefined ) );
+                assert( !Util.isCanvasType( null ) );
+                assert( !Util.isCanvasType( NaN ) );
+                assert( !Util.isCanvasType( true ) );
+                assert( !Util.isCanvasType( false ) );
+                assert( !Util.isCanvasType( 1.23 ) );
+                assert( !Util.isCanvasType( '12.33' ) );
+                assert( !Util.isCanvasType( '123' ) );
+            });
+        });
         describe('#isInteger()', function() {
             it('should return true if the valid is an integer', function() {
                 assert( Util.isInteger( 0 ) );
