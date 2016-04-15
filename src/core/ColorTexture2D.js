@@ -67,8 +67,8 @@
     var DEFAULT_INVERT_Y = true;
 
     /**
-     * Instantiates a ColorRexture2D object.
-     * @class ColorRexture2D
+     * Instantiates a ColorTexture2D object.
+     * @class ColorTexture2D
      * @classdesc A texture class to represent a 2D color texture.
      * @augments Texture2D
      *
@@ -91,7 +91,7 @@
      * @param {String} spec.type - The texture pixel component type.
      * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
      */
-    function ColorRexture2D( spec, callback ) {
+    function ColorTexture2D( spec, callback ) {
         spec = spec || {};
         // get specific params
         spec.wrapS = spec.wrapS || spec.wrap;
@@ -153,8 +153,8 @@
         }
     }
 
-    ColorRexture2D.prototype = Object.create( Texture2D.prototype );
+    ColorTexture2D.prototype = Object.create( Texture2D.prototype );
 
-    module.exports = ColorRexture2D;
+    module.exports = ColorTexture2D;
 
 }());
