@@ -14,8 +14,8 @@
     var width;
     var height;
 
-    var potImage = new Image( 256, 256 );
-    var npotImage = new Image( 300, 300 );
+    var potImage = new HTMLImageElement( 256, 256 );
+    var npotImage = new HTMLImageElement( 300, 300 );
 
     describe('ColorTexture2D', function() {
 
@@ -70,10 +70,10 @@
                     assert( false );
                 }
             });
-            it('should accept a `url` argument', function( done ) {
+            it('should accept a string URL `src` argument', function( done ) {
                 try {
                     new ColorTexture2D({
-                        url: 'path/to/image',
+                        src: 'path/to/image',
                     }, function() {
                         done();
                     });
@@ -81,8 +81,7 @@
                     assert( false );
                 }
             });
-
-            it('should execute callback function passing an error as first argument if a `urls` results in an error', function( done ) {
+            it('should execute callback function passing an error as first argument if a URL `src` results in an error', function( done ) {
                 var load = ImageLoader.load;
                 var err = new Error( 'error' );
                 ImageLoader.load = function( opts ) {
@@ -91,18 +90,17 @@
                     }, 100 );
                 };
                 new ColorTexture2D({
-                    url: 'path/to/image',
+                    src: 'path/to/image',
                 }, function( e ) {
                     assert( e === err );
                     ImageLoader.load = load;
                     done();
                 });
             });
-
-            it('should accept an `image` argument', function() {
+            it('should accept a canvas type `src` argument', function() {
                 try {
                     new ColorTexture2D({
-                        image: potImage
+                        src: potImage
                     });
                 } catch( err ) {
                     assert( false );
@@ -111,7 +109,7 @@
             it('should accept non-POT images if POT texture is not required', function() {
                 try {
                     new ColorTexture2D({
-                        image: npotImage,
+                        src: npotImage,
                         mipMap: false,
                         wrap: 'CLAMP_TO_EDGE'
                     });
@@ -122,7 +120,7 @@
             it('should convert non-POT images to POT images if POT texture is required', function() {
                 try {
                     new ColorTexture2D({
-                        image: npotImage,
+                        src: npotImage,
                     });
                 } catch( err ) {
                     assert( false );
@@ -177,7 +175,7 @@
             });
             it('should default `minFilter` to `LINEAR_MIPMAP_LINEAR` and `magFilter` to `LINEAR` with mip-mapping enabled', function() {
                 var tex = new ColorTexture2D({
-                    image: potImage
+                    src: potImage
                 });
                 assert( tex.minFilter === 'LINEAR_MIPMAP_LINEAR' );
                 assert( tex.magFilter === 'LINEAR' );
@@ -196,17 +194,17 @@
             });
             it('should default `mipMap` to `true` for textures instantiated with `data`, `image`, or `url` argument', function( done ) {
                 var tex0 = new ColorTexture2D({
-                    data: data,
+                    src: data,
                     width: width,
                     height: height
                 });
                 assert( tex0.mipMap );
                 var tex1 = new ColorTexture2D({
-                    image: potImage
+                    src: potImage
                 });
                 assert( tex1.mipMap );
                 var tex2 = new ColorTexture2D({
-                    url: 'path/to/image'
+                    src: 'path/to/image'
                 }, function() {
                     assert( tex2.mipMap );
                     done();
@@ -236,7 +234,7 @@
             it('should accept `format`, and `type` options`', function() {
                 try {
                     new ColorTexture2D({
-                        data: data,
+                        src: data,
                         width: width,
                         height: height,
                         format: 'RGBA',

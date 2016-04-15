@@ -10,13 +10,12 @@
     var _load;
     var canvas;
     var gl;
-    var data;
     var width;
     var height;
     var faces;
 
-    var potImage = new Image( 256, 256 );
-    var npotImage = new Image( 300, 300 );
+    var potImage = new HTMLImageElement( 256, 256 );
+    var npotImage = new HTMLImageElement( 300, 300 );
 
     function castTo( faces, Class ) {
         return {
@@ -57,7 +56,7 @@
 
         beforeEach( function() {
             var dim = Math.pow(2, Math.floor( Math.random() * 4 ) + 1 );
-            data = new Array( dim * dim * 4 );
+            var data = new Array( dim * dim * 4 );
             for ( var i = 0; i<dim * dim * 4; i++ ) {
                 data[i] = 255;
             }
@@ -73,36 +72,24 @@
         });
 
         afterEach( function() {
-            data = null;
             width = null;
             height = null;
             faces = null;
         });
 
         describe('#constructor()', function() {
-            it('should be accept an Array type argument complimented with `width` and `height` arguments', function() {
+            it('should be accept a null `faces` argument complimented with `width` and `height` arguments', function() {
                 try {
                     new TextureCubeMap({
                         width: width,
                         height: height,
-                        data: data
+                        faces: null
                     });
                 } catch( err ) {
                     assert( false );
                 }
             });
-            it('should be accept a `null` data argument complimented with `width` and `height` arguments', function() {
-                try {
-                    new TextureCubeMap({
-                        width: width,
-                        height: height,
-                        data: null
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
-            });
-            it('should throw an exception if `data` argument is not complimented with a valid `width` argument', function() {
+            it('should throw an exception if `faces` argument is not complimented with a valid `width` argument', function() {
                 var result = false;
                 try {
                     new TextureCubeMap();
@@ -141,7 +128,7 @@
                 }
                 assert( result );
             });
-            it('should throw an exception if `data` argument is not complimented with a valid `height` argument', function() {
+            it('should throw an exception if null `faces` argument is not complimented with a valid `height` argument', function() {
                 var result = false;
                 try {
                     new TextureCubeMap({
@@ -182,10 +169,10 @@
                 }
                 assert( result );
             });
-            it('should accept a `urls` object argument', function( done ) {
+            it('should accept a `faces` object argument with URL strings', function( done ) {
                 try {
                     new TextureCubeMap({
-                        urls: {
+                        faces: {
                             '+x': 'path/to/x-pos',
                             '+y': 'path/to/y-pos',
                             '+z': 'path/to/z-pos',
@@ -200,7 +187,7 @@
                     assert( false );
                 }
             });
-            it('should execute callback function passing an error as first argument if a `urls` results in an error', function( done ) {
+            it('should execute callback function passing an error as first argument if a URL `faces` string results in an error', function( done ) {
                 var load = ImageLoader.load;
                 var err = new Error( 'error' );
                 ImageLoader.load = function( opts ) {
@@ -209,7 +196,7 @@
                     }, 100 );
                 };
                 new TextureCubeMap({
-                    urls: {
+                    faces: {
                         '+x': 'path/to/x-pos',
                         '+y': 'path/to/y-pos',
                         '+z': 'path/to/z-pos',
@@ -223,10 +210,10 @@
                     done();
                 });
             });
-            it('should accept an `images` object argument', function() {
+            it('should accept a `faces` object with canvas type object arguments', function() {
                 try {
                     new TextureCubeMap({
-                        images: {
+                        faces: {
                             '+x': potImage,
                             '+y': potImage,
                             '+z': potImage,
@@ -242,7 +229,7 @@
             it('should accept non-POT images if POT texture is not required', function() {
                 try {
                     new TextureCubeMap({
-                        images: {
+                        faces: {
                             '+x': npotImage,
                             '+y': npotImage,
                             '+z': npotImage,
@@ -260,7 +247,7 @@
             it('should convert non-POT images to POT images if POT texture is required', function() {
                 try {
                     new TextureCubeMap({
-                        images: {
+                        faces: {
                             '+x': npotImage,
                             '+y': npotImage,
                             '+z': npotImage,
@@ -276,6 +263,7 @@
             it('should accept generic `wrap` and `filter` parameters', function() {
                 try {
                     new TextureCubeMap({
+                        faces: faces,
                         width: width,
                         height: height,
                         filter: 'LINEAR',
@@ -360,7 +348,7 @@
             it('should accept `format`, and `type` options`', function() {
                 try {
                     new TextureCubeMap({
-                        data: data,
+                        faces: null,
                         width: width,
                         height: height,
                         format: 'RGBA',
@@ -385,6 +373,54 @@
                 });
                 assert( tex.type === 'UNSIGNED_BYTE' );
             });
+            it('should throw an exception if the `width` argument is invalid', function() {
+                var result = false;
+                try {
+                    new TextureCubeMap({
+                        width: 'invalid',
+                        height: height
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw an exception if the `height` argument is invalid', function() {
+                var result = false;
+                try {
+                    new TextureCubeMap({
+                        width: 'invalid',
+                        height: height
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw an exception if the `width` and `height` arguments are not equal', function() {
+                var result = false;
+                try {
+                    new TextureCubeMap({
+                        width: width * 2,
+                        height: height
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw an exception if the `width` argument is not a POT and requires being a POT', function() {
+                var result = false;
+                try {
+                    new TextureCubeMap({
+                        width: 123,
+                        height: 123
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
             it('should throw exception if `type` is `FLOAT` but not supported by extension', function() {
                 var check = WebGLContext.checkExtension;
                 WebGLContext.checkExtension = function() {
@@ -406,79 +442,26 @@
         });
 
         describe('#bufferData()', function() {
-            it('should accept a `faces` object argument of data to buffer', function() {
+            it('should accept a `target` and `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( faces );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z'] );
             });
-            it('should accept a single `faces` argument of data to buffer all faces with', function() {
+            it('should accept a null `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( faces['+x'] );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', null );
             });
-            it('should accept options `width` and `height` arguments', function() {
+            it('should accept an Array `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( faces, width, height );
-            });
-            it('should throw exception if `width` is invalid', function() {
-                var tex = new TextureCubeMap({
-                    width: width,
-                    height: height
-                });
-                var result = false;
-                try {
-                    tex.bufferData( faces, 'invalid', height );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should throw exception if `height` is invalid', function() {
-                var tex = new TextureCubeMap({
-                    width: width,
-                    height: height
-                });
-                var result = false;
-                try {
-                    tex.bufferData( faces, width, 'invalid' );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should throw exception if `width` and `height` are not equal', function() {
-                var tex = new TextureCubeMap({
-                    width: width,
-                    height: height
-                });
-                var result = false;
-                try {
-                    tex.bufferData( faces, width * 2, height );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should accept a `null` argument', function() {
-                var tex = new TextureCubeMap({
-                    width: width,
-                    height: height
-                });
-                tex.bufferData( null );
-            });
-            it('should accept Array face arguments', function() {
-                var tex = new TextureCubeMap({
-                    width: width,
-                    height: height
-                });
-                tex.bufferData( faces );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z'] );
             });
             it('should cast an Array to the corresponding ArrayBufferView based on the `type`', function() {
                 var tex0 = new TextureCubeMap({
@@ -486,56 +469,69 @@
                     height: height,
                     type: 'UNSIGNED_SHORT'
                 });
-                tex0.bufferData( faces );
+                tex0.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z'] );
                 var tex1 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_INT'
                 });
-                tex1.bufferData( faces );
+                tex1.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z'] );
                 var tex2 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'FLOAT'
                 });
-                tex2.bufferData( faces );
+                tex2.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z'] );
             });
-            it('should accept a Uint8Array argument', function() {
+            it('should accept a Uint8Array `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( castTo( faces, Uint8Array ) );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z',  new Uint8Array( faces['+z'] ) );
             });
-            it('should accept a Uint16Array argument', function() {
+            it('should accept a Uint16Array `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( castTo( faces, Uint16Array ) );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z',  new Uint16Array( faces['+z'] ) );
             });
-            it('should accept a Uint32Array argument', function() {
+            it('should accept a Uint32Array `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( castTo( faces, Uint32Array ) );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z',  new Uint32Array( faces['+z'] ) );
             });
-            it('should accept a Float32Array argument', function() {
+            it('should accept a Float32Array `data` argument', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                tex.bufferData( castTo( faces, Float32Array ) );
+                tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', new Float32Array( faces['+z'] ) );
             });
-            it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, or null', function() {
+            it('should throw an exception if the `target` argument is invalid', function() {
                 var tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 var result = false;
                 try {
-                    tex.bufferData( 'derp' );
+                    tex.bufferData( 'invalid', faces['+z'] );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement or null', function() {
+                var tex = new TextureCubeMap({
+                    width: width,
+                    height: height
+                });
+                var result = false;
+                try {
+                    tex.bufferData( 'TEXTURE_CUBE_MAP_POSITIVE_Z', 'derp' );
                 } catch( err ) {
                     result = true;
                 }

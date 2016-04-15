@@ -53,7 +53,7 @@
      * @augments Texture2D
      *
      * @param {Object} spec - The specification arguments.
-     * @param {Uint8Array|Uint16Array|Uint32Array} spec.data - The data to buffer.
+     * @param {Uint8Array|Uint16Array|Uint32Array} spec.src - The data to buffer.
      * @param {number} width - The width of the texture.
      * @param {number} height - The height of the texture.
      * @param {String} spec.wrap - The wrapping type over both S and T dimension.

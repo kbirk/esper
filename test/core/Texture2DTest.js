@@ -91,6 +91,32 @@
                 }
                 assert( result );
             });
+            it('should throw an exception if data is not of canvas type, texture requires POT, and `height` is not POT', function() {
+                var result = false;
+                try {
+                    new Texture2D({
+                        src: data,
+                        width: width,
+                        height: 123
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw an exception if data is not of canvas type, texture requires POT, and `width` is not POT', function() {
+                var result = false;
+                try {
+                    new Texture2D({
+                        src: data,
+                        width: 123,
+                        height: height
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
             it('should throw an exception if `height` is missing or invalid', function() {
                 var result = false;
                 try {
@@ -219,7 +245,7 @@
             it('should accept `format`, and `type` options`', function() {
                 try {
                     new Texture2D({
-                        data: data,
+                        src: data,
                         width: width,
                         height: height,
                         format: 'RGBA',
@@ -356,7 +382,7 @@
                 });
                 tex.bufferData( new Float32Array() );
             });
-            it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, or null', function() {
+            it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement or null', function() {
                 var tex = new Texture2D({
                     width: width,
                     height: height
@@ -610,12 +636,16 @@
         });
 
         describe('#resize()', function() {
-            it('should resize the underlying data', function() {
+            it('should resize the underlying buffer', function() {
                 var tex = new Texture2D({
                     width: width,
                     height: height
                 });
-                tex.resize( width / 2, height / 2 );
+                var nWidth = width / 2;
+                var nHeight = height / 2;
+                tex.resize( nWidth, nHeight );
+                assert( tex.width === nWidth );
+                assert( tex.height === nHeight );
             });
             it('should throw an exception if the `width` is missing or invalid', function() {
                 var tex = new Texture2D({

@@ -82,7 +82,7 @@
      * @class Texture2D
      * @classdesc A texture class to represent a 2D texture.
      *
-     * @param {Uint8Array|Uint16Array|Uint32Array|Float32Array} spec.data - The data to buffer.
+     * @param {Uint8Array|Uint16Array|Uint32Array|Float32Array|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.src - The data to buffer.
      * @param {number} width - The width of the texture.
      * @param {number} height - The height of the texture.
      * @param {String} spec.wrap - The wrapping type over both S and T dimension.
@@ -99,16 +99,6 @@
      */
     function Texture2D( spec ) {
         spec = spec || {};
-        if ( typeof spec.width !== 'number' || spec.width <= 0 ) {
-            throw '`width` argument is missing or invalid';
-        }
-        if ( typeof spec.height !== 'number' || spec.height <= 0 ) {
-            throw '`height` argument is missing or invalid';
-        }
-        var gl = this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( gl );
-        // create texture object
-        this.texture = gl.createTexture();
         // get specific params
         spec.wrapS = spec.wrapS || spec.wrap;
         spec.wrapT = spec.wrapT || spec.wrap;
@@ -133,8 +123,30 @@
         if ( this.type === 'FLOAT' && !WebGLContext.checkExtension( 'OES_texture_float' ) ) {
             throw 'Cannot create Texture2D of type `FLOAT` as `OES_texture_float` extension is unsupported';
         }
+        // check size
+        if ( !Util.isCanvasType( spec.src ) ) {
+            // if not a canvas type, dimensions MUST be specified
+            if ( typeof spec.width !== 'number' || spec.width <= 0 ) {
+                throw '`width` argument is missing or invalid';
+            }
+            if ( typeof spec.height !== 'number' || spec.height <= 0 ) {
+                throw '`height` argument is missing or invalid';
+            }
+            if ( Util.mustBePowerOfTwo( this ) ) {
+                if ( !Util.isPowerOfTwo( spec.width ) ) {
+                    throw 'Parameters require a power-of-two texture, yet provided width of ' + spec.width + ' is not a power of two';
+                }
+                if ( !Util.isPowerOfTwo( spec.height ) ) {
+                    throw 'Parameters require a power-of-two texture, yet provided height of ' + spec.height + ' is not a power of two';
+                }
+            }
+        }
+        var gl = this.gl = WebGLContext.get();
+        this.state = WebGLContextState.get( gl );
+        // create texture object
+        this.texture = gl.createTexture();
         // buffer the data
-        this.bufferData( spec.data || null, spec.width, spec.height );
+        this.bufferData( spec.src || null, spec.width, spec.height );
         this.setParameters( this );
     }
 
@@ -236,24 +248,37 @@
             this.type = 'UNSIGNED_INT';
         } else if ( data instanceof Float32Array ) {
             this.type = 'FLOAT';
-        } else if ( data && !( data instanceof ArrayBuffer ) ) {
-            throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`, or null';
+        } else if ( data && !( data instanceof ArrayBuffer ) && !Util.isCanvasType( data ) ) {
+            throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, `ImageData`, `HTMLImageElement`, `HTMLCanvasElement`, `HTMLVideoElement`, or null';
         }
-        // store data description
-        this.data = data;
-        this.width = width || this.width;
-        this.height = height || this.height;
-        // buffer the texture data
-        gl.texImage2D(
-            gl.TEXTURE_2D,
-            0, // mip-map level
-            gl[ this.format ], // webgl requires format === internalFormat
-            this.width,
-            this.height,
-            0, // border, must be 0
-            gl[ this.format ],
-            gl[ this.type ],
-            this.data );
+        if ( Util.isCanvasType( data ) ) {
+            // store width and height
+            this.width = data.width;
+            this.height = data.height;
+            // buffer the texture
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0, // mip-map level,
+                gl[ this.format ], // webgl requires format === internalFormat
+                gl[ this.format ],
+                gl[ this.type ],
+                data );
+        } else {
+            // store width and height
+            this.width = width || this.width;
+            this.height = height || this.height;
+            // buffer the texture data
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0, // mip-map level
+                gl[ this.format ], // webgl requires format === internalFormat
+                this.width,
+                this.height,
+                0, // border, must be 0
+                gl[ this.format ],
+                gl[ this.type ],
+                data );
+        }
         // generate mip maps
         if ( this.mipMap ) {
             gl.generateMipmap( gl.TEXTURE_2D );
@@ -337,7 +362,7 @@
     };
 
     /**
-     * Resize the texture.
+     * Resize the underlying texture. This clears the texture data.
      * @memberof Texture2D
      *
      * @param {number} width - The new width of the texture.
@@ -352,7 +377,7 @@
         if ( typeof height !== 'number' || ( height <= 0 ) ) {
             throw 'Provided `height` of ' + height + ' is invalid';
         }
-        this.bufferData( this.data, width, height );
+        this.bufferData( null, width, height );
         return this;
     };
 
