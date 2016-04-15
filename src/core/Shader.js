@@ -193,17 +193,17 @@
      */
     function resolveSources( sources ) {
         return function( done ) {
-            var jobs = [];
+            var tasks = [];
             sources = sources || [];
             sources = ( !( sources instanceof Array ) ) ? [ sources ] : sources;
             sources.forEach( function( source ) {
                 if ( ShaderParser.isGLSL( source ) ) {
-                    jobs.push( passThroughSource( source ) );
+                    tasks.push( passThroughSource( source ) );
                 } else {
-                    jobs.push( loadShaderSource( source ) );
+                    tasks.push( loadShaderSource( source ) );
                 }
             });
-            Async.parallel( jobs, done );
+            Async.parallel( tasks, done );
         };
     }
 
@@ -364,33 +364,65 @@
         if ( !uniform ) {
             throw 'No uniform found under name `' + name + '`';
         }
-        // ensure that the uniform argument is defined
-        if ( value === undefined ) {
+        // check value
+        if ( value === undefined || value === null ) {
+            // ensure that the uniform argument is defined
             throw 'Argument passed for uniform `' + name + '` is undefined';
-        }
-        // if toArray function is present, convert to array
-        if ( value.toArray ) {
-            value = value.toArray();
-        }
-        // convert Array to Float32Array
-        if ( value instanceof Array ) {
+        } else if ( value instanceof Array ) {
+            // convert Array to Float32Array
             value = new Float32Array( value );
-        }
-        // convert boolean's to 0 or 1
-        if ( typeof value === 'boolean' ) {
+        } else if ( typeof value === 'boolean' ) {
+            // convert boolean's to 0 or 1
             value = value ? 1 : 0;
         }
         // pass the arguments depending on the type
-        switch ( uniform.type ) {
-            case 'mat2':
-            case 'mat3':
-            case 'mat4':
-                this.gl[ uniform.func ]( uniform.location, false, value );
-                break;
-            default:
-                this.gl[ uniform.func ]( uniform.location, value );
-                break;
+        if ( uniform.type === 'mat2' || uniform.type === 'mat3' || uniform.type === 'mat4' ) {
+            this.gl[ uniform.func ]( uniform.location, false, value );
+        } else {
+            this.gl[ uniform.func ]( uniform.location, value );
         }
+        return this;
+    };
+
+    /**
+     * Buffer a map of uniform values.
+     * @memberof Shader
+     *
+     * @param {Object} uniforms - The map of uniforms keyed by name.
+     *
+     * @returns {Shader} The shader object, for chaining.
+     */
+    Shader.prototype.setUniforms = function( args ) {
+        // ensure shader is bound
+        if ( this !== this.state.shaders.top() ) {
+            throw 'Attempting to set uniform `' + name + '` for an unbound shader';
+        }
+        var gl = this.gl;
+        var uniforms = this.uniforms;
+        Object.keys( args ).forEach( function( name ) {
+            var value = args[name];
+            var uniform = uniforms[name];
+            // ensure that the uniform exists for the name
+            if ( !uniform ) {
+                throw 'No uniform found under name `' + name + '`';
+            }
+            if ( value === undefined || value === null ) {
+                // ensure that the uniform argument is defined
+                throw 'Argument passed for uniform `' + name + '` is undefined';
+            } else if ( value instanceof Array ) {
+                // convert Array to Float32Array
+                value = new Float32Array( value );
+            } else if ( typeof value === 'boolean' ) {
+                // convert boolean's to 0 or 1
+                value = value ? 1 : 0;
+            }
+            // pass the arguments depending on the type
+            if ( uniform.type === 'mat2' || uniform.type === 'mat3' || uniform.type === 'mat4' ) {
+                gl[ uniform.func ]( uniform.location, false, value );
+            } else {
+                gl[ uniform.func ]( uniform.location, value );
+            }
+        });
         return this;
     };
 

@@ -235,6 +235,7 @@
                 });
                 shader.push();
                 shader.setUniform( 'uUseTexture', true );
+                shader.setUniform( 'uUseTexture', false );
                 shader.pop();
             });
             it('should accept value of type `number`', function() {
@@ -266,20 +267,6 @@
                 shader.setUniform( 'uMat3Array', new Float32Array( identity ) );
                 shader.pop();
             });
-            it('should accept value of of object with `toArray` method', function() {
-                var shader = new Shader({
-                    vert: vert,
-                    frag: frag
-                });
-                var val = {
-                    toArray: function() {
-                        return identity;
-                    }
-                };
-                shader.push();
-                shader.setUniform( 'uModelMatrix', val );
-                shader.pop();
-            });
             it('should throw an exception if the shader is not the top of the stack', function() {
                 var shader = new Shader({
                     vert: vert,
@@ -301,14 +288,14 @@
                 shader.push();
                 var result = false;
                 try {
-                    shader.setUniform('doesNotExist', identity );
+                    shader.setUniform( 'doesNotExist', identity );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
                 shader.pop();
             });
-            it('should throw an exception if the no value is provided', function() {
+            it('should throw an exception if the value is undefined or null', function() {
                 var shader = new Shader({
                     vert: vert,
                     frag: frag
@@ -316,7 +303,121 @@
                 shader.push();
                 var result = false;
                 try {
-                    shader.setUniform('uModelMatrix' );
+                    shader.setUniform( 'uModelMatrix' );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                result = false;
+                try {
+                    shader.setUniform( 'uModelMatrix', null );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                shader.pop();
+            });
+        });
+
+        describe('#setUniforms()', function() {
+            it('should accept value of type `boolean`', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader.push();
+                shader.setUniforms({
+                    uUseTexture: true
+                });
+                shader.pop();
+            });
+            it('should accept value of type `number`', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader.push();
+                shader.setUniforms({
+                    uSpecularComponent: 10
+                });
+                shader.pop();
+            });
+            it('should accept value of type `Array`', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader.push();
+                shader.setUniforms({
+                    uModelMatrix: identity
+                });
+                shader.pop();
+            });
+            it('should accept value of type `Float32Array`', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader.push();
+                shader.setUniforms({
+                    uModelMatrix: new Float32Array( identity ),
+                    uMat2Array: new Float32Array( identity ),
+                    uMat3Array: new Float32Array( identity )
+                });
+                shader.pop();
+            });
+            it('should throw an exception if the shader is not the top of the stack', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                var result = false;
+                try {
+                    shader.setUniforms({
+                        uModelMatrix: identity
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+            it('should throw an exception if the uniform does not exist', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader.push();
+                var result = false;
+                try {
+                    shader.setUniforms({
+                        doesNotExist: identity
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                shader.pop();
+            });
+            it('should throw an exception if the value is undefined or null', function() {
+                var shader = new Shader({
+                    vert: vert,
+                    frag: frag
+                });
+                shader.push();
+                var result = false;
+                try {
+                    shader.setUniforms({
+                        uModelMatrix: undefined
+                    });
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+                result = false;
+                try {
+                    shader.setUniforms({
+                        uViewMatrix: null
+                    });
                 } catch( err ) {
                     result = true;
                 }
