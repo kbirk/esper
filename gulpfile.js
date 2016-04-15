@@ -70,8 +70,9 @@
         return ( minify ) ? bundleMin( b, output ) : bundle( b, output );
     }
 
-    gulp.task('clean', function () {
-        del( paths.build );
+    gulp.task('clean', function( done ) {
+        del.sync( paths.build );
+        done();
     });
 
     gulp.task('lint', function() {

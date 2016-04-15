@@ -83,6 +83,7 @@
         "before"    : false,
         "after"     : false,
         "beforeEach": false,
-        "afterEach" : false
+        "afterEach" : false,
+        "ImageData" : false
     }
 }

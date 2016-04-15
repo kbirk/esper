@@ -22,7 +22,7 @@ bower install esper
 
 ## Example
 
-* [Full JSFiddle Example](https://jsfiddle.net/tpaxvquh/)
+* [Full JSFiddle Example](https://jsfiddle.net/pojz4gjc/)
 
 ```javascript
 
@@ -406,7 +406,7 @@ vertexBuffer.unbind();
 
 ### Renderables
 
-While working at the level of `esper.VertexBuffers` and `esper.IndexBuffers` can give you low level control, it is often tedious and unnecessary. The `esper.Renderable` class encapsulates this behavior with a simplified interface while still retaining the same low level control.
+While working at the level of `esper.VertexBuffer` and `esper.IndexBuffer` can give you low level control, it is often tedious and unnecessary. The `esper.Renderable` class encapsulates this behavior with a simplified interface while still retaining the same low level control.
 
 ```javascript
 // Create a renderable from vertex and index arrays.
@@ -480,12 +480,12 @@ texture.pop( 0 );
 
 ### ColorTextures
 
-Color textures are the most commonly used type of texture and are used to store RGB or RGBA values. An `esper.ColorTexture2D` can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, ArrayBufferViews, or no data at all.
+Color textures are the most common type of texture and are used to store RGB or RGBA values. An `esper.ColorTexture2D` can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, ArrayBufferViews, or null data.
 
 ```javascript
 // Create texture from image URL.
 var texture = new esper.ColorTexture2D({
-    url: 'images/checkerboard.png'
+    src: 'images/checkerboard.png'
 }, function( err, texture ) {
     if ( err ) {
         console.error( err );
@@ -517,12 +517,12 @@ var depthTexture = new esper.DepthTexture2D({
 
 ### TextureCubeMaps
 
-Cubemap textures are a specific type of texture typically used for skyboxes and reflections. An `esper.TextureCubeMap` can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, buffered with no data at all. The faces of the cube are specified during instantiation.
+Cubemap textures are a specific type of texture typically used for skyboxes and reflections. An `esper.TextureCubeMap` can be created from existing HTMLImageElements, URLs containing HTMLImageElement supported image formats, ArrayBufferViews, or null data. The faces of the cube are specified during instantiation.
 
 ```javascript
 // Create cube map from image URLs.
 var cubeMapTexture = new esper.TextureCubeMap({
-    urls: {
+    faces: {
         '+x': 'images/sky/posx.png',
         '-x': 'images/sky/negx.png',
         '+y': 'images/sky/posy.png',
