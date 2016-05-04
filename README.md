@@ -22,7 +22,7 @@ bower install esper
 
 ## Example
 
-* [Full JSFiddle Example](https://jsfiddle.net/pojz4gjc/)
+* [Full JSFiddle Example](https://jsfiddle.net/2on2g24k/)
 
 ```javascript
 
@@ -72,7 +72,7 @@ if ( gl ) {
 	});
 	// texture
 	texture = new esper.ColorTexture2D({
-		data: [
+		src: [
 			255, 0, 0, 255,
 			0, 255, 0, 255,
 			0, 0, 255, 255,
@@ -443,7 +443,7 @@ Textures can be used to store and sample many different types of information. Ty
 ```javascript
 // Create texture from image URL.
 var texture = new esper.Texture2D({
-    data: new Uint8Array([
+    src: new Uint8Array([
         255, 0, 0, 255,
         0, 255, 0, 255,
         0, 0, 255, 255,
