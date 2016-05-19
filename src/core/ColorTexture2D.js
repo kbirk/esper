@@ -76,8 +76,8 @@
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.image - The HTMLImageElement to buffer.
      * @param {String} spec.url - The HTMLImageElement URL to load and buffer.
      * @param {Uint8Array|Float32Array} spec.src - The data to buffer.
-     * @param {number} width - The width of the texture.
-     * @param {number} height - The height of the texture.
+     * @param {number} spec.width - The width of the texture.
+     * @param {number} spec.height - The height of the texture.
      * @param {String} spec.wrap - The wrapping type over both S and T dimension.
      * @param {String} spec.wrapS - The wrapping type over the S dimension.
      * @param {String} spec.wrapT - The wrapping type over the T dimension.

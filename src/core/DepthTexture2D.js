@@ -54,8 +54,8 @@
      *
      * @param {Object} spec - The specification arguments.
      * @param {Uint8Array|Uint16Array|Uint32Array} spec.src - The data to buffer.
-     * @param {number} width - The width of the texture.
-     * @param {number} height - The height of the texture.
+     * @param {number} spec.width - The width of the texture.
+     * @param {number} spec.height - The height of the texture.
      * @param {String} spec.wrap - The wrapping type over both S and T dimension.
      * @param {String} spec.wrapS - The wrapping type over the S dimension.
      * @param {String} spec.wrapT - The wrapping type over the T dimension.
@@ -64,7 +64,6 @@
      * @param {String} spec.magFilter - The magnification filter used during scaling.
      * @param {String} spec.format - The texture pixel format.
      * @param {String} spec.type - The texture pixel component type.
-     * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
      */
     function DepthTexture2D( spec ) {
         spec = spec || {};

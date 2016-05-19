@@ -83,8 +83,8 @@
      * @classdesc A texture class to represent a 2D texture.
      *
      * @param {Uint8Array|Uint16Array|Uint32Array|Float32Array|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.src - The data to buffer.
-     * @param {number} width - The width of the texture.
-     * @param {number} height - The height of the texture.
+     * @param {number} spec.width - The width of the texture.
+     * @param {number} spec.height - The height of the texture.
      * @param {String} spec.wrap - The wrapping type over both S and T dimension.
      * @param {String} spec.wrapS - The wrapping type over the S dimension.
      * @param {String} spec.wrapT - The wrapping type over the T dimension.
