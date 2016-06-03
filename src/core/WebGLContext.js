@@ -28,8 +28,11 @@
         'EXT_color_buffer_half_float',
         'WEBGL_color_buffer_float',
         'EXT_sRGB',
-        'WEBGL_compressed_texture_etc1'
+        'WEBGL_compressed_texture_etc1',
+        'EXT_disjoint_timer_query',
+        'EXT_color_buffer_float'
     ];
+
     var _boundContext = null;
     var _contexts = {};
 
@@ -211,7 +214,7 @@
         },
 
         /**
-         * Returns an array of all supported extensions for the provided or currently bound context object. If no context is bound, it will return an empty array.
+         * Returns an array of all supported extensions for the provided or currently bound context object.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
@@ -233,8 +236,7 @@
         },
 
         /**
-         * Returns an array of all unsupported extensions for the provided or currently bound context object. If no context is bound, it will return an empty array.
-         * an empty array.
+         * Returns an array of all unsupported extensions for the provided or currently bound context object.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
@@ -257,7 +259,6 @@
 
         /**
          * Checks if an extension has been successfully loaded for the provided or currently bound context object.
-         * 'false'.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {String} extension - The extension name.
@@ -274,6 +275,28 @@
             if ( wrapper ) {
                 var extensions = wrapper.extensions;
                 return extensions[ extension ] ? true : false;
+            }
+            throw 'No context is currently bound or could be associated with the provided argument';
+        },
+
+        /**
+         * Returns an extension if it has been successfully loaded for the provided or currently bound context object.
+         *
+         * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
+         * @param {String} extension - The extension name.
+         *
+         * @returns {boolean} Whether or not the provided extension has been loaded successfully.
+         */
+        getExtension: function( arg, extension ) {
+            if ( !extension ) {
+                // shift parameters if no canvas arg is provided
+                extension = arg;
+                arg = undefined;
+            }
+            var wrapper = getContextWrapper( arg );
+            if ( wrapper ) {
+                var extensions = wrapper.extensions;
+                return extensions[ extension ] || null;
             }
             throw 'No context is currently bound or could be associated with the provided argument';
         }

@@ -12,6 +12,7 @@
     var canvas;
     var gl;
 
+    var bytesPerComponent = 4;
     var positions;
     var normals;
     var uvs;
@@ -153,16 +154,18 @@
                 }
                 assert( result );
             });
-            it('should accept `mode`, `count`, and `byteOffset` options for drawing', function() {
+            it('should accept `mode`, `count`, `indexOffset`, and `byteOffset` options for drawing', function() {
                 var renderable = new Renderable({
                     vertexBuffer: vertexBuffer,
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * 4
+                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent,
+                    indexOffset: ( positions.length / 3 ) / 2
                 });
                 assert( renderable.options.mode === 'POINTS' );
                 assert( renderable.options.count === ( positions.length / 3 ) / 2 );
-                assert( renderable.options.byteOffset === ( positions.length / 3 ) / 2 * 4 );
+                assert( renderable.options.indexOffset === ( positions.length / 3 ) / 2 );
+                assert( renderable.options.byteOffset === ( positions.length / 3 ) / 2 * bytesPerComponent );
             });
         });
 
@@ -174,14 +177,15 @@
                 });
                 renderable.draw();
             });
-            it('should accept `mode`, `count`, and `byteOffset` overrides', function() {
+            it('should accept `mode`, `count`, `indexOffset`, and `byteOffset` overrides', function() {
                 var renderable = new Renderable({
                     vertexBuffer: vertexBuffer
                 });
                 renderable.draw({
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * 4
+                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent,
+                    indexOffset: ( positions.length / 3 ) / 2
                 });
             });
         });

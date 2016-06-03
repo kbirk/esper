@@ -29,14 +29,19 @@
     };
 
     /**
+     * The default attribute point byte offset.
+     */
+    var DEFAULT_BYTE_OFFSET = 0;
+
+    /**
      * The default render mode (primitive type).
      */
     var DEFAULT_MODE = 'TRIANGLES';
 
     /**
-     * The default byte offset to render from.
+     * The default index offset to render from.
      */
-    var DEFAULT_BYTE_OFFSET = 0;
+    var DEFAULT_INDEX_OFFSET = 0;
 
     /**
      * The default count of indices to render.
@@ -154,17 +159,17 @@
      * @param {Object} attributePointers - The array pointer map, or in the case of a vertex package arg, the options.
      * @param {Object} options - The rendering options.
      * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.byteOffset - The byte offset into the drawn buffer.
+     * @param {String} options.indexOffset - The index offset into the drawn buffer.
      * @param {String} options.count - The number of indices to draw.
      */
     function VertexBuffer( arg, attributePointers, options ) {
         options = options || {};
         var gl = this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( gl );
-        this.buffer = gl.createBuffer();
+        this.buffer = null;
         this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
         this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
-        this.byteOffset = ( options.byteOffset !== undefined ) ? options.byteOffset : DEFAULT_BYTE_OFFSET;
+        this.indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : DEFAULT_INDEX_OFFSET;
         this.byteLength = 0;
         // first, set the attribute pointers
         if ( arg instanceof VertexPackage ) {
@@ -187,8 +192,8 @@
                 if ( options.byteLength === undefined ) {
                     throw 'Argument of type `WebGLBuffer` must be complimented with a corresponding `options.byteLength`';
                 }
-                this.byteLength = options.byteLength;
                 this.buffer = arg;
+                this.byteLength = options.byteLength;
             } else {
                 // Array or ArrayBuffer or number argument
                 this.bufferData( arg );
@@ -196,8 +201,8 @@
         }
         // ensure there isn't an overflow
         var bytesPerCount = BYTES_PER_COMPONENT * getNumComponents( this.pointers );
-        if ( this.count * bytesPerCount + this.byteOffset > this.byteLength ) {
-            throw 'VertexBuffer `count` of ' + this.count + ' and `byteOffset` of ' + this.byteOffset + ' overflows the total byte length of the buffer (' + this.byteLength + ')';
+        if ( (this.count + this.indexOffset) * bytesPerCount > this.byteLength ) {
+            throw 'VertexBuffer `count` of ' + this.count + ' and `indexOffset` of ' + this.indexOffset + ' overflows the total byte length of the buffer (' + this.byteLength + ')';
         }
     }
 
@@ -231,6 +236,9 @@
             } else {
                 this.count = arg.length / numComponents;
             }
+            if ( this.count % 1 !== 0 ) {
+                throw 'Buffer `count` contains a fractional component, attributePointers and buffer byte length do not align';
+            }
         }
         // set byte length
         if ( typeof arg === 'number' ) {
@@ -240,6 +248,10 @@
             this.byteLength = arg;
         } else {
             this.byteLength = arg.length * BYTES_PER_COMPONENT;
+        }
+        // create buffer if it doesn't exist already
+        if ( !this.buffer ) {
+            this.buffer = gl.createBuffer();
         }
         // buffer the data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
@@ -343,7 +355,7 @@
      *
      * @param {Object} options - The options to pass to 'drawArrays'. Optional.
      * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.byteOffset - The byte offset into the drawn buffer.
+     * @param {String} options.indexOffset - The index offset into the drawn buffer.
      * @param {String} options.count - The number of indices to draw.
      *
      * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
@@ -355,17 +367,17 @@
         }
         var gl = this.gl;
         var mode = gl[ options.mode || this.mode ];
-        var byteOffset = ( options.byteOffset !== undefined ) ? options.byteOffset : this.byteOffset;
+        var indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : this.indexOffset;
         var count = ( options.count !== undefined ) ? options.count : this.count;
         if ( count === 0 ) {
             throw 'Attempting to draw with a count of 0';
         }
         var bytesPerCount = BYTES_PER_COMPONENT * getNumComponents( this.pointers );
-        if ( count * bytesPerCount + byteOffset > this.byteLength ) {
-            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + byteOffset + ' overflows the total byte length of the buffer (' + this.byteLength + ')';
+        if ( (count + indexOffset ) * bytesPerCount > this.byteLength ) {
+            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + indexOffset + ' overflows the total byte length of the buffer (' + this.byteLength + ')';
         }
         // draw elements
-        gl.drawArrays( mode, byteOffset, count );
+        gl.drawArrays( mode, indexOffset, count );
         return this;
     };
 

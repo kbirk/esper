@@ -57,7 +57,7 @@
         options = options || {};
         var gl = this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( gl );
-        this.buffer = gl.createBuffer();
+        this.buffer = null;
         this.type = TYPES[ options.type ] ? options.type : DEFAULT_TYPE;
         // check if type is supported
         if ( this.type === 'UNSIGNED_INT' && !WebGLContext.checkExtension( 'OES_element_index_uint' ) ) {
@@ -147,6 +147,10 @@
             this.byteLength = arg;
         } else {
             this.byteLength = arg.length * BYTES_PER_TYPE[ this.type ];
+        }
+        // create buffer if it doesn't exist already
+        if ( !this.buffer ) {
+            this.buffer = gl.createBuffer();
         }
         // buffer the data
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );

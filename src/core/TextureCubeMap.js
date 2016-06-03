@@ -210,7 +210,7 @@
         var that = this;
         var gl = this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( gl );
-        this.texture = gl.createTexture();
+        this.texture = null;
         // get specific params
         spec.wrapS = spec.wrapS || spec.wrap;
         spec.wrapT = spec.wrapT || spec.wrap;
@@ -354,6 +354,10 @@
             throw 'Provided `target` of ' + target + ' is invalid';
         }
         var gl = this.gl;
+        // create texture object if it doesn't already exist
+        if ( !this.texture ) {
+            this.texture = gl.createTexture();
+        }
         // buffer face texture
         this.push();
         // invert y if specified

@@ -104,6 +104,8 @@
         spec.wrapT = spec.wrapT || spec.wrap;
         spec.minFilter = spec.minFilter || spec.filter;
         spec.magFilter = spec.magFilter || spec.filter;
+        // empty texture
+        this.texture = null;
         // set texture params
         this.wrapS = spec.wrapS || DEFAULT_WRAP;
         this.wrapT = spec.wrapT || DEFAULT_WRAP;
@@ -143,8 +145,6 @@
         }
         var gl = this.gl = WebGLContext.get();
         this.state = WebGLContextState.get( gl );
-        // create texture object
-        this.texture = gl.createTexture();
         // buffer the data
         this.bufferData( spec.src || null, spec.width, spec.height );
         this.setParameters( this );
@@ -222,6 +222,11 @@
      */
     Texture2D.prototype.bufferData = function( data, width, height ) {
         var gl = this.gl;
+        // create texture object if it doesn't already exist
+        if ( !this.texture ) {
+            this.texture = gl.createTexture();
+        }
+        // push onto stack
         this.push();
         // invert y if specified
         gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
@@ -283,6 +288,7 @@
         if ( this.mipMap ) {
             gl.generateMipmap( gl.TEXTURE_2D );
         }
+        // pop off the stack
         this.pop();
         return this;
     };

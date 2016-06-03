@@ -199,9 +199,9 @@
                 var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
                 assert( vb.mode === 'TRIANGLES' );
             });
-            it('should default `byteOffset` to 0', function() {
+            it('should default `indexOffset` to 0', function() {
                 var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
-                assert( vb.byteOffset === 0 );
+                assert( vb.indexOffset === 0 );
             });
             it('should default count to length of the attribute arrays, or 0', function() {
                 var vb0 = new VertexBuffer( interleaved.buffer, interleaved.pointers );
@@ -209,22 +209,22 @@
                 var vb1 = new VertexBuffer( null, pointers );
                 assert( vb1.count === 0 );
             });
-            it('should accept `mode`, `count`, and `byteOffset` options for drawing', function() {
+            it('should accept `mode`, `count`, and `indexOffset` options for drawing', function() {
                 var vb = new VertexBuffer( positions, pointers, {
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent
+                    indexOffset: ( positions.length / 3 ) / 2
                 });
                 assert( vb.mode === 'POINTS' );
                 assert( vb.count === ( positions.length / 3 ) / 2 );
-                assert( vb.byteOffset === ( positions.length / 3 ) / 2 * bytesPerComponent );
+                assert( vb.indexOffset === ( positions.length / 3 ) / 2 );
             });
-            it('should throw an exception if count + byteOffset overflows the buffer', function() {
+            it('should throw an exception if count + indexOffset overflows the buffer', function() {
                 var result = false;
                 try {
                     new VertexBuffer( positions, pointers, {
                         count: positions.length / 3,
-                        byteOffset: 4
+                        indexOffset: 1
                     });
                 } catch( err ) {
                     result = true;

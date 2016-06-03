@@ -224,6 +224,45 @@
             });
         });
 
+        describe('#getExtension()', function() {
+            it('should return an extension if it exists', function() {
+                var canvas = new HTMLCanvasElement();
+                WebGLContext.get( canvas );
+                var supported = WebGLContext.supportedExtensions();
+                supported.forEach( function( ext ) {
+                    var instance = WebGLContext.getExtension( ext );
+                    assert( instance !== null );
+                });
+                WebGLContext.remove( canvas );
+            });
+            it('should return null if it doesnt exist', function() {
+                var canvas = new HTMLCanvasElement();
+                WebGLContext.get( canvas );
+                var unsupported = WebGLContext.unsupportedExtensions();
+                unsupported.forEach( function( ext ) {
+                    var instance = WebGLContext.getExtension( ext );
+                    assert( instance === null );
+                });
+                WebGLContext.remove( canvas );
+            });
+            it('should query an unbound context if provided', function() {
+                var canvas = new HTMLCanvasElement();
+                WebGLContext.get( canvas );
+                var instance = WebGLContext.getExtension( canvas, 'randomExt');
+                assert( instance === null );
+                WebGLContext.remove( canvas );
+            });
+            it('should return throw an exception if no context is referenced', function() {
+                var result = false;
+                try {
+                    WebGLContext.getExtension();
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+        });
+
     });
 
 }());
