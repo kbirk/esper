@@ -1,6 +1,6 @@
 {
   "name": "esper",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "A low-level WebGL rendering framework",
   "author": "Kevin Birk <birk.kevin@gmail.com>",
   "main": "src/exports.js",
@@ -20,11 +20,11 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "browserify": "13.0.0",
+    "browserify": "13.0.1",
     "del": "2.2.0",
     "gulp": "3.9.1",
     "gulp-coveralls": "0.1.4",
-    "gulp-istanbul": "0.10.3",
+    "gulp-istanbul": "0.10.4",
     "gulp-jshint": "1.12.0",
     "gulp-mocha": "2.2.0",
     "gulp-shell": "0.5.2",
@@ -32,7 +32,7 @@
     "jsdoc": "3.4.0",
     "jshint-stylish": "2.1.0",
     "minami": "1.1.1",
-    "run-sequence": "1.1.5",
+    "run-sequence": "1.2.1",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
     "webgl-mock": "0.1.6"
