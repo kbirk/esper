@@ -233,6 +233,8 @@
             // set count based on size of buffer and number of components
             if ( typeof arg === 'number' ) {
                 this.count = ( arg / BYTES_PER_COMPONENT ) / numComponents;
+            } else if ( arg instanceof ArrayBuffer ) {
+                this.count = ( arg.byteLength / BYTES_PER_COMPONENT ) / numComponents;
             } else {
                 this.count = arg.length / numComponents;
             }

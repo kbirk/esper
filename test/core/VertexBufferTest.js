@@ -344,7 +344,7 @@
             it('should accept an ArrayBuffer argument', function() {
                 var vb = new VertexBuffer( null, pointers );
                 try {
-                    vb.bufferData( new ArrayBuffer( positions.length ) );
+                    vb.bufferData( new ArrayBuffer( positions.length * bytesPerComponent ) );
                 } catch( err ) {
                     assert( false );
                 }
@@ -358,7 +358,9 @@
                 }
             });
             it('should throw an exception if byte length is not multiple of component byte size', function() {
-                var vb = new VertexBuffer( null, pointers );
+                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers, {
+                    count: positions.length / 3
+                });
                 var result = false;
                 try {
                     vb.bufferData( positions.length * bytesPerComponent + 1 );
@@ -373,6 +375,21 @@
                 });
                 vb.bufferData( positions );
                 assert( vb.count === ( positions.length / 3 ) / 2 );
+            });
+            it('should throw an exception if calculated count is not an integer', function() {
+                var vb = new VertexBuffer( null, {
+                    0: {
+                        size: 3,
+                        type: 'FLOAT'
+                    }
+                });
+                var result = false;
+                try {
+                    vb.bufferData( new Float32Array( new ArrayBuffer( 4 * bytesPerComponent ) ) );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
             });
             it('should throw an exception when given an invalid argument', function() {
                 var vb = new VertexBuffer( null, pointers );

@@ -24,7 +24,7 @@
     }
 
     /**
-     * Instantiates an Viewport object.
+     * Instantiates a Viewport object.
      * @class Viewport
      * @classdesc A viewport object.
      *

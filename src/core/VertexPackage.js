@@ -203,7 +203,7 @@
     }
 
     /**
-     * Instantiates an VertexPackage object.
+     * Instantiates a VertexPackage object.
      * @class VertexPackage
      * @classdesc A vertex package object.
      *
