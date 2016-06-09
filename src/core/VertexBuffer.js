@@ -99,10 +99,6 @@
      * @returns {Object} - The validated attribute pointer map.
      */
     function getAttributePointers( attributePointers ) {
-        // ensure there are pointers provided
-        if ( !attributePointers || Object.keys( attributePointers ).length === 0 ) {
-            throw 'VertexBuffer requires attribute pointers to be specified upon instantiation';
-        }
         // parse pointers to ensure they are valid
         var pointers = {};
         Object.keys( attributePointers ).forEach( function( key ) {
@@ -178,6 +174,7 @@
             // shift options arg since there will be no attrib pointers arg
             options = attributePointers || {};
         } else {
+            attributePointers = attributePointers || {};
             this.pointers = getAttributePointers( attributePointers );
         }
         // set the byte stride
@@ -226,8 +223,10 @@
             // if not arraybuffer or a numeric size
             throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `number`';
         }
+        // attempt to infer count of the buffer
         // don't overwrite the count if it is already set
-        if ( this.count === DEFAULT_COUNT ) {
+        // cannot infer count without pointers
+        if ( this.count === DEFAULT_COUNT && Object.keys( this.pointers ).length > 0 ) {
             // get the total number of attribute components from pointers
             var numComponents = getNumComponents( this.pointers );
             // set count based on size of buffer and number of components
@@ -258,6 +257,10 @@
         // buffer the data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
+        // rebind prev buffer
+        if ( this.state.boundVertexBuffer ) {
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
+        }
     };
 
     /**
@@ -287,6 +290,10 @@
         }
         gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
         gl.bufferSubData( gl.ARRAY_BUFFER, byteOffset, array );
+        // rebind prev buffer
+        if ( this.state.boundVertexBuffer ) {
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
+        }
         return this;
     };
 

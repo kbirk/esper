@@ -231,16 +231,7 @@
                 }
                 assert( result );
             });
-            it('should throw an exception if no attribute pointers are provided', function() {
-                var result = false;
-                try {
-                    new VertexBuffer( interleaved.buffer );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should throw an exception if no attribute pointer indices are invalid ', function() {
+            it('should throw an exception if attribute pointer indices are invalid ', function() {
                 var result = false;
                 try {
                     new VertexBuffer( positions, {

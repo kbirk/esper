@@ -155,6 +155,11 @@
         // buffer the data
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, arg, gl.STATIC_DRAW );
+        // rebind prev buffer
+        // rebind prev buffer
+        if ( this.state.boundIndexBuffer ) {
+            gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.state.boundIndexBuffer );
+        }
         return this;
     };
 
@@ -196,6 +201,10 @@
         }
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.buffer );
         gl.bufferSubData( gl.ELEMENT_ARRAY_BUFFER, byteOffset, array );
+        // rebind prev buffer
+        if ( this.state.boundIndexBuffer ) {
+            gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.state.boundIndexBuffer );
+        }
         return this;
     };
 
