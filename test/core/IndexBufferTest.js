@@ -331,11 +331,15 @@
                 }
             });
             it('should accept an ArrayBuffer argument', function() {
-                var ib = new IndexBuffer( indices.length * shortBytes, {
+                var ib0 = new IndexBuffer( indices.length * shortBytes, {
+                    type: 'UNSIGNED_SHORT'
+                });
+                var ib1 = new IndexBuffer( indices.length * shortBytes, {
                     type: 'UNSIGNED_SHORT'
                 });
                 try {
-                    ib.bufferSubData( new ArrayBuffer( indices.length ) );
+                    ib0.draw(); // code coverage to ensure next call re-binds after
+                    ib1.bufferSubData( new ArrayBuffer( indices.length ) );
                 } catch( err ) {
                     assert( false );
                 }

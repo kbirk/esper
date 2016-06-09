@@ -341,9 +341,11 @@
                 }
             });
             it('should accept numeric byte length argument', function() {
-                var vb = new VertexBuffer( null, pointers );
+                var vb0 = new VertexBuffer( null, pointers );
+                var vb1 = new VertexBuffer( null, pointers );
                 try {
-                    vb.bufferData( positions.length * bytesPerComponent );
+                    vb0.bind(); // code coverage to ensure next call re-binds after
+                    vb1.bufferData( positions.length * bytesPerComponent );
                 } catch( err ) {
                     assert( false );
                 }
@@ -419,9 +421,11 @@
                 }
             });
             it('should accept an ArrayBuffer argument', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
+                var vb0 = new VertexBuffer( positions.length * bytesPerComponent, pointers );
+                var vb1 = new VertexBuffer( positions.length * bytesPerComponent, pointers );
                 try {
-                    vb.bufferSubData( new ArrayBuffer( positions.length ) );
+                    vb0.bind(); // code coverage to ensure next call re-binds after
+                    vb1.bufferSubData( new ArrayBuffer( positions.length ) );
                 } catch( err ) {
                     assert( false );
                 }
