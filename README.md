@@ -4,6 +4,30 @@
 
 A low-level WebGL rendering framework.
 
+## Table of Contents
+
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Example](#example)
+- [Usage](#usage)
+	- [WebGLContexts](#webglcontexts)
+	- [Shaders](#shaders)
+	- [Viewports](#viewports)
+	- [VertexBuffers](#vertexbuffers)
+	- [VertexPackages](#vertexpackages)
+	- [IndexBuffers](#indexbuffers)
+	- [Renderables](#renderables)
+	- [Textures](#textures)
+	- [ColorTextures](#colortextures)
+	- [DepthTextures](#depthtextures)
+	- [TextureCubeMaps](#texturecubemaps)
+	- [RenderTargets](#rendertargets)
+
+<!-- /TOC -->
+
+
 ## Installation
 
 Requires [node](http://nodejs.org/) or [bower](http://bower.io/).
@@ -101,9 +125,9 @@ if ( gl ) {
 
 ## Usage
 
-### WebGLContext
+### WebGLContexts
 
-In order to access the WebGL API you need a canvas element from which a WebGL rendering context can be created. The `esper.WebGLContext` namespace wraps the typical process of instantiating a context and provides facilities for handling multiple contexts within a single application. The object returned is a native WebGLRenderingContext object.
+In order to access the WebGL API you first need a canvas element from which a WebGL rendering context can be created. The `esper.WebGLContext` namespace streamlines the typical process of instantiating a context and provides facilities for handling multiple contexts within a single application. The object returned is a native WebGLRenderingContext object.
 
 ```javascript
 // Get WebGL context and load all available extensions.
@@ -129,7 +153,7 @@ try {
 }
 ```
 
-Once a context has been created, it is bound internally and can be accessed throughout the application by calling `esper.WebGLContext.get`. It is important to note that all esper classes will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL constructs cannot be shared between contexts and result in redundant buffers and textures.
+Once a context has been created, it is bound internally and can be accessed throughout the application by calling `esper.WebGLContext.get`. It is important to note that all `esper` classes will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL constructs cannot be shared between contexts and result in redundant buffers and textures.
 
 ```javascript
 var gl = esper.WebGLContext.get();
