@@ -358,10 +358,10 @@ vertexBuffer.draw({
     mode: TRIANGLES
 });
 
-// Draw points from a byte offset.
+// Draw points from an index offset.
 vertexBuffer.draw({
     mode: POINTS,
-    byteOffset: 100 * 4 * 2
+    indexOffset: 100
 });
 
 // Draw n lines.
