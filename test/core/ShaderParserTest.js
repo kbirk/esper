@@ -143,6 +143,9 @@
                 var source = [
                     'uniform highp mat4 A[ 10], B, C [2];',
                     'uniform highp mat4 D;',
+                    'float func() {',
+                    'return 5.0;',
+                    '}',
                     'uniform highp mat4 E ,',
                     'F ',
                     '[11 ] ;',
@@ -168,6 +171,15 @@
                 var declarations = ShaderParser.parseDeclarations( source, [ 'uniform', 'attribute' ] );
                 assert( declarations[0].precision === 'highp' );
                 assert( declarations[1].precision === 'mediump' );
+            });
+            it('should handle preprocessor statements', function() {
+                var source = [
+                    'precision highp float;',
+                    '#define TEST 5',
+                    '#define CONST 6',
+                    'void main() { ... }'].join('\n');
+                var declarations = ShaderParser.parseDeclarations( source, [ 'uniform', 'attribute' ] );
+                assert( declarations.length === 0 );
             });
         });
         describe('#isGLSL()', function() {

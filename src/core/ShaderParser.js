@@ -29,6 +29,7 @@
     var NAME_COUNT_REGEXP = /([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?/;
     var PRECISION_REGEX = /\b(precision)\s+(\w+)\s+(\w+)/;
     var GLSL_REGEXP =  /void\s+main\s*\(\s*(void)*\s*\)\s*/mi;
+    var PREP_REGEXP = /#(define|if|ifdef|ifndef|else|elif|endif|undef|error|pragma|extension|version|line).*\n/g;
 
     /**
      * Removes standard comments from the provided string.
@@ -162,7 +163,7 @@
         var statements = normalized.split(';');
         // build regex for parsing statements with targetted keywords
         var keywordStr = keywords.join('|');
-        var keywordRegex = new RegExp( '.*\\b(' + keywordStr + ')\\b.*' );
+        var keywordRegex = new RegExp( '\\b(' + keywordStr + ')\\b.*' );
         // parse and store global precision statements and any declarations
         var precisions = {};
         var matched = [];
@@ -191,7 +192,8 @@
     }
 
     /**
-     * Filters out duplicate declarations present between shaders.
+     * Filters out duplicate declarations present between shaders. Currently
+     * just removes all # statements.
      * @private
      *
      * @param {Array} declarations - The array of declarations.
@@ -209,6 +211,19 @@
             seen[ declaration.name ] = true;
             return true;
         });
+    }
+
+    /**
+     * Runs the preprocessor on the glsl code.
+     * @private
+     *
+     * @param {String} source - The unprocessed source code.
+     *
+     * @returns {String} The processed source code.
+     */
+    function preprocess( source ) {
+        // TODO: implement this correctly...
+        return source.replace(PREP_REGEXP, '');
     }
 
     module.exports = {
@@ -243,7 +258,8 @@
             // parse out targetted declarations
             var declarations = [];
             sources.forEach( function( source ) {
-                declarations = declarations.concat( parseSource( source, qualifiers ) );
+                var preprocessed = preprocess( source );
+                declarations = declarations.concat( parseSource( preprocessed, qualifiers ) );
             });
             // remove duplicates and return
             return filterDuplicatesByName( declarations );
