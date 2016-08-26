@@ -2,9 +2,7 @@
 
     'use strict';
 
-    var Util = require('../util/Util');
-    var COMPONENT_TYPE = 'FLOAT';
-    var BYTES_PER_COMPONENT = 4;
+    let COMPONENT_TYPE = 'FLOAT';
 
     /**
      * Removes invalid attribute arguments. A valid argument must be an Array of length > 0 key by a string representing an int.
@@ -12,21 +10,19 @@
      *
      * @param {Object} attributes - The map of vertex attributes.
      *
-     * @returns {Array} The valid array of arguments.
+     * @returns {Array} - The valid array of arguments.
      */
     function parseAttributeMap( attributes ) {
-        var goodAttributes = [];
-        Object.keys( attributes ).forEach( function( key ) {
-            var index = parseFloat( key );
+        let goodAttributes = [];
+        Object.keys( attributes ).forEach( key => {
+            let index = parseFloat( key );
             // check that key is an valid integer
-            if ( !Util.isInteger( index ) || index < 0 ) {
+            if ( !Number.isInteger( index ) || index < 0 ) {
                 throw 'Attribute index `' + key + '` does not represent a valid integer';
             }
-            var vertices = attributes[key];
+            let vertices = attributes[key];
             // ensure attribute is valid
-            if ( vertices &&
-                vertices instanceof Array &&
-                vertices.length > 0 ) {
+            if ( Array.isArray(vertices) && vertices.length > 0 ) {
                 // add attribute data and index
                 goodAttributes.push({
                     index: index,
@@ -37,7 +33,7 @@
             }
         });
         // sort attributes ascending by index
-        goodAttributes.sort(function(a,b) {
+        goodAttributes.sort((a, b) => {
             return a.index - b.index;
         });
         return goodAttributes;
@@ -49,9 +45,13 @@
      *
      * @param {Object|Array} component - The component to measure.
      *
-     * @returns {integer} The byte size of the component.
+     * @returns {integer} - The byte size of the component.
      */
     function getComponentSize( component ) {
+        // check if array
+        if ( Array.isArray(component) ) {
+            return component.length;
+        }
         // check if vector
         if ( component.x !== undefined ) {
             // 1 component vector
@@ -69,12 +69,7 @@
             }
             return 1;
         }
-        // check if array
-        if ( component instanceof Array ) {
-            return component.length;
-        }
-        // default to 1 otherwise
-        return 1;
+        throw 'Component type not recognized';
     }
 
     /**
@@ -85,27 +80,27 @@
      * @param {Array} attributes - The array of vertex attributes.
      */
     function setPointersAndStride( vertexPackage, attributes ) {
-        var shortestArray = Number.MAX_VALUE;
-        var offset = 0;
+        let shortestArray = Number.MAX_VALUE;
+        let offset = 0;
         // clear pointers
         vertexPackage.pointers = {};
         // for each attribute
-        attributes.forEach( function( vertices ) {
+        attributes.forEach( vertices => {
             // set size to number of components in the attribute
-            var size = getComponentSize( vertices.data[0] );
+            let size = getComponentSize( vertices.data[0] );
             // length of the package will be the shortest attribute array length
             shortestArray = Math.min( shortestArray, vertices.data.length );
             // store pointer under index
             vertexPackage.pointers[ vertices.index ] = {
-                type : COMPONENT_TYPE,
-                size : size,
-                byteOffset : offset * BYTES_PER_COMPONENT
+                type: COMPONENT_TYPE,
+                size: size,
+                offset: offset
             };
             // accumulate attribute offset
             offset += size;
         });
         // set stride to total offset
-        vertexPackage.byteStride = offset * BYTES_PER_COMPONENT;
+        vertexPackage.stride = offset; // not in bytes
         // set length of package to the shortest attribute array length
         vertexPackage.length = shortestArray;
     }
@@ -117,11 +112,11 @@
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute.
-     * @param {number} stride - The of stride of the buffer.
+     * @param {number} offset - The offset to the attribute, not in bytes.
+     * @param {number} stride - The stride of the buffer, not in bytes.
      */
     function set1ComponentAttr( buffer, vertices, length, offset, stride ) {
-        var vertex, i, j;
+        let vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
@@ -143,11 +138,11 @@
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute.
-     * @param {number} stride - The of stride of the buffer.
+     * @param {number} offset - The offset to the attribute, not in bytes.
+     * @param {number} stride - The stride of the buffer, not in bytes.
      */
     function set2ComponentAttr( buffer, vertices, length, offset, stride ) {
-        var vertex, i, j;
+        let vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
@@ -164,11 +159,11 @@
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute.
-     * @param {number} stride - The of stride of the buffer.
+     * @param {number} offset - The offset to the attribute, not in bytes.
+     * @param {number} stride - The stride of the buffer, not in bytes.
      */
     function set3ComponentAttr( buffer, vertices, length, offset, stride ) {
-        var vertex, i, j;
+        let vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
@@ -186,11 +181,11 @@
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
      * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute.
-     * @param {number} stride - The of stride of the buffer.
+     * @param {number} offset - The offset to the attribute, not in bytes.
+     * @param {number} stride - The stride of the buffer, not in bytes.
      */
     function set4ComponentAttr( buffer, vertices, length, offset, stride ) {
-        var vertex, i, j;
+        let vertex, i, j;
         for ( i=0; i<length; i++ ) {
             vertex = vertices[i];
             // get the index in the buffer to the particular vertex
@@ -202,64 +197,68 @@
         }
     }
 
-    /**
-     * Instantiates a VertexPackage object.
-     * @class VertexPackage
-     * @classdesc A vertex package object.
-     *
-     * @param {Object} attributes - The attributes to interleave keyed by index.
-     */
-    function VertexPackage( attributes ) {
-        if ( attributes !== undefined ) {
-            this.set( attributes );
-        } else {
-            this.buffer = new Float32Array(0);
-            this.pointers = {};
+
+    class VertexPackage {
+
+        /**
+         * Instantiates a VertexPackage object.
+         * @class VertexPackage
+         * @classdesc A vertex package object.
+         *
+         * @param {Object} attributes - The attributes to interleave keyed by index.
+         */
+        constructor( attributes ) {
+            if ( attributes !== undefined ) {
+                this.set( attributes );
+            } else {
+                this.buffer = new Float32Array(0);
+                this.pointers = {};
+            }
+        }
+
+        /**
+         * Set the data to be interleaved inside the package. This clears any previously existing data.
+         * @memberof VertexPackage
+         *
+         * @param {Object} attributes - The attributes to interleaved, keyed by index.
+         *
+         * @returns {VertexPackage} - The vertex package object, for chaining.
+         */
+        set( attributes ) {
+            // remove bad attributes
+            attributes = parseAttributeMap( attributes );
+            // set attribute pointers and stride
+            setPointersAndStride( this, attributes );
+            // set size of data vector
+            let length = this.length;
+            let stride = this.stride; // not in bytes
+            let pointers = this.pointers;
+            let buffer = this.buffer = new Float32Array( length * stride );
+            // for each vertex attribute array
+            attributes.forEach( vertices => {
+                // get the pointer
+                let pointer = pointers[ vertices.index ];
+                // get the pointers offset
+                let offset = pointer.offset; // not in bytes
+                // copy vertex data into arraybuffer
+                switch ( pointer.size ) {
+                    case 2:
+                        set2ComponentAttr( buffer, vertices.data, length, offset, stride );
+                        break;
+                    case 3:
+                        set3ComponentAttr( buffer, vertices.data, length, offset, stride );
+                        break;
+                    case 4:
+                        set4ComponentAttr( buffer, vertices.data, length, offset, stride );
+                        break;
+                    default:
+                        set1ComponentAttr( buffer, vertices.data, length, offset, stride );
+                        break;
+                }
+            });
+            return this;
         }
     }
-
-    /**
-     * Set the data to be interleaved inside the package. This clears any previously existing data.
-     * @memberof VertexPackage
-     *
-     * @param {Object} attributes - The attributes to interleaved, keyed by index.
-     *
-     * @returns {VertexPackage} - The vertex package object, for chaining.
-     */
-    VertexPackage.prototype.set = function( attributes ) {
-        // remove bad attributes
-        attributes = parseAttributeMap( attributes );
-        // set attribute pointers and stride
-        setPointersAndStride( this, attributes );
-        // set size of data vector
-        var length = this.length;
-        var stride = this.byteStride / BYTES_PER_COMPONENT;
-        var pointers = this.pointers;
-        var buffer = this.buffer = new Float32Array( length * stride );
-        // for each vertex attribute array
-        attributes.forEach( function( vertices ) {
-            // get the pointer
-            var pointer = pointers[ vertices.index ];
-            // get the pointers offset
-            var offset = pointer.byteOffset / BYTES_PER_COMPONENT;
-            // copy vertex data into arraybuffer
-            switch ( pointer.size ) {
-                case 2:
-                    set2ComponentAttr( buffer, vertices.data, length, offset, stride );
-                    break;
-                case 3:
-                    set3ComponentAttr( buffer, vertices.data, length, offset, stride );
-                    break;
-                case 4:
-                    set4ComponentAttr( buffer, vertices.data, length, offset, stride );
-                    break;
-                default:
-                    set1ComponentAttr( buffer, vertices.data, length, offset, stride );
-                    break;
-            }
-        });
-        return this;
-    };
 
     module.exports = VertexPackage;
 

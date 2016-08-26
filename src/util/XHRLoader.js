@@ -14,10 +14,10 @@
          * @param {Function} options.responseType - The responseType of the XHR.
          */
         load: function ( options ) {
-            var request = new XMLHttpRequest();
+            let request = new XMLHttpRequest();
             request.open( 'GET', options.url, true );
             request.responseType = options.responseType;
-            request.onreadystatechange = function() {
+            request.onreadystatechange = () => {
                 if ( request.readyState === 4 ) {
                     if ( request.status === 200 ) {
                         if ( options.success ) {

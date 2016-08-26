@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var EXTENSIONS = [
+    let EXTENSIONS = [
         // ratified
         'OES_texture_float',
         'OES_texture_half_float',
@@ -33,8 +33,8 @@
         'EXT_color_buffer_float'
     ];
 
-    var _boundContext = null;
-    var _contexts = {};
+    let _boundContext = null;
+    let _contexts = {};
 
     /**
      * Returns an rfc4122 version 4 compliant UUID.
@@ -43,9 +43,9 @@
      * @returns {String} The UUID string.
      */
     function getUUID() {
-        var replace = function( c ) {
-            var r = Math.random() * 16 | 0;
-            var v = ( c === 'x' ) ? r : ( r & 0x3 | 0x8 );
+        let replace = function( c ) {
+            let r = Math.random() * 16 | 0;
+            let v = ( c === 'x' ) ? r : ( r & 0x3 | 0x8 );
             return v.toString( 16 );
         };
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, replace );
@@ -100,7 +100,7 @@
                 return _boundContext;
             }
         } else {
-            var canvas = getCanvas( arg );
+            let canvas = getCanvas( arg );
             if ( canvas ) {
                 return _contexts[ getId( canvas ) ];
             }
@@ -116,8 +116,8 @@
      * @param {Object} contextWrapper - The context wrapper.
      */
     function loadExtensions( contextWrapper ) {
-        var gl = contextWrapper.gl;
-        EXTENSIONS.forEach( function( id ) {
+        let gl = contextWrapper.gl;
+        EXTENSIONS.forEach( id => {
             contextWrapper.extensions[ id ] = gl.getExtension( id );
         });
     }
@@ -132,9 +132,9 @@
      * @returns {Object} The context wrapper.
      */
     function createContextWrapper( canvas, options ) {
-        var gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
+        let gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
         // wrap context
-        var contextWrapper = {
+        let contextWrapper = {
             id: getId( canvas ),
             gl: gl,
             extensions: {}
@@ -155,10 +155,10 @@
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string.
          *
-         * @returns {WebGLContext} This namespace, used for chaining.
+         * @returns {WebGLContext} - This namespace, used for chaining.
          */
         bind: function( arg ) {
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
                 _boundContext = wrapper;
                 return this;
@@ -171,18 +171,18 @@
          * During creation attempts to load all extensions found at: https://www.khronos.org/registry/webgl/extensions/.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
-         * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
+         * @param {Object} options - Parameters to the webgl context, only used during instantiation. Optional.
          *
-         * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
+         * @returns {WebGLRenderingContext} - The WebGLRenderingContext object.
          */
         get: function( arg, options ) {
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
                // return the native WebGLRenderingContext
                return wrapper.gl;
             }
             // get canvas element
-            var canvas = getCanvas( arg );
+            let canvas = getCanvas( arg );
             // try to find or create context
             if ( !canvas ) {
                 throw 'Context could not be associated with argument of type `' + ( typeof arg ) + '`';
@@ -197,10 +197,10 @@
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
          *
-         * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
+         * @returns {WebGLRenderingContext} - The WebGLRenderingContext object.
          */
         remove: function( arg ) {
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
                 // delete the context
                 delete _contexts[ wrapper.id ];
@@ -218,13 +218,13 @@
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
-         * @returns {Array} All supported extensions.
+         * @returns {Array} - All supported extensions.
          */
         supportedExtensions: function( arg ) {
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                var extensions = wrapper.extensions;
-                var supported = [];
+                let extensions = wrapper.extensions;
+                let supported = [];
                 Object.keys( extensions ).forEach( function( key ) {
                     if ( extensions[ key ] ) {
                         supported.push( key );
@@ -240,13 +240,13 @@
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
-         * @returns {Array} All unsupported extensions.
+         * @returns {Array} - All unsupported extensions.
          */
         unsupportedExtensions: function( arg ) {
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                var extensions = wrapper.extensions;
-                var unsupported = [];
+                let extensions = wrapper.extensions;
+                let unsupported = [];
                 Object.keys( extensions ).forEach( function( key ) {
                     if ( !extensions[ key ] ) {
                         unsupported.push( key );
@@ -263,7 +263,7 @@
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {String} extension - The extension name.
          *
-         * @returns {boolean} Whether or not the provided extension has been loaded successfully.
+         * @returns {boolean} - Whether or not the provided extension has been loaded successfully.
          */
         checkExtension: function( arg, extension ) {
             if ( !extension ) {
@@ -271,9 +271,9 @@
                 extension = arg;
                 arg = undefined;
             }
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                var extensions = wrapper.extensions;
+                let extensions = wrapper.extensions;
                 return extensions[ extension ] ? true : false;
             }
             throw 'No context is currently bound or could be associated with the provided argument';
@@ -285,7 +285,7 @@
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {String} extension - The extension name.
          *
-         * @returns {boolean} Whether or not the provided extension has been loaded successfully.
+         * @returns {boolean} - Whether or not the provided extension has been loaded successfully.
          */
         getExtension: function( arg, extension ) {
             if ( !extension ) {
@@ -293,9 +293,9 @@
                 extension = arg;
                 arg = undefined;
             }
-            var wrapper = getContextWrapper( arg );
+            let wrapper = getContextWrapper( arg );
             if ( wrapper ) {
-                var extensions = wrapper.extensions;
+                let extensions = wrapper.extensions;
                 return extensions[ extension ] || null;
             }
             throw 'No context is currently bound or could be associated with the provided argument';

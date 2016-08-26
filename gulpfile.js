@@ -14,6 +14,7 @@
     var jshint = require('gulp-jshint');
     var coveralls = require('gulp-coveralls');
     var shell = require('gulp-shell');
+	var babel = require('babelify');
 
     var project = 'esper';
     var paths = {
@@ -66,6 +67,8 @@
         var b = browserify( root, {
             debug: !minify,
             standalone: project
+        }).transform(babel, {
+            presets: [ 'es2015' ]
         });
         return ( minify ) ? bundleMin( b, output ) : bundle( b, output );
     }

@@ -5,6 +5,7 @@
     var WebGLContext = require('./WebGLContext');
     var WebGLContextState = require('./WebGLContextState');
     var TYPES = {
+        UNSIGNED_BYTE: true,
         UNSIGNED_SHORT: true,
         UNSIGNED_INT: true
     };
@@ -18,6 +19,7 @@
         TRIANGLE_FAN: true
     };
     var BYTES_PER_TYPE = {
+        UNSIGNED_BYTE: 1,
         UNSIGNED_SHORT: 2,
         UNSIGNED_INT: 4
     };

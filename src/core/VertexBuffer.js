@@ -2,10 +2,10 @@
 
     'use strict';
 
-    var WebGLContext = require('./WebGLContext');
-    var WebGLContextState = require('./WebGLContextState');
-    var VertexPackage = require('./VertexPackage');
-    var MODES = {
+    let WebGLContext = require('./WebGLContext');
+    let WebGLContextState = require('./WebGLContextState');
+    let VertexPackage = require('./VertexPackage');
+    let MODES = {
         POINTS: true,
         LINES: true,
         LINE_STRIP: true,
@@ -14,14 +14,23 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
-    var TYPES = {
+    let TYPES = {
+        BYTE: true,
+        UNSIGNED_BYTE: true,
+        SHORT: true,
+        UNSIGNED_SHORT: true,
+        FIXED: true,
         FLOAT: true
     };
-    var BYTES_PER_TYPE = {
+    let BYTES_PER_TYPE = {
+        BYTE: 1,
+        UNSIGNED_BYTE: 1,
+        SHORT: 2,
+        UNSIGNED_SHORT: 2,
+        FIXED: 4,
         FLOAT: 4
     };
-    var BYTES_PER_COMPONENT = BYTES_PER_TYPE.FLOAT;
-    var SIZES = {
+    let SIZES = {
         1: true,
         2: true,
         3: true,
@@ -31,22 +40,22 @@
     /**
      * The default attribute point byte offset.
      */
-    var DEFAULT_BYTE_OFFSET = 0;
+    let DEFAULT_BYTE_OFFSET = 0;
 
     /**
      * The default render mode (primitive type).
      */
-    var DEFAULT_MODE = 'TRIANGLES';
+    let DEFAULT_MODE = 'TRIANGLES';
 
     /**
      * The default index offset to render from.
      */
-    var DEFAULT_INDEX_OFFSET = 0;
+    let DEFAULT_INDEX_OFFSET = 0;
 
     /**
      * The default count of indices to render.
      */
-    var DEFAULT_COUNT = 0;
+    let DEFAULT_COUNT = 0;
 
     /**
      * Parse the attribute pointers and determine the byte stride of the buffer.
@@ -59,18 +68,18 @@
     function getStride( attributePointers ) {
         // if there is only one attribute pointer assigned to this buffer,
         // there is no need for stride, set to default of 0
-        var indices = Object.keys( attributePointers );
+        let indices = Object.keys( attributePointers );
         if ( indices.length === 1 ) {
             return 0;
         }
-        var maxByteOffset = 0;
-        var byteSizeSum = 0;
-        var byteStride = 0;
-        indices.forEach( function( index ) {
-            var pointer = attributePointers[ index ];
-            var byteOffset = pointer.byteOffset;
-            var size = pointer.size;
-            var type = pointer.type;
+        let maxByteOffset = 0;
+        let byteSizeSum = 0;
+        let byteStride = 0;
+        indices.forEach( index => {
+            let pointer = attributePointers[ index ];
+            let byteOffset = pointer.byteOffset;
+            let size = pointer.size;
+            let type = pointer.type;
             // track the sum of each attribute size
             byteSizeSum += size * BYTES_PER_TYPE[ type ];
             // track the largest offset to determine the byte stride of the buffer
@@ -100,17 +109,17 @@
      */
     function getAttributePointers( attributePointers ) {
         // parse pointers to ensure they are valid
-        var pointers = {};
-        Object.keys( attributePointers ).forEach( function( key ) {
-            var index = parseInt( key, 10 );
+        let pointers = {};
+        Object.keys( attributePointers ).forEach( key => {
+            let index = parseInt( key, 10 );
             // check that key is an valid integer
             if ( isNaN( index ) ) {
                 throw 'Attribute index `' + key + '` does not represent an integer';
             }
-            var pointer = attributePointers[key];
-            var size = pointer.size;
-            var type = pointer.type;
-            var byteOffset = pointer.byteOffset;
+            let pointer = attributePointers[key];
+            let size = pointer.size;
+            let type = pointer.type;
+            let byteOffset = pointer.byteOffset;
             // check size
             if ( !SIZES[ size ] ) {
                 throw 'Attribute pointer `size` parameter is invalid, must be one of ' +
@@ -130,265 +139,223 @@
         return pointers;
     }
 
-    /**
-     * Return the number of components in the buffer.
-     * @private
-     *
-     * @param {Object} attributePointers - The attribute pointer map.
-     *
-     * @returns {number} - The number of components in the buffer.
-     */
-    function getNumComponents( attributePointers ) {
-        var size = 0;
-        Object.keys( attributePointers ).forEach( function( index ) {
-            size += attributePointers[ index ].size;
-        });
-        return size;
-    }
-
-    /**
-     * Instantiates an VertexBuffer object.
-     * @class VertexBuffer
-     * @classdesc A vertex buffer object.
-     *
-     * @param {Array|Float32Array|VertexPackage|number} arg - The buffer or length of the buffer.
-     * @param {Object} attributePointers - The array pointer map, or in the case of a vertex package arg, the options.
-     * @param {Object} options - The rendering options.
-     * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.indexOffset - The index offset into the drawn buffer.
-     * @param {String} options.count - The number of indices to draw.
-     */
-    function VertexBuffer( arg, attributePointers, options ) {
-        options = options || {};
-        var gl = this.gl = WebGLContext.get();
-        this.state = WebGLContextState.get( gl );
-        this.buffer = null;
-        this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
-        this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
-        this.indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : DEFAULT_INDEX_OFFSET;
-        this.byteLength = 0;
-        // first, set the attribute pointers
-        if ( arg instanceof VertexPackage ) {
-            // VertexPackage argument, use its attribute pointers
-            this.pointers = arg.pointers;
-            // shift options arg since there will be no attrib pointers arg
-            options = attributePointers || {};
-        } else {
-            attributePointers = attributePointers || {};
-            this.pointers = getAttributePointers( attributePointers );
-        }
-        // set the byte stride
-        this.byteStride = getStride( this.pointers );
-        // then buffer the data
-        if ( arg ) {
+    class VertexBuffer {
+        
+        /**
+         * Instantiates an VertexBuffer object.
+         * @class VertexBuffer
+         * @classdesc A vertex buffer object.
+         *
+         * @param {Array|Float32Array|VertexPackage|number} arg - The buffer or length of the buffer.
+         * @param {Object} attributePointers - The array pointer map, or in the case of a vertex package arg, the options.
+         * @param {Object} options - The rendering options.
+         * @param {String} options.mode - The draw mode / primitive type.
+         * @param {String} options.indexOffset - The index offset into the drawn buffer.
+         * @param {String} options.count - The number of indices to draw.
+         */
+        constructor( arg, attributePointers, options = {} ) {
+            this.gl = WebGLContext.get();
+            this.state = WebGLContextState.get( this.gl );
+            this.buffer = null;
+            this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
+            this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
+            this.indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : DEFAULT_INDEX_OFFSET;
+            this.byteLength = 0;
+            // first, set the attribute pointers
             if ( arg instanceof VertexPackage ) {
-                // VertexPackage argument
-                this.bufferData( arg.buffer );
-            } else if ( arg instanceof WebGLBuffer ) {
-                // WebGLBuffer argument
-                if ( options.byteLength === undefined ) {
-                    throw 'Argument of type `WebGLBuffer` must be complimented with a corresponding `options.byteLength`';
-                }
-                this.buffer = arg;
-                this.byteLength = options.byteLength;
+                // VertexPackage argument, use its attribute pointers
+                this.pointers = arg.pointers;
+                // shift options arg since there will be no attrib pointers arg
+                options = attributePointers || {};
             } else {
-                // Array or ArrayBuffer or number argument
-                this.bufferData( arg );
+                attributePointers = attributePointers || {};
+                this.pointers = getAttributePointers( attributePointers );
+            }
+            // set the byte stride
+            this.byteStride = getStride( this.pointers );
+            // then buffer the data
+            if ( arg ) {
+                if ( arg instanceof VertexPackage ) {
+                    // VertexPackage argument
+                    this.bufferData( arg.buffer );
+                } else if ( arg instanceof WebGLBuffer ) {
+                    // WebGLBuffer argument
+                    if ( options.byteLength === undefined ) {
+                        throw 'Argument of type `WebGLBuffer` must be complimented with a corresponding `options.byteLength`';
+                    }
+                    this.buffer = arg;
+                    this.byteLength = options.byteLength;
+                } else {
+                    // Array or ArrayBuffer or number argument
+                    this.bufferData( arg );
+                }
             }
         }
-        // ensure there isn't an overflow
-        var bytesPerCount = BYTES_PER_COMPONENT * getNumComponents( this.pointers );
-        if ( (this.count + this.indexOffset) * bytesPerCount > this.byteLength ) {
-            throw 'VertexBuffer `count` of ' + this.count + ' and `indexOffset` of ' + this.indexOffset + ' overflows the total byte length of the buffer (' + this.byteLength + ')';
+
+        /**
+         * Upload vertex data to the GPU.
+         * @memberof VertexBuffer
+         *
+         * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer, or size of the buffer in bytes.
+         *
+         * @returns {VertexBuffer} - The vertex buffer object for chaining.
+         */
+        bufferData( arg ) {
+            let gl = this.gl;
+            // ensure argument is valid
+            if ( Array.isArray(arg) ) {
+                // cast array into Float32Array
+                arg = new Float32Array( arg );
+            } else if (
+                !( arg instanceof ArrayBuffer ) &&
+                !( ArrayBuffer.isView(arg) ) &&
+                !( Number.isInteger(arg) )
+                ) {
+                // if not arraybuffer or a numeric size
+                throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `Number`';
+            }
+            // set byte length
+            this.byteLength = arg.byteLength;
+            // create buffer if it doesn't exist already
+            if ( !this.buffer ) {
+                this.buffer = gl.createBuffer();
+            }
+            // buffer the data
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
+            gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
+            // rebind prev buffer
+            if ( this.state.boundVertexBuffer ) {
+                gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
+            }
+        }
+
+        /**
+         * Upload partial vertex data to the GPU.
+         * @memberof VertexBuffer
+         *
+         * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
+         * @param {number} byteOffset - The byte offset at which to buffer.
+         *
+         * @returns {VertexBuffer} - The vertex buffer object for chaining.
+         */
+        bufferSubData( array, byteOffset = DEFAULT_BYTE_OFFSET ) {
+            let gl = this.gl;
+            // ensure the buffer exists
+            if ( !this.buffer ) {
+                throw 'Buffer has not yet been allocated, allocate with `bufferData`';
+            }
+            // ensure argument is valid
+            if ( Array.isArray(array) ) {
+                array = new Float32Array( array );
+            } else if (
+                !( array instanceof ArrayBuffer ) &&
+                !ArrayBuffer.isView( array )
+                ) {
+                throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
+            }
+            // get the total number of attribute components from pointers
+            if ( byteOffset + array.byteLength > this.byteLength ) {
+                throw 'Argument of length ' + array.byteLength +
+                    ' bytes and offset of ' + byteOffset +
+                    ' bytes overflows the buffer length of ' + this.byteLength +
+                    ' bytes';
+            }
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
+            gl.bufferSubData( gl.ARRAY_BUFFER, byteOffset, array );
+            // rebind prev buffer
+            if ( this.state.boundVertexBuffer ) {
+                gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
+            }
+            return this;
+        }
+
+        /**
+         * Binds the vertex buffer object.
+         * @memberof VertexBuffer
+         *
+         * @returns {VertexBuffer} - Returns the vertex buffer object for chaining.
+         */
+        bind() {
+            let gl = this.gl;
+            let state = this.state;
+            // cache this vertex buffer
+            if ( state.boundVertexBuffer !== this.buffer ) {
+                // bind buffer
+                gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
+                state.boundVertexBuffer = this.buffer;
+            }
+            // for each attribute pointer
+            Object.keys( this.pointers ).forEach( index => {
+                let pointer = this.pointers[ index ];
+                // set attribute pointer
+                gl.vertexAttribPointer(
+                    index,
+                    pointer.size,
+                    gl[ pointer.type ],
+                    false,
+                    this.byteStride,
+                    pointer.byteOffset );
+                // enable attribute index
+                if ( !state.enabledVertexAttributes[ index ] ) {
+                    gl.enableVertexAttribArray( index );
+                    state.enabledVertexAttributes[ index ] = true;
+                }
+            });
+            return this;
+        }
+
+        /**
+         * Unbinds the vertex buffer object.
+         * @memberof VertexBuffer
+         *
+         * @returns {VertexBuffer} - Returns the vertex buffer object for chaining.
+         */
+        unbind() {
+            let gl = this.gl;
+            let state = this.state;
+            // only bind if it already isn't bound
+            if ( state.boundVertexBuffer !== this.buffer ) {
+                // bind buffer
+                gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
+                state.boundVertexBuffer = this.buffer;
+            }
+            Object.keys( this.pointers ).forEach( index => {
+                // disable attribute index
+                if ( state.enabledVertexAttributes[ index ] ) {
+                    gl.disableVertexAttribArray( index );
+                    state.enabledVertexAttributes[ index ] = false;
+                }
+            });
+            return this;
+        }
+
+        /**
+         * Execute the draw command for the bound buffer.
+         * @memberof VertexBuffer
+         *
+         * @param {Object} options - The options to pass to 'drawArrays'. Optional.
+         * @param {String} options.mode - The draw mode / primitive type.
+         * @param {String} options.indexOffset - The index offset into the drawn buffer.
+         * @param {String} options.count - The number of indices to draw.
+         *
+         * @returns {VertexBuffer} - Returns the vertex buffer object for chaining.
+         */
+        draw( options = {} ) {
+            if ( this.state.boundVertexBuffer !== this.buffer ) {
+                throw 'Attempting to draw an unbound VertexBuffer';
+            }
+            let gl = this.gl;
+            let mode = gl[ options.mode || this.mode ];
+            let indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : this.indexOffset;
+            let count = ( options.count !== undefined ) ? options.count : this.count;
+            if ( count === 0 ) {
+                throw 'Attempting to draw with a count of 0';
+            }
+            // draw elements
+            gl.drawArrays( mode, indexOffset, count );
+            return this;
         }
     }
-
-    /**
-     * Upload vertex data to the GPU.
-     * @memberof VertexBuffer
-     *
-     * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer, or size of the buffer in bytes.
-     *
-     * @returns {VertexBuffer} The vertex buffer object for chaining.
-     */
-    VertexBuffer.prototype.bufferData = function( arg ) {
-        var gl = this.gl;
-        if ( arg instanceof Array ) {
-            // cast array into ArrayBufferView
-            arg = new Float32Array( arg );
-        } else if (
-            !( arg instanceof ArrayBuffer ) &&
-            !( arg instanceof Float32Array ) &&
-            typeof arg !== 'number' ) {
-            // if not arraybuffer or a numeric size
-            throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `number`';
-        }
-        // attempt to infer count of the buffer
-        // don't overwrite the count if it is already set
-        // cannot infer count without pointers
-        if ( this.count === DEFAULT_COUNT && Object.keys( this.pointers ).length > 0 ) {
-            // get the total number of attribute components from pointers
-            var numComponents = getNumComponents( this.pointers );
-            // set count based on size of buffer and number of components
-            if ( typeof arg === 'number' ) {
-                this.count = ( arg / BYTES_PER_COMPONENT ) / numComponents;
-            } else if ( arg instanceof ArrayBuffer ) {
-                this.count = ( arg.byteLength / BYTES_PER_COMPONENT ) / numComponents;
-            } else {
-                this.count = arg.length / numComponents;
-            }
-            if ( this.count % 1 !== 0 ) {
-                throw 'Buffer `count` contains a fractional component, attributePointers and buffer byte length do not align';
-            }
-        }
-        // set byte length
-        if ( typeof arg === 'number' ) {
-            if ( arg % BYTES_PER_COMPONENT ) {
-                throw 'Byte length must be multiple of ' + BYTES_PER_COMPONENT;
-            }
-            this.byteLength = arg;
-        } else {
-            this.byteLength = arg.length * BYTES_PER_COMPONENT;
-        }
-        // create buffer if it doesn't exist already
-        if ( !this.buffer ) {
-            this.buffer = gl.createBuffer();
-        }
-        // buffer the data
-        gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-        gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
-        // rebind prev buffer
-        if ( this.state.boundVertexBuffer ) {
-            gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
-        }
-    };
-
-    /**
-     * Upload partial vertex data to the GPU.
-     * @memberof VertexBuffer
-     *
-     * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
-     * @param {number} byteOffset - The byte offset at which to buffer.
-     *
-     * @returns {VertexBuffer} The vertex buffer object for chaining.
-     */
-    VertexBuffer.prototype.bufferSubData = function( array, byteOffset ) {
-        var gl = this.gl;
-        if ( this.byteLength === 0 ) {
-            throw 'Buffer has not yet been allocated';
-        }
-        if ( array instanceof Array ) {
-            array = new Float32Array( array );
-        } else if ( !( array instanceof ArrayBuffer ) && !ArrayBuffer.isView( array ) ) {
-            throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
-        }
-        byteOffset = ( byteOffset !== undefined ) ? byteOffset : DEFAULT_BYTE_OFFSET;
-        // get the total number of attribute components from pointers
-        var byteLength = array.length * BYTES_PER_COMPONENT;
-        if ( byteOffset + byteLength > this.byteLength ) {
-            throw 'Argument of length ' + byteLength + ' bytes and offset of ' + byteOffset + ' bytes overflows the buffer length of ' + this.byteLength + ' bytes';
-        }
-        gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-        gl.bufferSubData( gl.ARRAY_BUFFER, byteOffset, array );
-        // rebind prev buffer
-        if ( this.state.boundVertexBuffer ) {
-            gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
-        }
-        return this;
-    };
-
-    /**
-     * Binds the vertex buffer object.
-     * @memberof VertexBuffer
-     *
-     * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
-     */
-    VertexBuffer.prototype.bind = function() {
-        var gl = this.gl;
-        var state = this.state;
-        // cache this vertex buffer
-        if ( state.boundVertexBuffer !== this.buffer ) {
-            // bind buffer
-            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-            state.boundVertexBuffer = this.buffer;
-        }
-        var pointers = this.pointers;
-        var byteStride = this.byteStride;
-        Object.keys( pointers ).forEach( function( index ) {
-            var pointer = pointers[ index ];
-            // set attribute pointer
-            gl.vertexAttribPointer(
-                index,
-                pointer.size,
-                gl[ pointer.type ],
-                false,
-                byteStride,
-                pointer.byteOffset );
-            // enable attribute index
-            if ( !state.enabledVertexAttributes[ index ] ) {
-                gl.enableVertexAttribArray( index );
-                state.enabledVertexAttributes[ index ] = true;
-            }
-        });
-        return this;
-    };
-
-    /**
-     * Unbinds the vertex buffer object.
-     * @memberof VertexBuffer
-     *
-     * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
-     */
-    VertexBuffer.prototype.unbind = function() {
-        var gl = this.gl;
-        var state = this.state;
-        // only bind if it already isn't bound
-        if ( state.boundVertexBuffer !== this.buffer ) {
-            // bind buffer
-            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-            state.boundVertexBuffer = this.buffer;
-        }
-        Object.keys( this.pointers ).forEach( function( index ) {
-            // disable attribute index
-            if ( state.enabledVertexAttributes[ index ] ) {
-                gl.disableVertexAttribArray( index );
-                state.enabledVertexAttributes[ index ] = false;
-            }
-        });
-        return this;
-    };
-
-    /**
-     * Execute the draw command for the bound buffer.
-     * @memberof VertexBuffer
-     *
-     * @param {Object} options - The options to pass to 'drawArrays'. Optional.
-     * @param {String} options.mode - The draw mode / primitive type.
-     * @param {String} options.indexOffset - The index offset into the drawn buffer.
-     * @param {String} options.count - The number of indices to draw.
-     *
-     * @returns {VertexBuffer} Returns the vertex buffer object for chaining.
-     */
-    VertexBuffer.prototype.draw = function( options ) {
-        options = options || {};
-        if ( this.state.boundVertexBuffer !== this.buffer ) {
-            throw 'Attempting to draw an unbound VertexBuffer';
-        }
-        var gl = this.gl;
-        var mode = gl[ options.mode || this.mode ];
-        var indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : this.indexOffset;
-        var count = ( options.count !== undefined ) ? options.count : this.count;
-        if ( count === 0 ) {
-            throw 'Attempting to draw with a count of 0';
-        }
-        var bytesPerCount = BYTES_PER_COMPONENT * getNumComponents( this.pointers );
-        if ( (count + indexOffset ) * bytesPerCount > this.byteLength ) {
-            throw 'Attempting to draw with `count` of ' + count + ' and `offset` of ' + indexOffset + ' overflows the total byte length of the buffer (' + this.byteLength + ')';
-        }
-        // draw elements
-        gl.drawArrays( mode, indexOffset, count );
-        return this;
-    };
 
     module.exports = VertexBuffer;
 

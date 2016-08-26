@@ -50,25 +50,25 @@ bower install esper
 
 ```javascript
 
-var shader;
-var viewport;
-var renderable;
-var texture;
+let shader;
+let viewport;
+let renderable;
+let texture;
 
 function render() {
 	// setup
 	viewport.push();
 	shader.push();
-	shader.setUniform( 'uLightPosition', light );
-	shader.setUniform( 'uModelMatrix', model );
-	shader.setUniform( 'uViewMatrix', view );
-	shader.setUniform( 'uProjectionMatrix', projection );
-	shader.setUniform( 'uTextureSampler', 0 );
-	texture.push( 0 );
+	shader.setUniform('uLightPosition', light);
+	shader.setUniform('uModelMatrix', model);
+	shader.setUniform('uViewMatrix', view);
+	shader.setUniform('uProjectionMatrix', projection);
+	shader.setUniform('uTextureSampler', 0);
+	texture.push(0);
 	// draw
 	renderable.draw();
 	// teardown
-	texture.pop( 0 );
+	texture.pop(0);
 	viewport.pop();
 	shader.pop();
 	// continue to next frame
@@ -77,13 +77,13 @@ function render() {
 
 // create webgl context
 try {
-	gl = esper.WebGLContext.get( "glcanvas" );
-} catch( err ) {
-	console.err( err.message );
+	gl = esper.WebGLContext.get("glcanvas");
+} catch(err) {
+	console.err(err.message);
 }
 
 // only continue if WebGL is available
-if ( gl ) {
+if (gl) {
 	// viewport
 	viewport = new esper.Viewport({
 		width: window.innerWidth,
@@ -117,7 +117,7 @@ if ( gl ) {
 		indices: cube.indices
 	});
 	// enable depth testing
-	gl.enable( gl.DEPTH_TEST );
+	gl.enable(gl.DEPTH_TEST);
 	// start render loop
 	render();
 }
@@ -131,66 +131,66 @@ In order to access the WebGL API you first need a canvas element from which a We
 
 ```javascript
 // Get WebGL context and load all available extensions.
-var gl;
+let gl;
 try {
-	gl = esper.WebGLContext.get( 'canvas-id' );
-} catch( err ) {
-	console.error( err.message );
+	gl = esper.WebGLContext.get('canvas-id');
+} catch(err) {
+	console.error(err.message);
 }
 ```
 
 Options can be provided via the second parameter.
 
 ```javascript
-var gl;
+let gl;
 try {
-	gl = esper.WebGLContext.get( canvasDOMElement, {
-	    antialias: false
-	    depth: false
+	gl = esper.WebGLContext.get(canvasDOMElement, {
+		antialias: false
+		depth: false
 	});
-} catch( err ) {
-	console.error( err.message );
+} catch(err) {
+	console.error(err.message);
 }
 ```
 
 Once a context has been created, it is bound internally and can be accessed throughout the application by calling `esper.WebGLContext.get`. It is important to note that all `esper` classes will use the context bound during their instantiation. This is only important if you are intending to use multiple WebGL contexts. In most cases this is discouraged as WebGL constructs cannot be shared between contexts and result in redundant buffers and textures.
 
 ```javascript
-var gl = esper.WebGLContext.get();
+let gl = esper.WebGLContext.get();
 ```
 
 The `esper.WebGLContext.bind` method can be used to manually bind a context. Once again, if only one context is ever used, this is unnecessary as the context is bound upon creation.
 
 ```javascript
-esper.WebGLContext.bind( 'canvas-id' );
-esper.WebGLContext.bind( canvasDOMElement );
+esper.WebGLContext.bind('canvas-id');
+esper.WebGLContext.bind(canvasDOMElement);
 ```
 
 During the creation of the context, esper will automatically attempt to load all known WebGL extensions. To check whether or not a specific extension has been successfully loaded use `esper.WebGLContext.checkExtension`.
 
 ```javascript
 // Check if the bound WebGL context supports depth textures.
-if ( esper.WebGLContext.checkExtension( 'WEBGL_depth_texture' ) ) {
-    console.log( 'Depth textures are supported' );
+if (esper.WebGLContext.checkExtension('WEBGL_depth_texture')) {
+	console.log('Depth textures are supported');
 }
 ```
 
 All supported or unsupported extensions can also be queried.
 
 ```javascript
-esper.WebGLContext.supportedExtensions().forEach( function( extension ) {
-    console.log( extensions + ' is supported.');
+esper.WebGLContext.supportedExtensions().forEach( extension => {
+	console.log(extensions + ' is supported.');
 });
 
-esper.WebGLContext.unsupportedExtensions().forEach( function( extension ) {
-    console.log( extensions + ' is not supported.');
+esper.WebGLContext.unsupportedExtensions().forEach( extension => {
+	console.log(extensions + ' is not supported.');
 });
 ```
 
 Contexts can be removed via the `esper.WebGLContext.remove` method.
 
 ```javascript
-esper.WebGLContext.remove( 'canvas-id' );
+esper.WebGLContext.remove('canvas-id');
 ```
 
 ### Shaders
@@ -199,16 +199,16 @@ Shaders are programs that execute on the GPU and are essential to 3D programming
 
 ```javascript
 // Create shader object and using source URLs (also supports source code strings).
-var shader = new esper.Shader({
-    vert: 'shaders/phong.vert',
-    frag: 'shaders/phong.frag'
-}, function( err, shader ) {
-    if ( err ) {
-        console.error( err );
-        return;
-    }
-    // Shader completion callback.
-    console.log( 'Shader sources loaded and program instantiated' );
+let shader = new esper.Shader({
+	vert: 'shaders/phong.vert',
+	frag: 'shaders/phong.frag'
+}, (err, shader) => {
+	if (err) {
+		console.error(err);
+		return;
+	}
+	// Shader completion callback.
+	console.log('Shader sources loaded and program instantiated');
 });
 ```
 
@@ -216,26 +216,25 @@ Multiple source arguments can be provided as arrays and are concatenated togethe
 
 ```javascript
 // Create shader object and using source URLs (also supports source code strings).
-var shader = new esper.Shader({
-    common: 'uniform highp float uTime;'
-    vert: [
-        'shaders/noise.vert',
-        'attribute highp vec3 aVertexPosition;' +
-        'void main() {' +
-        '    gl_Position = vec4( aVertexPosition * noise( uTime ), 1.0 );' +
-        '    vPosition = aVertexPosition.xyz;' +
-        '}'
-    ],
-    frag:
-        'void main() {' +
-        '    gl_FragColor = vec4( 1*uTime, 1*uTime, 1*uTime, 1.0 );' +
-        '}'
-}, function( err shader ) {
-    if ( err ) {
-        console.error( err );
-        return;
-    }
-    console.log( 'Shader sources loaded and program instantiated' );
+let shader = new esper.Shader({
+	common: 'uniform highp float uTime;'
+	vert: `
+		shaders/noise.vert
+		attribute highp vec3 aVertexPosition;
+		void main() {
+			gl_Position = vec4(aVertexPosition * noise(uTime), 1.0);
+			vPosition = aVertexPosition.xyz;
+		}`
+	frag:`
+		void main() {
+			gl_FragColor = vec4(1*uTime, 1*uTime, 1*uTime, 1.0);
+		}`
+}, (err, shader) => {
+	if (err) {
+		console.error(err);
+		return;
+	}
+	console.log('Shader sources loaded and program instantiated');
 });
 ```
 
@@ -245,9 +244,9 @@ When uploading uniforms to the GPU, arguments are automatically casted (within r
 
 ```javascript
 // Upload uniforms to the GPU
-shader.setUniform( 'uProjectionMatrix', projectionMatrixArray );
-shader.setUniform( 'uAlpha', 0.25 );
-shader.setUniform( 'uHasTexture', false ); // booleans are converted to float
+shader.setUniform('uProjectionMatrix', projectionMatrixArray);
+shader.setUniform('uAlpha', 0.25);
+shader.setUniform('uHasTexture', false); // booleans are converted to float
 ```
 
 ### Viewports
@@ -256,21 +255,21 @@ An `esper.Viewport` defines a rendering resolution within the canvas element. By
 
 ```javascript
 // Create the viewport.
-var viewport = new esper.Viewport({
+let viewport = new esper.Viewport({
 	width: window.innerWidth,
 	height: window.innerHeight
 });
 
 // Have the viewport always fit to the window.
-window.addEventListener( 'resize', function() {
-    viewport.resize( window.innerWidth, window.innerHeight );
+window.addEventListener('resize', () => {
+	viewport.resize(window.innerWidth, window.innerHeight);
 }
 
 // Push the viewport onto the stack at its current size.
 viewport.push();
 
 // Push viewport overrides onto the stack, this will give a 10px border.
-viewport.push( 10, 10, canvas.height - 20, canvas.width - 20 );
+viewport.push(10, 10, canvas.height - 20, canvas.width - 20);
 
 // Pop the override off the stack.
 viewport.pop();
@@ -280,22 +279,22 @@ Using the `resize` method will resize the underlying canvas element along with t
 
 ```javascript
 // Resize the viewport. This resizes the underlying canvas.
-viewport.resize( 460, 460 );
+viewport.resize(460, 460);
 ```
 
 Modifying the viewport is the recommended way to mimic multiple rendering contexts as it requires no duplication of WebGL constructs.
 
 ```javascript
-var viewport = new esper.Viewport({
-    width: 1000,
-    height: 500
+let viewport = new esper.Viewport({
+	width: 1000,
+	height: 500
 });
-viewport.push( 0, 0, 500, 500 );
+viewport.push(0, 0, 500, 500);
 
 // ... render to left half of canvas
 
 viewport.pop();
-viewport.push( 500, 0, 500, 500 );
+viewport.push(500, 0, 500, 500);
 
 // .. render to right half of canvas
 
@@ -308,42 +307,42 @@ An `esper.VertexBuffer` is used to store vertex attribute information. Common at
 
 ```javascript
 // Create separate vertex buffers for each attributes.
-var positionBuffer = new esper.VertexBuffer( positions, {
-    0: {
-        size: 3,
-        type: 'FLOAT'
-    }
+let positionBuffer = new esper.VertexBuffer(positions, {
+	0: {
+		size: 3,
+		type: 'FLOAT'
+	}
 });
-var normalBuffer = new esper.VertexBuffer( normals, {
-    1: {
-        size: 3,
-        type: 'FLOAT'
-    }
+let normalBuffer = new esper.VertexBuffer(normals, {
+	1: {
+		size: 3,
+		type: 'FLOAT'
+	}
 });
-var uvBuffer = new esper.VertexBuffer( uvs, {
-    2: {
-        size: 2,
-        type: 'FLOAT'
-    }
+let uvBuffer = new esper.VertexBuffer(uvs, {
+	2: {
+		size: 2,
+		type: 'FLOAT'
+	}
 });
 
 // Create interleaved buffer from an existing Array or Float32Array.
-var vertexBuffer = new esper.VertexBuffer( array, {
-    0: {
-        size: 3,
-        type: 'FLOAT',
-        byteOffset: 0
-    },
-    1: {
-        size: 3,
-        type: 'FLOAT',
-        byteOffset: 12
-    },
-    2: {
-        size: 2,
-        type: 'FLOAT',
-        byteOffset: 26
-    }
+let vertexBuffer = new esper.VertexBuffer(array, {
+	0: {
+		size: 3,
+		type: 'FLOAT',
+		byteOffset: 0
+	},
+	1: {
+		size: 3,
+		type: 'FLOAT',
+		byteOffset: 12
+	},
+	2: {
+		size: 2,
+		type: 'FLOAT',
+		byteOffset: 26
+	}
 );
 ```
 
@@ -355,19 +354,19 @@ vertexBuffer.bind();
 
 // Draw triangles.
 vertexBuffer.draw({
-    mode: TRIANGLES
+	mode: TRIANGLES
 });
 
 // Draw points from an index offset.
 vertexBuffer.draw({
-    mode: POINTS,
-    indexOffset: 100
+	mode: POINTS,
+	indexOffset: 100
 });
 
 // Draw n lines.
 vertexBuffer.draw({
-    mode: LINES,
-    count: n * 2
+	mode: LINES,
+	count: n * 2
 });
 
 // Unbind
@@ -380,17 +379,17 @@ Interleaving vertex attributes and manually defining the attribute pointers is t
 
 ```javascript
 // Create interleaved vertex buffers using vertex packages.
-var vertexPackage = new esper.VertexPackage({
-    0: positions,
-    1: normals,
-    2: uvs
+let vertexPackage = new esper.VertexPackage({
+	0: positions,
+	1: normals,
+	2: uvs
 });
 ```
 
 An instantiated `esper.VertexPackage` can then be passed to a `esper.VertexBuffer` constructor for simple instantiation.
 
 ```javascript
-var vertexBuffer = new esper.VertexBuffer( vertexPackage );
+let vertexBuffer = new esper.VertexBuffer(vertexPackage);
 ```
 
 ### IndexBuffers
@@ -399,7 +398,7 @@ Due to the nature of tessellation, single vertices may referenced by multiple ge
 
 ```javascript
 // Create index buffer from an array of indices.
-var indexBuffer = new esper.IndexBuffer( indices );
+let indexBuffer = new esper.IndexBuffer(indices);
 ```
 
 Rendering using an `esper.IndexBuffer` is easy as well, simply bind any referenced vertex buffers, then bind the index buffer and draw.
@@ -410,19 +409,19 @@ vertexBuffer.bind();
 
 // Draw triangles.
 indexBuffer.draw({
-    mode: TRIANGLES
+	mode: TRIANGLES
 });
 
 // Draw points from an offset.
 indexBuffer.draw({
-    mode: POINTS,
-    byteOffset: 100 * 4 * 2
+	mode: POINTS,
+	byteOffset: 100 * 4 * 2
 });
 
 // Draw n lines.
 indexBuffer.draw({
-    mode: LINES,
-    count: n * 2
+	mode: LINES,
+	count: n * 2
 });
 
 vertexBuffer.unbind();
@@ -434,29 +433,29 @@ While working at the level of `esper.VertexBuffer` and `esper.IndexBuffer` can g
 
 ```javascript
 // Create a renderable from vertex and index arrays.
-var renderable = new esper.Renderable({
-    vertices: {
-        0: positions,
-        1: normals,
-        2: uvs
-    },
-    indices: indices
+let renderable = new esper.Renderable({
+	vertices: {
+		0: positions,
+		1: normals,
+		2: uvs
+	},
+	indices: indices
 });
 
 // Create a renderable without an index buffer
-var renderable = new esper.Renderable({
-    vertices: {
-        0: positions,
-        1: normals,
-        2: uvs
-    }
+let renderable = new esper.Renderable({
+	vertices: {
+		0: positions,
+		1: normals,
+		2: uvs
+	}
 });
 
 // Draw the renderable.
 renderable.draw({
-    mode: 'LINES', // render lines instead of triangles
-    byteOffset: 100 * 4 * 2, // exclude the first 100 lines
-    count: 500 * 2 // only render 500 lines
+	mode: 'LINES', // render lines instead of triangles
+	byteOffset: 100 * 4 * 2, // exclude the first 100 lines
+	count: 500 * 2 // only render 500 lines
 });
 ```
 
@@ -466,24 +465,24 @@ Textures can be used to store and sample many different types of information. Ty
 
 ```javascript
 // Create texture from image URL.
-var texture = new esper.Texture2D({
-    src: new Uint8Array([
-        255, 0, 0, 255,
-        0, 255, 0, 255,
-        0, 0, 255, 255,
-        0, 255, 0, 255,
-    ]),
-    width: 2,
-    height: 2,
-    format: 'RGBA',
-    type: 'UNSIGNED_BYTE',
-    wrapS: 'REPEAT',
-    wrapT: 'REPEAT',
-    minFlter: 'LINEAR',
-    magFilter: 'LINEAR',
-    invertY: false,
-    premultiplyAlpha: false,
-    mipMap: false
+let texture = new esper.Texture2D({
+	src: new Uint8Array([
+		255, 0, 0, 255,
+		0, 255, 0, 255,
+		0, 0, 255, 255,
+		0, 255, 0, 255,
+	]),
+	width: 2,
+	height: 2,
+	format: 'RGBA',
+	type: 'UNSIGNED_BYTE',
+	wrapS: 'REPEAT',
+	wrapT: 'REPEAT',
+	minFlter: 'LINEAR',
+	magFilter: 'LINEAR',
+	invertY: false,
+	premultiplyAlpha: false,
+	mipMap: false
 });
 ```
 
@@ -491,15 +490,15 @@ Using textures is easy, simply push the texture onto the stack, providing the te
 
 ```javascript
 // Bind to texture unit 0
-texture.push( 0 );
+texture.push(0);
 
 // Bind texture sampler to the same unit.
-shader.setUniform( 'uTextureSampler', 0 );
+shader.setUniform('uTextureSampler', 0);
 
 // .. draw using texture
 
 // Unbind from texture unit 0.
-texture.pop( 0 );
+texture.pop(0);
 ```
 
 ### ColorTextures
@@ -508,20 +507,20 @@ Color textures are the most common type of texture and are used to store RGB or 
 
 ```javascript
 // Create texture from image URL.
-var texture = new esper.ColorTexture2D({
-    src: 'images/checkerboard.png'
-}, function( err, texture ) {
-    if ( err ) {
-        console.error( err );
-        return;
-    }
-    console.log( 'Texture2D image successfully created.' );
+let texture = new esper.ColorTexture2D({
+	src: 'images/checkerboard.png'
+}, (err, texture) => {
+	if (err) {
+		console.error(err);
+		return;
+	}
+	console.log('Texture2D image successfully created.');
 });
 
 // Create empty color texture buffer to be written to.
-var colorTexture = new esper.Texture2D({
-    height: 256,
-    width: 256
+let colorTexture = new esper.Texture2D({
+	height: 256,
+	width: 256
 });
 ```
 
@@ -533,9 +532,9 @@ Depth textures can be used to store depth values and are commonly used in conjun
 
 ```javascript
 // Create a depth texture. (Only works if depth texture extension is supported).
-var depthTexture = new esper.DepthTexture2D({
-    width: 1024,
-    height: 1024
+let depthTexture = new esper.DepthTexture2D({
+	width: 1024,
+	height: 1024
 });
 ```
 
@@ -545,27 +544,27 @@ Cubemap textures are a specific type of texture typically used for skyboxes and 
 
 ```javascript
 // Create cube map from image URLs.
-var cubeMapTexture = new esper.TextureCubeMap({
-    faces: {
-        '+x': 'images/sky/posx.png',
-        '-x': 'images/sky/negx.png',
-        '+y': 'images/sky/posy.png',
-        '-y': 'images/sky/negy.png',
-        '+z': 'images/sky/posz.png',
-        '-z': 'images/sky/negz.png'
-    }
-}, function( err, texture ) {
-    if ( err ) {
-        console.error( err );
-        return;
-    }
-    console.log( 'TextureCubeMap successfully created.' );
+let cubeMapTexture = new esper.TextureCubeMap({
+	faces: {
+		'+x': 'images/sky/posx.png',
+		'-x': 'images/sky/negx.png',
+		'+y': 'images/sky/posy.png',
+		'-y': 'images/sky/negy.png',
+		'+z': 'images/sky/posz.png',
+		'-z': 'images/sky/negz.png'
+	}
+}, (err, texture) => {
+	if (err) {
+		console.error(err);
+		return;
+	}
+	console.log('TextureCubeMap successfully created.');
 });
 
 // Create empty cube map to be written to.
-var cubeMapTexture = new TextureCubeMap({
-    width: 512,
-    height: 512
+let cubeMapTexture = new TextureCubeMap({
+	width: 512,
+	height: 512
 });
 ```
 
@@ -573,14 +572,14 @@ Using cubemap textures is easy, simply push the texture onto the stack, providin
 
 ```javascript
 // Bind to texture unit 0.
-cubeMapTexture.push( 0 );
+cubeMapTexture.push(0);
 // Bind texture sampler to the same unit.
-shader.setUniform( 'uTextureSampler', 0 );
+shader.setUniform('uTextureSampler', 0);
 
 // .. draw using cubemap texture
 
 // Unbind from texture unit 0.
-cubeMapTexture.pop( 0 );
+cubeMapTexture.pop(0);
 ```
 
 ### RenderTargets
@@ -589,21 +588,21 @@ When compositing more complex scenes, intermediate render states may need to be 
 
 ```javascript
 // Create a shadow map texture.
-var shadowTexture = new esper.ColorTexture2D({
-    width: 512,
-    height: 512
+let shadowTexture = new esper.ColorTexture2D({
+	width: 512,
+	height: 512
 });
 
 // Create a depth texture for the render target.
-var depthTexture = new esper.DepthTexture2D({
-    width: 512,
-    height: 512
+let depthTexture = new esper.DepthTexture2D({
+	width: 512,
+	height: 512
 });
 
 // Create a render target and attach the textures.
-var renderTarget = new esper.RenderTarget();
-renderTarget.setColorTarget( shadowTexture, 0 ); // Bind to color attachment 0
-renderTarget.setDepthTarget( depthTexture );
+let renderTarget = new esper.RenderTarget();
+renderTarget.setColorTarget(shadowTexture, 0); // Bind to color attachment 0
+renderTarget.setDepthTarget(depthTexture);
 ```
 
 Drawing to the texture unit is simple:
@@ -613,7 +612,7 @@ Drawing to the texture unit is simple:
 renderTarget.push();
 
 // Clear the bound color and depth textures.
-gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 // .. render to the render target
 
@@ -623,13 +622,13 @@ renderTarget.pop();
 // Now use the bound textures as you would normally.
 
 // Bind shadow map to texture unit 0.
-shadowTexture.push( 0 );
+shadowTexture.push(0);
 
 // Bind texture sampler to the same unit.
-shader.setUniform( 'uShadowTextureSampler', 0 );
+shader.setUniform('uShadowTextureSampler', 0);
 
 // ... render using the texture
 
 // Unbind from texture unit 0.
-shadowTexture.pop( 0 );
+shadowTexture.pop(0);
 ```

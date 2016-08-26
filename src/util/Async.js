@@ -3,8 +3,8 @@
     'use strict';
 
     function getIterator( arg ) {
-        var i = -1;
-        var len;
+        let i = -1;
+        let len;
         if ( Array.isArray( arg ) ) {
             len = arg.length;
             return function() {
@@ -12,7 +12,7 @@
                 return i < len ? i : null;
             };
         }
-        var keys = Object.keys( arg );
+        let keys = Object.keys( arg );
         len = keys.length;
         return function() {
             i++;
@@ -32,8 +32,8 @@
 
     function each( object, iterator, callback ) {
         callback = once( callback );
-        var key;
-        var completed = 0;
+        let key;
+        let completed = 0;
 
         function done( err ) {
             completed--;
@@ -46,7 +46,7 @@
             }
         }
 
-        var iter = getIterator(object);
+        let iter = getIterator(object);
         while ( ( key = iter() ) !== null ) {
             completed += 1;
             iterator( object[ key ], key, done );
@@ -69,7 +69,7 @@
          * @param {Function} callback - The callback function to be executed upon completion.
          */
         parallel: function (tasks, callback) {
-            var results = Array.isArray( tasks ) ? [] : {};
+            let results = Array.isArray( tasks ) ? [] : {};
             each( tasks, function( task, key, done ) {
                 task( function( err, res ) {
                     results[ key ] = res;

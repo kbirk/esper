@@ -58,7 +58,7 @@
      *
      * @returns {boolean} - Whether or not the value is a number.
      */
-    Util.isInteger = function( num ) {
+    Number.isInteger = function( num ) {
         return typeof num === 'number' && ( num % 1 ) === 0;
     };
 
