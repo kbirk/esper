@@ -13,19 +13,19 @@
          * @param {Function} options.error - The error callback function.
          * @param {Function} options.responseType - The responseType of the XHR.
          */
-        load: function ( options ) {
-            var request = new XMLHttpRequest();
-            request.open( 'GET', options.url, true );
+        load: function (options) {
+            let request = new XMLHttpRequest();
+            request.open('GET', options.url, true);
             request.responseType = options.responseType;
-            request.onreadystatechange = function() {
-                if ( request.readyState === 4 ) {
-                    if ( request.status === 200 ) {
-                        if ( options.success ) {
-                            options.success( request.response );
+            request.onreadystatechange = () => {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        if (options.success) {
+                            options.success(request.response);
                         }
                     } else {
-                        if ( options.error ) {
-                            options.error( 'GET ' + request.responseURL + ' ' + request.status + ' (' + request.statusText + ')' );
+                        if (options.error) {
+                            options.error('GET ' + request.responseURL + ' ' + request.status + ' (' + request.statusText + ')');
                         }
                     }
                 }

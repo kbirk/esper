@@ -12,17 +12,17 @@
          * @param {Function} options.success - The success callback function.
          * @param {Function} options.error - The error callback function.
          */
-        load: function ( options ) {
-            var image = new Image();
-            image.onload = function() {
-                if ( options.success ) {
-                    options.success( image );
+        load: function (options = {}) {
+            let image = new Image();
+            image.onload = () => {
+                if (options.success) {
+                    options.success(image);
                 }
             };
-            image.onerror = function( event ) {
-                if ( options.error ) {
-                    var err = 'Unable to load image from URL: `' + event.path[0].currentSrc + '`';
-                    options.error( err );
+            image.onerror = (event) => {
+                if (options.error) {
+                    let err = 'Unable to load image from URL: `' + event.path[0].currentSrc + '`';
+                    options.error(err);
                 }
             };
             image.src = options.url;

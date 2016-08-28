@@ -2,67 +2,66 @@
 
     'use strict';
 
-    var assert = require('assert');
-    var WebGLContext = require('../../src/core/WebGLContext');
-    var VertexPackage = require('../../src/core/VertexPackage');
-    var VertexBuffer = require('../../src/core/VertexBuffer');
-    var IndexBuffer = require('../../src/core/IndexBuffer');
-    var Renderable = require('../../src/core/Renderable');
+    let assert = require('assert');
+    let WebGLContext = require('../../src/core/WebGLContext');
+    let VertexPackage = require('../../src/core/VertexPackage');
+    let VertexBuffer = require('../../src/core/VertexBuffer');
+    let IndexBuffer = require('../../src/core/IndexBuffer');
+    let Renderable = require('../../src/core/Renderable');
     require('webgl-mock');
-    var canvas;
-    var gl;
+    let canvas;
+    let gl;
 
-    var bytesPerComponent = 4;
-    var positions;
-    var normals;
-    var uvs;
-    var vertexBuffer;
-    var indexBuffer;
-    var indices;
+    let bytesPerComponent = 4;
+    let positions;
+    let normals;
+    let uvs;
+    let vertexBuffer;
+    let indexBuffer;
+    let indices;
 
     describe('Renderable', function() {
 
-        before( function() {
+        before(function() {
             canvas = new HTMLCanvasElement();
-            gl = WebGLContext.get( canvas );
+            gl = WebGLContext.get(canvas);
         });
 
-        after( function() {
-            WebGLContext.remove( canvas );
+        after(function() {
+            WebGLContext.remove(canvas);
             canvas = null;
             gl = null;
         });
 
-        beforeEach( function() {
-            var maxTriangles = 256;
-            var numTriangles = Math.floor( Math.random() * maxTriangles ) + 1;
-            var numVertices = numTriangles * 3;
+        beforeEach(function() {
+            let maxTriangles = 256;
+            let numTriangles = Math.floor(Math.random() * maxTriangles) + 1;
+            let numVertices = numTriangles * 3;
             positions = [];
             normals = [];
             uvs = [];
             indices = [];
-            for ( var i=0; i<numVertices; i++ ) {
+            for (let i=0; i<numVertices; i++) {
                 // separate
                 // positions
-                positions.push([ 0, 0, 0 ]);
+                positions.push([0, 0, 0]);
                 // normals
-                normals.push([ 0, 0, 0 ]);
+                normals.push([0, 0, 0]);
                 // uvs
-                uvs.push([ 0, 0 ]);
+                uvs.push([0, 0]);
                 // indices
-                indices.push( i );
+                indices.push(i);
             }
             vertexBuffer = new VertexBuffer(
                 new VertexPackage({
                     0: positions,
                     1: normals,
                     2: uvs
-                })
-            );
-            indexBuffer = new IndexBuffer( indices );
+                }));
+            indexBuffer = new IndexBuffer(indices);
         });
 
-        afterEach( function() {
+        afterEach(function() {
             positions = null;
             normals = null;
             uvs = null;
@@ -73,74 +72,50 @@
 
         describe('#constructor()', function() {
             it('should accept no arguments', function() {
-                try {
-                    new Renderable();
-                } catch( err ) {
-                    assert( false );
-                }
+                new Renderable();
             });
             it('should accept a `vertices` map argument', function() {
-                try {
-                    new Renderable({
-                        vertices: {
-                            0: positions,
-                            1: normals,
-                            2: uvs
-                        }
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
+                new Renderable({
+                    vertices: {
+                        0: positions,
+                        1: normals,
+                        2: uvs
+                    }
+                });
             });
             it('should accept a complimentary `indices` array argument', function() {
-                try {
-                    new Renderable({
-                        vertices: {
-                            0: positions,
-                            1: normals,
-                            2: uvs
-                        },
-                        indices: indices
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
+                new Renderable({
+                    vertices: {
+                        0: positions,
+                        1: normals,
+                        2: uvs
+                    },
+                    indices: indices
+                });
             });
             it('should accept an existing VertexBuffer argument', function() {
-                try {
-                    new Renderable({
-                        vertexBuffer: vertexBuffer
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
+                new Renderable({
+                    vertexBuffer: vertexBuffer
+                });
             });
             it('should accept an multiple VertexBuffer arguments', function() {
-                try {
-                    new Renderable({
-                        vertexBuffers: [ vertexBuffer ]
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
+                new Renderable({
+                    vertexBuffers: [vertexBuffer]
+                });
             });
             it('should accept a complimentary IndexBuffer argument', function() {
-                try {
-                    new Renderable({
-                        vertexBuffer: vertexBuffer,
-                        indexBuffer: indexBuffer
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
+                new Renderable({
+                    vertexBuffer: vertexBuffer,
+                    indexBuffer: indexBuffer
+                });
             });
             it('should throw an exception if contains multiple attribute pointers for the same index', function() {
-                var result = false;
+                let result = false;
                 try {
                     new Renderable({
                         vertexBuffers: [
                             vertexBuffer,
-                            new VertexBuffer( null, {
+                            new VertexBuffer(null, {
                                 0: {
                                     type: 'FLOAT',
                                     size: 3
@@ -149,43 +124,30 @@
                         ],
                         indexBuffer: indexBuffer
                     });
-                } catch( err ) {
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
-            });
-            it('should accept `mode`, `count`, `indexOffset`, and `byteOffset` options for drawing', function() {
-                var renderable = new Renderable({
-                    vertexBuffer: vertexBuffer,
-                    mode: 'POINTS',
-                    count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent,
-                    indexOffset: ( positions.length / 3 ) / 2
-                });
-                assert( renderable.options.mode === 'POINTS' );
-                assert( renderable.options.count === ( positions.length / 3 ) / 2 );
-                assert( renderable.options.indexOffset === ( positions.length / 3 ) / 2 );
-                assert( renderable.options.byteOffset === ( positions.length / 3 ) / 2 * bytesPerComponent );
+                assert(result);
             });
         });
 
         describe('#draw()', function() {
             it('should draw the buffer', function() {
-                var renderable = new Renderable({
+                let renderable = new Renderable({
                     vertexBuffer: vertexBuffer,
                     indexBuffer: indexBuffer
                 });
                 renderable.draw();
             });
             it('should accept `mode`, `count`, `indexOffset`, and `byteOffset` overrides', function() {
-                var renderable = new Renderable({
+                let renderable = new Renderable({
                     vertexBuffer: vertexBuffer
                 });
                 renderable.draw({
                     mode: 'POINTS',
-                    count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent,
-                    indexOffset: ( positions.length / 3 ) / 2
+                    count: (positions.length / 3) / 2,
+                    byteOffset: (positions.length / 3) / 2 * bytesPerComponent,
+                    indexOffset: (positions.length / 3) / 2
                 });
             });
         });
