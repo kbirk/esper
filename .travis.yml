@@ -4,7 +4,5 @@ notifications:
 node_js:
   - "node"
   - "6"
-  - "5"
-  - "4"
 script: npm run test
 after_success: npm run coveralls
