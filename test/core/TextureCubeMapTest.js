@@ -176,6 +176,17 @@
                         opts.error(err);
                     }, 100);
                 };
+                // coverage, for no supplied callback branch
+                new TextureCubeMap({
+                    faces: {
+                        '+x': 'path/to/x-pos',
+                        '+y': 'path/to/y-pos',
+                        '+z': 'path/to/z-pos',
+                        '-x': 'path/to/x-neg',
+                        '-y': 'path/to/y-neg',
+                        '-z': 'path/to/z-neg'
+                    }
+                });
                 new TextureCubeMap({
                     faces: {
                         '+x': 'path/to/x-pos',

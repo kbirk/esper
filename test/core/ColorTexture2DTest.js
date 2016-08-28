@@ -67,6 +67,10 @@
                 });
             });
             it('should accept a string URL `src` argument', function(done) {
+                // coverage, for no supplied callback branch
+                new ColorTexture2D({
+                    src: 'path/to/image',
+                });
                 new ColorTexture2D({
                     src: 'path/to/image',
                 }, function() {
@@ -81,6 +85,10 @@
                         opts.error(err);
                     }, 100);
                 };
+                // coverage, for no supplied callback branch
+                new ColorTexture2D({
+                    src: 'path/to/image',
+                });
                 new ColorTexture2D({
                     src: 'path/to/image',
                 }, function(e) {

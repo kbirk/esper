@@ -281,6 +281,8 @@
             it('should accept an Array argument', function() {
                 let vb = new VertexBuffer(null, pointers);
                 vb.bufferData(positions);
+                // coverage, existing WebGLBuffer branch
+                vb.bufferData(positions);
             });
             it('should accept an ArrayBufferView argument', function() {
                 let vb = new VertexBuffer(null, pointers);
@@ -324,7 +326,6 @@
             });
             it('should accept an ArrayBuffer argument', function() {
                 let vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
-                vb.bind(); // code coverage to ensure next call re-binds after
                 vb.bufferSubData(new ArrayBuffer(positions.length));
             });
             it('should accept a second numberic byte offset argument', function() {

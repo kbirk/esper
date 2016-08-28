@@ -251,14 +251,10 @@
                 ib.bufferSubData(new Uint16Array(indices));
             });
             it('should accept an ArrayBuffer argument', function() {
-                let ib0 = new IndexBuffer(indices.length * shortBytes, {
+                let ib = new IndexBuffer(indices.length * shortBytes, {
                     type: 'UNSIGNED_SHORT'
                 });
-                let ib1 = new IndexBuffer(indices.length * shortBytes, {
-                    type: 'UNSIGNED_SHORT'
-                });
-                ib0.draw(); // code coverage to ensure next call re-binds after
-                ib1.bufferSubData(new ArrayBuffer(indices.length));
+                ib.bufferSubData(new ArrayBuffer(indices.length));
             });
             it('should accept a second numberic byte offset argument', function() {
                 let ib = new IndexBuffer(indices.length * shortBytes * 2, {
