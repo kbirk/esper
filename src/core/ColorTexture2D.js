@@ -5,6 +5,7 @@
     let Texture2D = require('./Texture2D');
     let ImageLoader = require('../util/ImageLoader');
     let Util = require('../util/Util');
+
     let MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
@@ -75,7 +76,6 @@
 
         /**
          * Instantiates a ColorTexture2D object.
-         * @memberof ColorTexture2D
          *
          * @param {Object} spec - The specification arguments.
          * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.image - The HTMLImageElement to buffer.
@@ -96,59 +96,59 @@
          * @param {String} spec.type - The texture pixel component type.
          * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
          */
-        constructor( spec = {}, callback = null ) {
+        constructor(spec = {}, callback = null) {
             // get specific params
             spec.wrapS = spec.wrapS || spec.wrap;
             spec.wrapT = spec.wrapT || spec.wrap;
             spec.minFilter = spec.minFilter || spec.filter;
             spec.magFilter = spec.magFilter || spec.filter;
             // set texture params
-            spec.wrapS = WRAP_MODES[ spec.wrapS ] ? spec.wrapS : DEFAULT_WRAP;
-            spec.wrapT = WRAP_MODES[ spec.wrapT ] ? spec.wrapT : DEFAULT_WRAP;
-            spec.minFilter = MIN_FILTERS[ spec.minFilter ] ? spec.minFilter : DEFAULT_FILTER;
-            spec.magFilter = MAG_FILTERS[ spec.magFilter ] ? spec.magFilter : DEFAULT_FILTER;
+            spec.wrapS = WRAP_MODES[spec.wrapS] ? spec.wrapS : DEFAULT_WRAP;
+            spec.wrapT = WRAP_MODES[spec.wrapT] ? spec.wrapT : DEFAULT_WRAP;
+            spec.minFilter = MIN_FILTERS[spec.minFilter] ? spec.minFilter : DEFAULT_FILTER;
+            spec.magFilter = MAG_FILTERS[spec.magFilter] ? spec.magFilter : DEFAULT_FILTER;
             // set other properties
             spec.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
             spec.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
             spec.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
             // set format
-            spec.format = FORMATS[ spec.format ] ? spec.format : DEFAULT_FORMAT;
+            spec.format = FORMATS[spec.format] ? spec.format : DEFAULT_FORMAT;
             // buffer the texture based on argument type
-            if ( typeof spec.src === 'string' ) {
+            if (typeof spec.src === 'string') {
                 // request source from url
                 spec.type = 'UNSIGNED_BYTE';
                 // call base constructor
-                super( spec );
+                super(spec);
                 // TODO: put extension handling for arraybuffer / image / video differentiation
                 ImageLoader.load({
                     url: spec.src,
                     success: image => {
                         // set to unsigned byte type
-                        image = Util.resizeCanvas( spec, image );
+                        image = Util.resizeCanvas(spec, image);
                         // now buffer
-                        this.bufferData( image, spec.width, spec.height );
-                        this.setParameters( this );
+                        this.bufferData(image, spec.width, spec.height);
+                        this.setParameters(this);
                         // execute callback
-                        if ( callback ) {
-                            callback( null, this );
+                        if (callback) {
+                            callback(null, this);
                         }
                     },
                     error: err => {
-                        if ( callback ) {
-                            callback( err, null );
+                        if (callback) {
+                            callback(err, null);
                         }
                     }
                 });
-            } else if ( Util.isCanvasType( spec.src ) ) {
+            } else if (Util.isCanvasType(spec.src)) {
                 // is image / canvas / video type
                 // set to unsigned byte type
                 spec.type = 'UNSIGNED_BYTE';
-                spec.src = Util.resizeCanvas( spec, spec.src );
+                spec.src = Util.resizeCanvas(spec, spec.src);
                 // call base constructor
-                super( spec );
+                super(spec);
             } else {
                 // array, arraybuffer, or null
-                if ( spec.src === undefined ) {
+                if (spec.src === undefined || spec.src === null) {
                     // if no data is provided, assume this texture will be rendered
                     // to. In this case disable mipmapping, there is no need and it
                     // will only introduce very peculiar and difficult to discern
@@ -157,9 +157,9 @@
                     spec.mipMap = false;
                 }
                 // buffer from arg
-                spec.type = TYPES[ spec.type ] ? spec.type : DEFAULT_TYPE;
+                spec.type = TYPES[spec.type] ? spec.type : DEFAULT_TYPE;
                 // call base constructor
-                super( spec );
+                super(spec);
             }
         }
     }

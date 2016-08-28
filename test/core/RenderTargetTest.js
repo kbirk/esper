@@ -12,13 +12,13 @@
 
     describe('RenderTarget', function() {
 
-        before( function() {
+        before(function() {
             canvas = new HTMLCanvasElement();
-            gl = WebGLContext.get( canvas );
+            gl = WebGLContext.get(canvas);
         });
 
-        after( function() {
-            WebGLContext.remove( canvas );
+        after(function() {
+            WebGLContext.remove(canvas);
             canvas = null;
             gl = null;
         });
@@ -36,7 +36,7 @@
                     width: 256,
                     height: 256
                 });
-                target.setColorTarget( texture, 0 );
+                target.setColorTarget(texture, 0);
             });
             it('should default attachment `index` to 0 if not provided', function() {
                 let target = new RenderTarget();
@@ -44,8 +44,8 @@
                     width: 256,
                     height: 256
                 });
-                target.setColorTarget( texture );
-                target.setColorTarget( texture, 'TEXTURE_CUBE_MAP' );
+                target.setColorTarget(texture);
+                target.setColorTarget(texture, 'TEXTURE_CUBE_MAP');
             });
             it('should accept an optional `target` parameter', function() {
                 let target = new RenderTarget();
@@ -53,17 +53,17 @@
                     width: 256,
                     height: 256
                 });
-                target.setColorTarget( texture, 0, 'TEXTURE_CUBE_MAP' );
+                target.setColorTarget(texture, 0, 'TEXTURE_CUBE_MAP');
             });
             it('should throw an exception if no `texture` is provided', function() {
                 let target = new RenderTarget();
                 let result = false;
                 try {
                     target.setColorTarget();
-                } catch( err ) {
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
             it('should throw an exception if `index` is invalid', function() {
                 let target = new RenderTarget();
@@ -73,11 +73,11 @@
                 });
                 let result = false;
                 try {
-                    target.setColorTarget( texture, 'invalid' );
-                } catch( err ) {
+                    target.setColorTarget(texture, 'invalid');
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
             it('should throw an exception if `target` is invalid', function() {
                 let target = new RenderTarget();
@@ -87,11 +87,11 @@
                 });
                 let result = false;
                 try {
-                    target.setColorTarget( texture, 0, 'invalid' );
-                } catch( err ) {
+                    target.setColorTarget(texture, 0, 'invalid');
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
         });
 
@@ -103,17 +103,17 @@
                     height: 256,
                     format: 'DEPTH_COMPONENT'
                 });
-                target.setDepthTarget( texture );
+                target.setDepthTarget(texture);
             });
             it('should throw an exception if no `texture` is provided', function() {
                 let target = new RenderTarget();
                 let result = false;
                 try {
                     target.setDepthTarget();
-                } catch( err ) {
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
             it('should throw an exception if `texture` is not of format `DEPTH_COMPONENT` or `DEPTH_STENCIL`', function() {
                 let target = new RenderTarget();
@@ -123,11 +123,11 @@
                 });
                 let result = false;
                 try {
-                    target.setDepthTarget( texture );
-                } catch( err ) {
+                    target.setDepthTarget(texture);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
         });
 
@@ -156,70 +156,70 @@
                     width: 256,
                     height: 256
                 });
-                target.setColorTarget( texture );
-                target.resize( 256, 256 );
+                target.setColorTarget(texture);
+                target.resize(256, 256);
             });
             it('should throw an exception if the `width` is missing or invalid', function() {
                 let target = new RenderTarget();
                 let result = false;
                 try {
-                    target.resize( undefined, 200 );
-                } catch( err ) {
+                    target.resize(undefined, 200);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
                 result = false;
                 try {
-                    target.resize( null, 200 );
-                } catch( err ) {
+                    target.resize(null, 200);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
                 result = false;
                 try {
-                    target.resize( -14, 200 );
-                } catch( err ) {
+                    target.resize(-14, 200);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
                 result = false;
                 try {
-                    target.resize( 'invalid', 200 );
-                } catch( err ) {
+                    target.resize('invalid', 200);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
             it('should throw an exception if the `height` is missing or invalid', function() {
                 let target = new RenderTarget();
                 let result = false;
                 try {
-                    target.resize( 200, undefined );
-                } catch( err ) {
+                    target.resize(200, undefined);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
                 result = false;
                 try {
-                    target.resize( 200, null );
-                } catch( err ) {
+                    target.resize(200, null);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
                 result = false;
                 try {
-                    target.resize( 200, -14 );
-                } catch( err ) {
+                    target.resize(200, -14);
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
                 result = false;
                 try {
-                    target.resize( 200, 'invalid' );
-                } catch( err ) {
+                    target.resize(200, 'invalid');
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
+                assert(result);
             });
         });
 

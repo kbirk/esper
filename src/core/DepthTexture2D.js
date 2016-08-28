@@ -3,6 +3,7 @@
     'use strict';
 
     let Texture2D = require('./Texture2D');
+
     let MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
@@ -55,7 +56,6 @@
 
         /**
          * Instantiates a DepthTexture2D object.
-         * @memberof DepthTexture2D
          *
          * @param {Object} spec - The specification arguments.
          * @param {Uint8Array|Uint16Array|Uint32Array} spec.src - The data to buffer.
@@ -70,30 +70,30 @@
          * @param {String} spec.format - The texture pixel format.
          * @param {String} spec.type - The texture pixel component type.
          */
-        constructor( spec = {} ) {
+        constructor(spec = {}) {
             // get specific params
             spec.wrapS = spec.wrapS || spec.wrap;
             spec.wrapT = spec.wrapT || spec.wrap;
             spec.minFilter = spec.minFilter || spec.filter;
             spec.magFilter = spec.magFilter || spec.filter;
             // set texture params
-            spec.wrapS = WRAP_MODES[ spec.wrapS ] ? spec.wrapS : DEFAULT_WRAP;
-            spec.wrapT = WRAP_MODES[ spec.wrapT ] ? spec.wrapT : DEFAULT_WRAP;
-            spec.minFilter = MIN_FILTERS[ spec.minFilter ] ? spec.minFilter : DEFAULT_FILTER;
-            spec.magFilter = MAG_FILTERS[ spec.magFilter ] ? spec.magFilter : DEFAULT_FILTER;
+            spec.wrapS = WRAP_MODES[spec.wrapS] ? spec.wrapS : DEFAULT_WRAP;
+            spec.wrapT = WRAP_MODES[spec.wrapT] ? spec.wrapT : DEFAULT_WRAP;
+            spec.minFilter = MIN_FILTERS[spec.minFilter] ? spec.minFilter : DEFAULT_FILTER;
+            spec.magFilter = MAG_FILTERS[spec.magFilter] ? spec.magFilter : DEFAULT_FILTER;
             // set mip-mapping and format
             spec.mipMap = false; // disable mip-mapping
             spec.invertY = false; // no need to invert-y
             spec.preMultiplyAlpha = false; // no alpha to pre-multiply
-            spec.format = FORMATS[ spec.format ] ? spec.format : DEFAULT_FORMAT;
+            spec.format = FORMATS[spec.format] ? spec.format : DEFAULT_FORMAT;
             // check if stencil-depth, or just depth
-            if ( spec.format === 'DEPTH_STENCIL' ) {
+            if (spec.format === 'DEPTH_STENCIL') {
                 spec.type = 'UNSIGNED_INT_24_8_WEBGL';
             } else {
-                spec.type = DEPTH_TYPES[ spec.type ] ? spec.type : DEFAULT_TYPE;
+                spec.type = DEPTH_TYPES[spec.type] ? spec.type : DEFAULT_TYPE;
             }
             // call base constructor
-            super( spec );
+            super(spec);
         }
     }
 

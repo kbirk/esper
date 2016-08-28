@@ -14,19 +14,19 @@
     let width;
     let height;
 
-    let potImage = new HTMLImageElement( 256, 256 );
-    let npotImage = new HTMLImageElement( 300, 300 );
+    let potImage = new HTMLImageElement(256, 256);
+    let npotImage = new HTMLImageElement(300, 300);
 
     describe('ColorTexture2D', function() {
 
-        before( function() {
+        before(function() {
             canvas = new HTMLCanvasElement();
-            gl = WebGLContext.get( canvas );
+            gl = WebGLContext.get(canvas);
             _load = ImageLoader.load;
-            ImageLoader.load = function( opts ) {
-                setTimeout( function() {
-                    opts.success( potImage );
-                }, 100 );
+            ImageLoader.load = function(opts) {
+                setTimeout(function() {
+                    opts.success(potImage);
+                }, 100);
             };
             global.document = {
                 createElement: function() {
@@ -35,25 +35,25 @@
             };
         });
 
-        after( function() {
-            WebGLContext.remove( canvas );
+        after(function() {
+            WebGLContext.remove(canvas);
             canvas = null;
             gl = null;
             ImageLoader.load = _load;
             global.document = undefined;
         });
 
-        beforeEach( function() {
-            let dim = Math.pow(2, Math.floor( Math.random() * 4 ) + 1 );
-            data = new Uint8Array( dim * dim * 4 );
-            for ( let i = 0; i<dim * dim * 4; i++ ) {
+        beforeEach(function() {
+            let dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
+            data = new Uint8Array(dim * dim * 4);
+            for (let i = 0; i<dim * dim * 4; i++) {
                 data[i] = 255;
             }
             width = dim;
             height = dim;
         });
 
-        afterEach( function() {
+        afterEach(function() {
             data = null;
             width = null;
             height = null;
@@ -66,26 +66,26 @@
                     height: height
                 });
             });
-            it('should accept a string URL `src` argument', function( done ) {
+            it('should accept a string URL `src` argument', function(done) {
                 new ColorTexture2D({
                     src: 'path/to/image',
                 }, function() {
                     done();
                 });
             });
-            it('should execute callback function passing an error as first argument if a URL `src` results in an error', function( done ) {
+            it('should execute callback function passing an error as first argument if a URL `src` results in an error', function(done) {
                 let load = ImageLoader.load;
-                let err = new Error( 'error' );
-                ImageLoader.load = function( opts ) {
-                    setTimeout( function() {
-                        opts.error( err );
-                    }, 100 );
+                let err = new Error('error');
+                ImageLoader.load = function(opts) {
+                    setTimeout(function() {
+                        opts.error(err);
+                    }, 100);
                 };
                 new ColorTexture2D({
                     src: 'path/to/image',
-                }, function( e ) {
+                }, function(e) {
                     ImageLoader.load = load;
-                    assert( e === err );
+                    assert(e === err);
                     done();
                 });
             });
@@ -123,18 +123,18 @@
                     wrapS: 'CLAMP_TO_EDGE',
                     wrapT: 'CLAMP_TO_EDGE'
                 });
-                assert( tex.minFilter === 'NEAREST' );
-                assert( tex.magFilter === 'NEAREST' );
-                assert( tex.wrapS === 'CLAMP_TO_EDGE' );
-                assert( tex.wrapT === 'CLAMP_TO_EDGE' );
+                assert(tex.minFilter === 'NEAREST');
+                assert(tex.magFilter === 'NEAREST');
+                assert(tex.wrapS === 'CLAMP_TO_EDGE');
+                assert(tex.wrapT === 'CLAMP_TO_EDGE');
             });
             it('should default `wrapS` and `wrapT` parameters to `REPEAT`', function() {
                 let tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
-                assert( tex.wrapS === 'REPEAT' );
-                assert( tex.wrapT === 'REPEAT' );
+                assert(tex.wrapS === 'REPEAT');
+                assert(tex.wrapT === 'REPEAT');
             });
             it('should default `minFilter` and `magFilter` parameters to `LINEAR` with mip-mapping disabled', function() {
                 let tex = new ColorTexture2D({
@@ -142,15 +142,15 @@
                     height: height,
                     mipMap: false
                 });
-                assert( tex.minFilter === 'LINEAR' );
-                assert( tex.magFilter === 'LINEAR' );
+                assert(tex.minFilter === 'LINEAR');
+                assert(tex.magFilter === 'LINEAR');
             });
             it('should default `minFilter` to `LINEAR_MIPMAP_LINEAR` and `magFilter` to `LINEAR` with mip-mapping enabled', function() {
                 let tex = new ColorTexture2D({
                     src: potImage
                 });
-                assert( tex.minFilter === 'LINEAR_MIPMAP_LINEAR' );
-                assert( tex.magFilter === 'LINEAR' );
+                assert(tex.minFilter === 'LINEAR_MIPMAP_LINEAR');
+                assert(tex.magFilter === 'LINEAR');
             });
             it('should accept `mipMap`, `invertY`, and `preMultiplyAlpha` boolean parameters`', function() {
                 let tex = new ColorTexture2D({
@@ -160,25 +160,25 @@
                     invertY: false,
                     preMultiplyAlpha: false
                 });
-                assert( tex.mipMap === false );
-                assert( tex.invertY === false );
-                assert( tex.preMultiplyAlpha === false );
+                assert(tex.mipMap === false);
+                assert(tex.invertY === false);
+                assert(tex.preMultiplyAlpha === false);
             });
-            it('should default `mipMap` to `true` for textures instantiated with `data`, `image`, or `url` argument', function( done ) {
+            it('should default `mipMap` to `true` for textures instantiated with `data`, `image`, or `url` argument', function(done) {
                 let tex0 = new ColorTexture2D({
                     src: data,
                     width: width,
                     height: height
                 });
-                assert( tex0.mipMap );
+                assert(tex0.mipMap);
                 let tex1 = new ColorTexture2D({
                     src: potImage
                 });
-                assert( tex1.mipMap );
+                assert(tex1.mipMap);
                 let tex2 = new ColorTexture2D({
                     src: 'path/to/image'
                 }, function() {
-                    assert( tex2.mipMap );
+                    assert(tex2.mipMap);
                     done();
                 });
             });
@@ -187,21 +187,21 @@
                     width: width,
                     height: height
                 });
-                assert( !tex.mipMap );
+                assert(!tex.mipMap);
             });
             it('should default `invertY` to `true`', function() {
                 let tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
-                assert( tex.invertY );
+                assert(tex.invertY);
             });
             it('should default `preMultiplyAlpha` to `true`', function() {
                 let tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
-                assert( tex.preMultiplyAlpha );
+                assert(tex.preMultiplyAlpha);
             });
             it('should accept `format`, and `type` options`', function() {
                 new ColorTexture2D({
@@ -218,7 +218,7 @@
                     width: width,
                     height: height
                 });
-                assert( tex.format === 'RGBA' );
+                assert(tex.format === 'RGBA');
             });
         });
 

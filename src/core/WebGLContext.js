@@ -40,28 +40,27 @@
      * Returns an rfc4122 version 4 compliant UUID.
      * @private
      *
-     * @returns {String} The UUID string.
+     * @return {String} - The UUID string.
      */
     function getUUID() {
-        let replace = function( c ) {
+        let replace = function(c) {
             let r = Math.random() * 16 | 0;
-            let v = ( c === 'x' ) ? r : ( r & 0x3 | 0x8 );
-            return v.toString( 16 );
+            let v = (c === 'x') ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
         };
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, replace );
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, replace);
     }
 
     /**
-     * Returns the id of the HTMLCanvasElement element. If there is no id, it
-     * generates one and appends it.
+     * Returns the id of the HTMLCanvasElement element. If there is no id, it generates one and appends it.
      * @private
      *
      * @param {HTMLCanvasElement} canvas - The Canvas object.
      *
-     * @returns {String} The Canvas id string.
+     * @return {String} The Canvas id string.
      */
-    function getId( canvas ) {
-        if ( !canvas.id ) {
+    function getId(canvas) {
+        if (!canvas.id) {
             canvas.id = getUUID();
         }
         return canvas.id;
@@ -73,36 +72,36 @@
      *
      * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas id or selector string.
      *
-     * @returns {HTMLCanvasElement} The Canvas element object.
+     * @return {HTMLCanvasElement} The Canvas element object.
      */
-    function getCanvas( arg ) {
-        if ( arg instanceof HTMLCanvasElement ) {
+    function getCanvas(arg) {
+        if (arg instanceof HTMLCanvasElement) {
             return arg;
-        } else if ( typeof arg === 'string' ) {
-            return document.getElementById( arg ) ||
-                document.querySelector( arg );
+        } else if (typeof arg === 'string') {
+            return document.getElementById(arg) ||
+                document.querySelector(arg);
         }
         return null;
     }
 
     /**
-     * Attempts to retreive a wrapped WebGLRenderingContext.
+     * Attempts to retrieve a wrapped WebGLRenderingContext.
      * @private
      *
      * @param {HTMLCanvasElement} The Canvas element object to create the context under.
      *
-     * @returns {Object} The context wrapper.
+     * @return {Object} The context wrapper.
      */
-    function getContextWrapper( arg ) {
-        if ( arg === undefined ) {
-            if ( _boundContext ) {
+    function getContextWrapper(arg) {
+        if (arg === undefined) {
+            if (_boundContext) {
                 // return last bound context
                 return _boundContext;
             }
         } else {
-            let canvas = getCanvas( arg );
-            if ( canvas ) {
-                return _contexts[ getId( canvas ) ];
+            let canvas = getCanvas(arg);
+            if (canvas) {
+                return _contexts[getId(canvas)];
             }
         }
         // no bound context or argument
@@ -115,34 +114,34 @@
      *
      * @param {Object} contextWrapper - The context wrapper.
      */
-    function loadExtensions( contextWrapper ) {
+    function loadExtensions(contextWrapper) {
         let gl = contextWrapper.gl;
-        EXTENSIONS.forEach( id => {
-            contextWrapper.extensions[ id ] = gl.getExtension( id );
+        EXTENSIONS.forEach(id => {
+            contextWrapper.extensions[id] = gl.getExtension(id);
         });
     }
 
     /**
-     * Attempts to create a WebGLRenderingContext wrapped inside an object which will also store the extension query results.
+     * Attempts to create a WebGLRenderingContext and load all extensions.
      * @private
      *
-     * @param {HTMLCanvasElement} The Canvas element object to create the context under.
+     * @param {HTMLCanvasElement} - The Canvas element object to create the context under.
      * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
      *
-     * @returns {Object} The context wrapper.
+     * @return {Object} The context wrapper.
      */
-    function createContextWrapper( canvas, options ) {
-        let gl = canvas.getContext( 'webgl', options ) || canvas.getContext( 'experimental-webgl', options );
+    function createContextWrapper(canvas, options) {
+        let gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
         // wrap context
         let contextWrapper = {
-            id: getId( canvas ),
+            id: getId(canvas),
             gl: gl,
             extensions: {}
         };
         // load WebGL extensions
-        loadExtensions( contextWrapper );
+        loadExtensions(contextWrapper);
         // add context wrapper to map
-        _contexts[ getId( canvas ) ] = contextWrapper;
+        _contexts[getId(canvas)] = contextWrapper;
         // bind the context
         _boundContext = contextWrapper;
         return contextWrapper;
@@ -155,15 +154,15 @@
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string.
          *
-         * @returns {WebGLContext} - This namespace, used for chaining.
+         * @return {WebGLContext} The namespace, used for chaining.
          */
-        bind: function( arg ) {
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+        bind: function(arg) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                 _boundContext = wrapper;
                 return this;
             }
-            throw 'No context exists for provided argument `' + arg + '`';
+            throw `No context exists for provided argument '${arg}'`;
         },
 
         /**
@@ -173,43 +172,43 @@
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {Object} options - Parameters to the webgl context, only used during instantiation. Optional.
          *
-         * @returns {WebGLRenderingContext} - The WebGLRenderingContext object.
+         * @return {WebGLRenderingContext} The WebGLRenderingContext object.
          */
-        get: function( arg, options ) {
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+        get: function(arg, options) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                // return the native WebGLRenderingContext
                return wrapper.gl;
             }
             // get canvas element
-            let canvas = getCanvas( arg );
+            let canvas = getCanvas(arg);
             // try to find or create context
-            if ( !canvas ) {
-                throw 'Context could not be associated with argument of type `' + ( typeof arg ) + '`';
+            if (!canvas) {
+                throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
             }
             // create context
-            return createContextWrapper( canvas, options ).gl;
+            return createContextWrapper(canvas, options).gl;
         },
 
         /**
-         * Removes an existing WebGL context object for the provided or currently bound object.
+         * Removes an existing WebGL context object for the provided or currently bound context object.
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
          *
-         * @returns {WebGLRenderingContext} - The WebGLRenderingContext object.
+         * @return {WebGLRenderingContext} The WebGLRenderingContext object.
          */
-        remove: function( arg ) {
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+        remove: function(arg) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                 // delete the context
-                delete _contexts[ wrapper.id ];
+                delete _contexts[wrapper.id];
                 // remove if currently bound
-                if ( wrapper === _boundContext ) {
+                if (wrapper === _boundContext) {
                     _boundContext = null;
                 }
             } else {
-                throw 'Context could not be found or deleted for argument of type `' + ( typeof arg ) + '`';
+                throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
             }
         },
 
@@ -218,21 +217,21 @@
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
-         * @returns {Array} - All supported extensions.
+         * @return {Array} All supported extensions.
          */
-        supportedExtensions: function( arg ) {
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+        supportedExtensions: function(arg) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                 let extensions = wrapper.extensions;
                 let supported = [];
-                Object.keys( extensions ).forEach( function( key ) {
-                    if ( extensions[ key ] ) {
-                        supported.push( key );
+                Object.keys(extensions).forEach(function(key) {
+                    if (extensions[key]) {
+                        supported.push(key);
                     }
                 });
                 return supported;
             }
-            throw 'No context is currently bound or could be associated with the provided argument';
+            throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
         },
 
         /**
@@ -240,21 +239,21 @@
          *
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          *
-         * @returns {Array} - All unsupported extensions.
+         * @return {Array} All unsupported extensions.
          */
-        unsupportedExtensions: function( arg ) {
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+        unsupportedExtensions: function(arg) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                 let extensions = wrapper.extensions;
                 let unsupported = [];
-                Object.keys( extensions ).forEach( function( key ) {
-                    if ( !extensions[ key ] ) {
-                        unsupported.push( key );
+                Object.keys(extensions).forEach(function(key) {
+                    if (!extensions[key]) {
+                        unsupported.push(key);
                     }
                 });
                 return unsupported;
             }
-            throw 'No context is currently bound or could be associated with the provided argument';
+            throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
         },
 
         /**
@@ -263,20 +262,20 @@
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {String} extension - The extension name.
          *
-         * @returns {boolean} - Whether or not the provided extension has been loaded successfully.
+         * @return {boolean} Whether or not the provided extension has been loaded successfully.
          */
-        checkExtension: function( arg, extension ) {
-            if ( !extension ) {
+        checkExtension: function(arg, extension) {
+            if (!extension) {
                 // shift parameters if no canvas arg is provided
                 extension = arg;
                 arg = undefined;
             }
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                 let extensions = wrapper.extensions;
-                return extensions[ extension ] ? true : false;
+                return extensions[extension] ? true : false;
             }
-            throw 'No context is currently bound or could be associated with the provided argument';
+            throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
         },
 
         /**
@@ -285,20 +284,20 @@
          * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
          * @param {String} extension - The extension name.
          *
-         * @returns {boolean} - Whether or not the provided extension has been loaded successfully.
+         * @return {boolean} Whether or not the provided extension has been loaded successfully.
          */
-        getExtension: function( arg, extension ) {
-            if ( !extension ) {
+        getExtension: function(arg, extension) {
+            if (!extension) {
                 // shift parameters if no canvas arg is provided
                 extension = arg;
                 arg = undefined;
             }
-            let wrapper = getContextWrapper( arg );
-            if ( wrapper ) {
+            let wrapper = getContextWrapper(arg);
+            if (wrapper) {
                 let extensions = wrapper.extensions;
-                return extensions[ extension ] || null;
+                return extensions[extension] || null;
             }
-            throw 'No context is currently bound or could be associated with the provided argument';
+            throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
         }
     };
 

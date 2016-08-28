@@ -3,61 +3,61 @@
     'use strict';
 
     let WebGLContext = require('./WebGLContext');
-    let WebGLContextState = require('./WebGLContextState');
 
     /**
      * Bind the viewport to the rendering context.
      *
      * @param {Viewport} viewport - The viewport object.
-     * @param {number} width - The width override.
-     * @param {number} height - The height override.
-     * @param {number} x - The horizontal offset.
-     * @param {number} y - The vertical offset.
+     * @param {Number} width - The width override.
+     * @param {Number} height - The height override.
+     * @param {Number} x - The horizontal offset override.
+     * @param {Number} y - The vertical offset override.
      */
-    function set( viewport, x, y, width, height ) {
+    function set(viewport, x, y, width, height) {
         let gl = viewport.gl;
-        x = ( x !== undefined ) ? x : 0;
-        y = ( y !== undefined ) ? y : 0;
-        width = ( width !== undefined ) ? width : viewport.width;
-        height = ( height !== undefined ) ? height : viewport.height;
-        gl.viewport( x, y, width, height );
+        x = (x !== undefined) ? x : viewport.x;
+        y = (y !== undefined) ? y : viewport.y;
+        width = (width !== undefined) ? width : viewport.width;
+        height = (height !== undefined) ? height : viewport.height;
+        gl.viewport(x, y, width, height);
     }
 
+    /**
+     * @class Viewport
+     * @classdesc A viewport class for managing WebGL viewports.
+     */
     class Viewport {
 
         /**
          * Instantiates a Viewport object.
-         * @class Viewport
-         * @classdesc A viewport object.
          *
          * @param {Object} spec - The viewport specification object.
-         * @param {number} spec.width - The width of the viewport.
-         * @param {number} spec.height - The height of the viewport.
+         * @param {Number} spec.width - The width of the viewport.
+         * @param {Number} spec.height - The height of the viewport.
          */
-        constructor( spec = {} ) {
+        constructor(spec = {}) {
             this.gl = WebGLContext.get();
-            this.state = WebGLContextState.get( this.gl );
+            this.stack = [];
             // set size
             this.resize(
                 spec.width || this.gl.canvas.width,
-                spec.height || this.gl.canvas.height );
+                spec.height || this.gl.canvas.height);
         }
 
         /**
          * Updates the viewports width and height. This resizes the underlying canvas element.
-         * @memberof Viewport
          *
-         * @param {number} width - The width of the viewport.
-         * @param {number} height - The height of the viewport.
+         * @param {Number} width - The width of the viewport.
+         * @param {Number} height - The height of the viewport.
          *
-         * @returns {Viewport} - The viewport object, for chaining.
+         * @return {Viewport} The viewport object, for chaining.
          */
-        resize( width, height ) {
-            if ( typeof width !== 'number' || ( width <= 0 ) ) {
-                throw 'Provided `width` of ' + width + ' is invalid';
+        resize(width = 0, height = 0) {
+            if (typeof width !== 'number' || width <= 0) {
+                throw `Provided \`width\` of \`${width}\` is invalid`;
             }
-            if ( typeof height !== 'number' || ( height <= 0 ) ) {
-                throw 'Provided `height` of ' + height + ' is invalid';
+            if (typeof height !== 'number' || height <= 0) {
+                throw `Provided \`height\` of \`${height}\` is invalid`;
             }
             this.width = width;
             this.height = height;
@@ -67,58 +67,55 @@
         }
 
         /**
-         * Activates the viewport and pushes it onto the stack with the provided arguments. The underlying canvas element is not affected.
-         * @memberof Viewport
+         * Sets the viewport dimensions and position. The underlying canvas element is not affected.
          *
-         * @param {number} width - The width override.
-         * @param {number} height - The height override.
-         * @param {number} x - The horizontal offset override.
-         * @param {number} y - The vertical offset override.
+         * @param {Number} width - The width override.
+         * @param {Number} height - The height override.
+         * @param {Number} x - The horizontal offset override.
+         * @param {Number} y - The vertical offset override.
          *
-         * @returns {Viewport} - The viewport object, for chaining.
+         * @return {Viewport} - The viewport object, for chaining.
          */
-        push( x, y, width, height ) {
-            if ( x !== undefined && typeof x !== 'number' ) {
-                throw 'Provided `x` of ' + x + ' is invalid';
+        push(x = 0, y = 0, width = this.width, height = this.height) {
+            if (typeof x !== 'number') {
+                throw `Provided \`x\` of \`${x}\` is invalid`;
             }
-            if ( y !== undefined && typeof y !== 'number' ) {
-                throw 'Provided `y` of ' + y + ' is invalid';
+            if (typeof y !== 'number') {
+                throw `Provided \`y\` of \`${y}\` is invalid`;
             }
-            if ( width !== undefined && ( typeof width !== 'number' || ( width <= 0 ) ) ) {
-                throw 'Provided `width` of ' + width + ' is invalid';
+            if (typeof width !== 'number' || width <= 0) {
+                throw `Provided \`width\` of \`${width}\` is invalid`;
             }
-            if ( height !== undefined && ( typeof height !== 'number' || ( height <= 0 ) ) ) {
-                throw 'Provided `height` of ' + height + ' is invalid';
+            if (typeof height !== 'number' || height <= 0) {
+                throw `Provided \`height\` of \`${height}\` is invalid`;
             }
-            this.state.viewports.push({
-                viewport: this,
+            // push onto stack
+            this.stack.push({
                 x: x,
                 y: y,
                 width: width,
                 height: height
             });
-            set( this, x, y, width, height );
+            // set viewport
+            set(this, x, y, width, height);
             return this;
         }
 
         /**
-         * Pops current the viewport object and activates the viewport beneath it.
-         * @memberof Viewport
+         * Pops current the viewport object and sets the viewport beneath it.
          *
-         * @returns {Viewport} - The viewport object, for chaining.
+         * @return {Viewport} The viewport object, for chaining.
          */
         pop() {
-            let state = this.state;
-            let top = state.viewports.top();
-            if ( !top || this !== top.viewport ) {
-                throw 'Viewport is not the top most element on the stack';
+            if (this.stack.length === 0) {
+                throw 'Viewport stack is empty';
             }
-            state.viewports.pop();
-            top = state.viewports.top();
-            if ( top ) {
-                set( top.viewport, top.x, top.y, top.width, top.height );
+            this.stack.pop();
+            if (this.stack.length > 0) {
+                let top = this.stack[this.stack.length - 1];
+                set(this, top.x, top.y, top.width, top.height);
             } else {
-                set( this );
+                set(this);
             }
             return this;
         }

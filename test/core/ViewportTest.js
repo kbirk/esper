@@ -119,38 +119,43 @@
             });
         });
 
-        describe('#set()', function() {
-            it('should set the viewport', function() {
+        describe('#push()', function() {
+            it('should push the viewport on the stack', function() {
                 let viewport = new Viewport();
-                viewport.set();
+                viewport.push();
+                viewport.push();
+                viewport.pop();
+                viewport.pop();
             });
             it('should accept `width`, `height`, `x`, and `y` overrides', function() {
                 let viewport = new Viewport();
-                viewport.set( 10, 10, 100, 200 );
+                viewport.push( 10, 10, 100, 200 );
+                viewport.pop();
             });
             it('should not resize the viewport object or underlying canvas from overrides', function() {
                 let viewport = new Viewport({
                     width: 500,
                     height: 500
                 });
-                viewport.set( 0, 0, 100, 200 );
+                viewport.push( 0, 0, 100, 200 );
                 assert( viewport.width === 500 );
                 assert( viewport.height === 500 );
                 assert( gl.canvas.width === 500 );
                 assert( gl.canvas.height === 500 );
+                viewport.pop();
             });
             it('should throw an exception if the `x` is invalid', function() {
                 let viewport = new Viewport();
                 let result = false;
                 try {
-                    viewport.set( null, 200 );
+                    viewport.push( null, 200 );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
                 result = false;
                 try {
-                    viewport.set( 'invalid', 200 );
+                    viewport.push( 'invalid', 200 );
                 } catch( err ) {
                     result = true;
                 }
@@ -160,14 +165,14 @@
                 let viewport = new Viewport();
                 let result = false;
                 try {
-                    viewport.set( 200, null );
+                    viewport.push( 200, null );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
                 result = false;
                 try {
-                    viewport.set( 200, 'invalid' );
+                    viewport.push( 200, 'invalid' );
                 } catch( err ) {
                     result = true;
                 }
@@ -177,14 +182,14 @@
                 let viewport = new Viewport();
                 let result = false;
                 try {
-                    viewport.set( 0, 0, null, 200 );
+                    viewport.push( 0, 0, null, 200 );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
                 result = false;
                 try {
-                    viewport.set( 0, 0, 'invalid', 200 );
+                    viewport.push( 0, 0, 'invalid', 200 );
                 } catch( err ) {
                     result = true;
                 }
@@ -194,14 +199,32 @@
                 let viewport = new Viewport();
                 let result = false;
                 try {
-                    viewport.set( 0, 0, 200, null );
+                    viewport.push( 0, 0, 200, null );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
                 result = false;
                 try {
-                    viewport.set( 0, 0, 200, 'invalid' );
+                    viewport.push( 0, 0, 200, 'invalid' );
+                } catch( err ) {
+                    result = true;
+                }
+                assert( result );
+            });
+        });
+
+        describe('#pop()', function() {
+            it('should pop the viewport off the stack', function() {
+                let viewport = new Viewport();
+                viewport.push();
+                viewport.pop();
+            });
+            it('should throw an exception if there viewport is not the top of the stack', function() {
+                let viewport = new Viewport();
+                let result = false;
+                try {
+                    viewport.pop();
                 } catch( err ) {
                     result = true;
                 }

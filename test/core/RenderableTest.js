@@ -22,47 +22,46 @@
 
     describe('Renderable', function() {
 
-        before( function() {
+        before(function() {
             canvas = new HTMLCanvasElement();
-            gl = WebGLContext.get( canvas );
+            gl = WebGLContext.get(canvas);
         });
 
-        after( function() {
-            WebGLContext.remove( canvas );
+        after(function() {
+            WebGLContext.remove(canvas);
             canvas = null;
             gl = null;
         });
 
-        beforeEach( function() {
+        beforeEach(function() {
             let maxTriangles = 256;
-            let numTriangles = Math.floor( Math.random() * maxTriangles ) + 1;
+            let numTriangles = Math.floor(Math.random() * maxTriangles) + 1;
             let numVertices = numTriangles * 3;
             positions = [];
             normals = [];
             uvs = [];
             indices = [];
-            for ( let i=0; i<numVertices; i++ ) {
+            for (let i=0; i<numVertices; i++) {
                 // separate
                 // positions
-                positions.push([ 0, 0, 0 ]);
+                positions.push([0, 0, 0]);
                 // normals
-                normals.push([ 0, 0, 0 ]);
+                normals.push([0, 0, 0]);
                 // uvs
-                uvs.push([ 0, 0 ]);
+                uvs.push([0, 0]);
                 // indices
-                indices.push( i );
+                indices.push(i);
             }
             vertexBuffer = new VertexBuffer(
                 new VertexPackage({
                     0: positions,
                     1: normals,
                     2: uvs
-                })
-            );
-            indexBuffer = new IndexBuffer( indices );
+                }));
+            indexBuffer = new IndexBuffer(indices);
         });
 
-        afterEach( function() {
+        afterEach(function() {
             positions = null;
             normals = null;
             uvs = null;
@@ -101,7 +100,7 @@
             });
             it('should accept an multiple VertexBuffer arguments', function() {
                 new Renderable({
-                    vertexBuffers: [ vertexBuffer ]
+                    vertexBuffers: [vertexBuffer]
                 });
             });
             it('should accept a complimentary IndexBuffer argument', function() {
@@ -116,7 +115,7 @@
                     new Renderable({
                         vertexBuffers: [
                             vertexBuffer,
-                            new VertexBuffer( null, {
+                            new VertexBuffer(null, {
                                 0: {
                                     type: 'FLOAT',
                                     size: 3
@@ -125,23 +124,10 @@
                         ],
                         indexBuffer: indexBuffer
                     });
-                } catch( err ) {
+                } catch(err) {
                     result = true;
                 }
-                assert( result );
-            });
-            it('should accept `mode`, `count`, `indexOffset`, and `byteOffset` options for drawing', function() {
-                let renderable = new Renderable({
-                    vertexBuffer: vertexBuffer,
-                    mode: 'POINTS',
-                    count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent,
-                    indexOffset: ( positions.length / 3 ) / 2
-                });
-                assert( renderable.options.mode === 'POINTS' );
-                assert( renderable.options.count === ( positions.length / 3 ) / 2 );
-                assert( renderable.options.indexOffset === ( positions.length / 3 ) / 2 );
-                assert( renderable.options.byteOffset === ( positions.length / 3 ) / 2 * bytesPerComponent );
+                assert(result);
             });
         });
 
@@ -159,9 +145,9 @@
                 });
                 renderable.draw({
                     mode: 'POINTS',
-                    count: ( positions.length / 3 ) / 2,
-                    byteOffset: ( positions.length / 3 ) / 2 * bytesPerComponent,
-                    indexOffset: ( positions.length / 3 ) / 2
+                    count: (positions.length / 3) / 2,
+                    byteOffset: (positions.length / 3) / 2 * bytesPerComponent,
+                    indexOffset: (positions.length / 3) / 2
                 });
             });
         });
