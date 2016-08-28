@@ -3,6 +3,7 @@
     'use strict';
 
     let COMPONENT_TYPE = 'FLOAT';
+    let BYTES_PER_COMPONENT = 4;
 
     /**
      * Removes invalid attribute arguments. A valid argument must be an Array of length > 0 key by a string representing an int.
@@ -69,7 +70,8 @@
             }
             return 1;
         }
-        throw 'Component type not recognized';
+        // single component
+        return 1;
     }
 
     /**
@@ -94,7 +96,7 @@
             vertexPackage.pointers[ vertices.index ] = {
                 type: COMPONENT_TYPE,
                 size: size,
-                offset: offset
+                byteOffset: offset * BYTES_PER_COMPONENT
             };
             // accumulate attribute offset
             offset += size;
@@ -111,9 +113,9 @@
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
-     * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute, not in bytes.
-     * @param {number} stride - The stride of the buffer, not in bytes.
+     * @param {Number} length - The length of the buffer to copy from.
+     * @param {Number} offset - The offset to the attribute, not in bytes.
+     * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set1ComponentAttr( buffer, vertices, length, offset, stride ) {
         let vertex, i, j;
@@ -137,9 +139,9 @@
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
-     * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute, not in bytes.
-     * @param {number} stride - The stride of the buffer, not in bytes.
+     * @param {Number} length - The length of the buffer to copy from.
+     * @param {Number} offset - The offset to the attribute, not in bytes.
+     * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set2ComponentAttr( buffer, vertices, length, offset, stride ) {
         let vertex, i, j;
@@ -158,9 +160,9 @@
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
-     * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute, not in bytes.
-     * @param {number} stride - The stride of the buffer, not in bytes.
+     * @param {Number} length - The length of the buffer to copy from.
+     * @param {Number} offset - The offset to the attribute, not in bytes.
+     * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set3ComponentAttr( buffer, vertices, length, offset, stride ) {
         let vertex, i, j;
@@ -180,9 +182,9 @@
      *
      * @param {Float32Array} buffer - The arraybuffer to fill.
      * @param {Array} vertices - The vertex attribute array to copy from.
-     * @param {number} length - The length of the buffer to copy from.
-     * @param {number} offset - The offset to the attribute, not in bytes.
-     * @param {number} stride - The stride of the buffer, not in bytes.
+     * @param {Number} length - The length of the buffer to copy from.
+     * @param {Number} offset - The offset to the attribute, not in bytes.
+     * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set4ComponentAttr( buffer, vertices, length, offset, stride ) {
         let vertex, i, j;
@@ -197,14 +199,17 @@
         }
     }
 
-
+    /**
+     * @class VertexPackage
+     * @classdesc A vertex package to assist in interleaving vertex data and
+     * building the associated vertex attribute pointers.
+     */
     class VertexPackage {
 
         /**
          * Instantiates a VertexPackage object.
-         * @class VertexPackage
-         * @classdesc A vertex package object.
-         *
+         * @memberof VertexPackage
+          *
          * @param {Object} attributes - The attributes to interleave keyed by index.
          */
         constructor( attributes ) {
@@ -239,7 +244,7 @@
                 // get the pointer
                 let pointer = pointers[ vertices.index ];
                 // get the pointers offset
-                let offset = pointer.offset; // not in bytes
+                let offset = pointer.byteOffset / BYTES_PER_COMPONENT;
                 // copy vertex data into arraybuffer
                 switch ( pointer.size ) {
                     case 2:

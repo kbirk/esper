@@ -3,7 +3,6 @@
     'use strict';
 
     let WebGLContext = require('./WebGLContext');
-    let WebGLContextState = require('./WebGLContextState');
     let Async = require('../util/Async');
     let Util = require('../util/Util');
     let ImageLoader = require('../util/ImageLoader');
@@ -127,10 +126,10 @@
      * @private
      *
      * @param {TextureCubeMap} cubeMap - The cube map texture object.
-     * @param {string} target - The texture target.
-     * @param {string} url - The url to load the face from.
+     * @param {String} target - The texture target.
+     * @param {String} url - The url to load the face from.
      *
-     * @returns {function} The loader function.
+     * @returns {function} - The loader function.
      */
     function loadFaceURL( cubeMap, target, url ) {
         return function( done ) {
@@ -154,10 +153,10 @@
      * @private
      *
      * @param {TextureCubeMap} cubeMap - The cube map texture object.
-     * @param {string} target - The texture target.
+     * @param {String} target - The texture target.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} canvas - The canvas type object.
      *
-     * @returns {function} The loader function.
+     * @returns {function} - The loader function.
      */
     function loadFaceCanvas( cubeMap, target, canvas ) {
         return function( done ) {
@@ -172,10 +171,10 @@
      * @private
      *
      * @param {TextureCubeMap} cubeMap - The cube map texture object.
-     * @param {string} target - The texture target.
+     * @param {String} target - The texture target.
      * @param {Array|ArrayBuffer|ArrayBufferView} arr - The array type object.
      *
-     * @returns {function} The loader function.
+     * @returns {function} - The loader function.
      */
     function loadFaceArray( cubeMap, target, arr ) {
         checkDimensions( cubeMap );
@@ -185,17 +184,20 @@
         };
     }
 
+    /**
+     * @class TextureCubeMap
+     * @classdesc A texture class to represent a cube map texture.
+     */
     class TextureCubeMap {
 
         /**
          * Instantiates a TextureCubeMap object.
-         * @class TextureCubeMap
-         * @classdesc A texture class to represent a cube map texture.
+         * @memberof TextureCubeMap
          *
          * @param {Object} spec - The specification arguments
          * @param {Object} spec.faces - The faces to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.
-         * @param {number} spec.width - The width of the faces.
-         * @param {number} spec.height - The height of the faces.
+         * @param {Number} spec.width - The width of the faces.
+         * @param {Number} spec.height - The height of the faces.
          * @param {String} spec.wrap - The wrapping type over both S and T dimension.
          * @param {String} spec.wrapS - The wrapping type over the S dimension.
          * @param {String} spec.wrapT - The wrapping type over the T dimension.
@@ -208,9 +210,8 @@
          * @param {String} spec.format - The texture pixel format.
          * @param {String} spec.type - The texture pixel component type.
          */
-        constructor( spec = {}, callback = {} ) {
-            let gl = this.gl = WebGLContext.get();
-            this.state = WebGLContextState.get( gl );
+        constructor( spec = {}, callback = null ) {
+            this.gl = WebGLContext.get();
             this.texture = null;
             // get specific params
             spec.wrapS = spec.wrapS || spec.wrap;
@@ -283,24 +284,18 @@
          * Binds the texture object and pushes it to onto the stack.
          * @memberof TextureCubeMap
          *
-         * @param {number} location - The texture unit location index.
+         * @param {Number} location - The texture unit location index.
          *
          * @returns {TextureCubeMap} - The texture object, for chaining.
          */
-        push( location ) {
-            if ( location === undefined ) {
-                location = 0;
-            } else if ( !Number.isInteger( location ) || location < 0 ) {
+        bind( location = 0 ) {
+            if ( !Number.isInteger( location ) || location < 0 ) {
                 throw 'Texture unit location is invalid';
             }
-            // if this texture is already bound, no need to rebind
-            if ( this.state.textureCubeMaps.top( location ) !== this ) {
-                let gl = this.gl;
-                gl.activeTexture( gl[ 'TEXTURE' + location ] );
-                gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.texture );
-            }
-            // add to stack under the texture unit
-            this.state.textureCubeMaps.push( location, this );
+            // bind cube map texture
+            let gl = this.gl;
+            gl.activeTexture( gl[ 'TEXTURE' + location ] );
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.texture );
             return this;
         }
 
@@ -309,35 +304,12 @@
          * this stack. If there is no underlying texture, unbinds the unit.
          * @memberof TextureCubeMap
          *
-         * @param {number} location - The texture unit location index.
-         *
-         * @returns {TextureCubeMap} The texture object, for chaining.
+         * @returns {TextureCubeMap} - The texture object, for chaining.
          */
-        pop( location ) {
-            if ( location === undefined ) {
-                location = 0;
-            } else if ( !Number.isInteger( location ) || location < 0 ) {
-                throw 'Texture unit location is invalid';
-            }
-            let state = this.state;
-            if ( state.textureCubeMaps.top( location ) !== this ) {
-                throw 'The current texture is not the top most element on the stack';
-            }
-            state.textureCubeMaps.pop( location );
-            let gl;
-            let top = state.textureCubeMaps.top( location );
-            if ( top ) {
-                if ( top !== this ) {
-                    // bind underlying texture
-                    gl = top.gl;
-                    gl.activeTexture( gl[ 'TEXTURE' + location ] );
-                    gl.bindTexture( gl.TEXTURE_CUBE_MAP, top.texture );
-                }
-            } else {
-                // unbind
-                gl = this.gl;
-                gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
-            }
+        unbind() {
+            // unbind cube map texture
+            let gl = this.gl;
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
             return this;
         }
 
@@ -345,7 +317,7 @@
          * Buffer data into the respective cube map face.
          * @memberof TextureCubeMap
          *
-         * @param {string} target - The face target.
+         * @param {String} target - The face target.
          * @param {Object|null} data - The face data.
          *
          * @returns {TextureCubeMap} - The texture object, for chaining.
@@ -359,14 +331,14 @@
             if ( !this.texture ) {
                 this.texture = gl.createTexture();
             }
-            // buffer face texture
-            this.push();
+            // bind texture
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.texture );
             // invert y if specified
             gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, this.invertY );
             // premultiply alpha if specified
             gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha );
             // cast array arg
-            if ( data instanceof Array ) {
+            if ( Array.isArray(data) ) {
                 if ( this.type === 'UNSIGNED_SHORT' ) {
                     data = new Uint16Array( data );
                 } else if ( this.type === 'UNSIGNED_INT' ) {
@@ -424,7 +396,8 @@
                 // only generate mipmaps if all faces are buffered
                 gl.generateMipmap( gl.TEXTURE_CUBE_MAP );
             }
-            this.pop();
+            // unbind texture
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
             return this;
         }
 
@@ -444,7 +417,8 @@
          */
         setParameters( params ) {
             let gl = this.gl;
-            this.push();
+            // bind texture
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, this.texture );
             // set wrap S parameter
             let param = params.wrapS || params.wrap;
             if ( param ) {
@@ -498,7 +472,8 @@
                     }
                 }
             }
-            this.pop();
+            // unbind texture
+            gl.bindTexture( gl.TEXTURE_CUBE_MAP, null );
             return this;
         }
     }

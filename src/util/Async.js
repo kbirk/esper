@@ -68,7 +68,7 @@
          * @param {Array|Object} tasks - The set of functions to execute.
          * @param {Function} callback - The callback function to be executed upon completion.
          */
-        parallel: function (tasks, callback) {
+        parallel: function( tasks, callback ) {
             let results = Array.isArray( tasks ) ? [] : {};
             each( tasks, function( task, key, done ) {
                 task( function( err, res ) {

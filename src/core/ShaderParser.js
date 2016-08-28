@@ -249,10 +249,11 @@
          */
         parseDeclarations: function( sources = [], qualifiers = [] ) {
             // if no sources or qualifiers are provided, return empty array
-            if ( !Array.isArray(qualifiers) || qualifiers.length === 0 ||
-                !Array.isArray(sources) || sources.length === 0 ) {
+            if ( sources.length === 0 || qualifiers.length === 0 ) {
                 return [];
             }
+            sources = Array.isArray(sources) ? sources : [ sources ];
+            qualifiers = Array.isArray(qualifiers) ? qualifiers : [ qualifiers ];
             // parse out targetted declarations
             let declarations = [];
             sources.forEach( source => {

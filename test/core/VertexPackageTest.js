@@ -2,34 +2,34 @@
 
     'use strict';
 
-    var assert = require('assert');
-    var VertexPackage = require( '../../src/core/VertexPackage' );
+    let assert = require('assert');
+    let VertexPackage = require( '../../src/core/VertexPackage' );
 
     describe('VertexPackage', function() {
 
         describe('#constructor()', function() {
             it('should accept an object of vertex attribute arrays', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
                     1: [[1,1,1], [1,1,1], [1,1,1], [1,1,1]]
                 });
                 assert( p.buffer.length === 4*3*2 );
             });
             it('should accept a single attribute array', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                 });
                 assert( p.buffer.length === 4*3 );
             });
             it('should accept no arguments', function() {
-                var p = new VertexPackage();
+                let p = new VertexPackage();
                 assert( p.buffer.length === 0 );
             });
         });
 
         describe('#set()', function() {
             it('should build a new buffer and attribute pointers from the new data', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                 });
                 p.set({
@@ -39,41 +39,41 @@
                 assert( p.buffer.length === 4*3*2 );
             });
             it('should handle 1 component attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0], [0], [0], [0]]
                 });
                 assert( p.buffer.length === 4 );
             });
             it('should accept 2 component attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0], [0,0], [0,0], [0,0]]
                 });
                 assert( p.buffer.length === 4*2 );
             });
             it('should accept 3 component attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                 });
                 assert( p.buffer.length === 4*3 );
             });
             it('should accept 4 component attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
                 });
                 assert( p.buffer.length === 4*4 );
             });
             it('should accept non array or vector args for single component attribtues', function() {
-                var p0 = new VertexPackage({
+                let p0 = new VertexPackage({
                     0: [[0], [0], [0], [0]]
                 });
-                var p1 = new VertexPackage({
+                let p1 = new VertexPackage({
                     0: [0, 0, 0, 0]
                 });
                 assert( p0.buffer.length === 4 );
                 assert( p1.buffer.length === 4 );
             });
             it('should accept mixed component attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [ [0], [0], [0], [0] ],
                     1: [ [0,0], [0,0], [0,0], [0,0] ],
                     2: [ [0,0,0], [0,0,0], [0,0,0], [0,0,0] ],
@@ -82,13 +82,13 @@
                 assert( p.buffer.length === 4 + 4*2 + 4*3 + 4*4 );
             });
             it('should accept array attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]]
                 });
                 assert( p.buffer.length === 4*3 );
             });
             it('should accept object attributes with x,y,z,w components', function() {
-                var p0 = new VertexPackage({
+                let p0 = new VertexPackage({
                     0: [
                         { x: 0 },
                         { x: 0 },
@@ -96,7 +96,7 @@
                         { x: 0 }
                     ]
                 });
-                var p1 = new VertexPackage({
+                let p1 = new VertexPackage({
                     0: [
                         { x: 0, y: 0 },
                         { x: 0, y: 0 },
@@ -104,7 +104,7 @@
                         { x: 0, y: 0 }
                     ]
                 });
-                var p2 = new VertexPackage({
+                let p2 = new VertexPackage({
                     0: [
                         { x: 0, y: 0, z: 0 },
                         { x: 0, y: 0, z: 0 },
@@ -112,7 +112,7 @@
                         { x: 0, y: 0, z: 0 }
                     ]
                 });
-                var p3 = new VertexPackage({
+                let p3 = new VertexPackage({
                     0: [
                         { x: 0, y: 0, z: 0, w: 0 },
                         { x: 0, y: 0, z: 0, w: 0 },
@@ -126,10 +126,10 @@
                 assert( p3.buffer.length === 4*4 );
             });
             it('should use the element of smallest size when sizing an attribute array', function() {
-                var p0 = new VertexPackage({
+                let p0 = new VertexPackage({
                     0: [[0], [0,0], [0,0,0], [0,0,0,0]]
                 });
-                var p1 = new VertexPackage({
+                let p1 = new VertexPackage({
                     0: [
                         { x: 0 },
                         { x: 0, y: 0 },
@@ -141,7 +141,7 @@
                 assert( p1.buffer.length === 4 );
             });
             it('should use the attribute of shortest length when sizing the unified array', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [0, 0, 0, 0, 0, 0, 0],
                     1: [0, 0, 0, 0, 0, 0],
                     2: [0, 0, 0, 0, 0],
@@ -150,7 +150,7 @@
                 assert( p.buffer.length === 3 * 4 );
             });
             it('should throw exception on invalid or erroneous attribute values', function() {
-                var result = false;
+                let result = false;
                 try {
                     new VertexPackage({
                         0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
@@ -165,7 +165,7 @@
                 assert( result );
             });
             it('should throw exception on invalid or erroneous attribute indices', function() {
-                var result = false;
+                let result = false;
                 try {
                     new VertexPackage({
                         0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
@@ -218,15 +218,15 @@
 
         describe('#pointers', function() {
             it('should be all attribute pointers, as an object, keyed by the attribute index', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [ [0], [0], [0], [0] ],
                     1: [ [0,0], [0,0], [0,0], [0,0] ],
                     2: [ [0,0,0], [0,0,0], [0,0,0], [0,0,0] ],
                     3: [ [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0] ]
                 });
-                var bytesPerComponent = 4;
-                var pointers = p.pointers;
-                var type = 'FLOAT';
+                let bytesPerComponent = 4;
+                let pointers = p.pointers;
+                let type = 'FLOAT';
                 // first
                 assert( pointers['0'].size === 1 );
                 assert( pointers['0'].type === type );
@@ -245,33 +245,33 @@
                 assert( pointers['3'].byteOffset === (1 + 2 + 3) * bytesPerComponent );
             });
             it('should be an empty object if no data as been set', function() {
-                var p = new VertexPackage();
+                let p = new VertexPackage();
                 assert( Object.keys(p.pointers).length === 0 );
             });
         });
 
         describe('#buffer', function() {
             it('should be a Float32Array', function() {
-                var p0 = new VertexPackage({
+                let p0 = new VertexPackage({
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
                     1: [[1,1,1], [1,1,1], [1,1,1], [1,1,1]]
                 });
-                var p1 = new VertexPackage();
+                let p1 = new VertexPackage();
                 assert( p0.buffer instanceof Float32Array );
                 assert( p1.buffer instanceof Float32Array );
             });
             it('should be the interleaved vertex attributes', function() {
-                var p = new VertexPackage({
+                let p = new VertexPackage({
                     0: [[0,0,0], [2,2,2], [4,4,4], [6,6,6]],
                     1: [[1,1,1], [3,3,3], [5,5,5], [7,7,7]]
                 });
-                var buffer = p.buffer;
-                for (var i=0; i<buffer.length; i++) {
+                let buffer = p.buffer;
+                for (let i=0; i<buffer.length; i++) {
                     assert(buffer[i] === Math.floor(i/3));
                 }
             });
             it('should be an empty Float32Array if no data has been set', function() {
-                var p = new VertexPackage();
+                let p = new VertexPackage();
                 assert( p.buffer.length === 0 );
             });
         });

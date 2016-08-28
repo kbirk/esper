@@ -66,20 +66,23 @@
      */
     let DEFAULT_INVERT_Y = true;
 
+    /**
+     * @class ColorTexture2D
+     * @classdesc A texture class to represent a 2D color texture.
+     * @augments Texture2D
+     */
     class ColorTexture2D extends Texture2D {
 
         /**
          * Instantiates a ColorTexture2D object.
-         * @class ColorTexture2D
-         * @classdesc A texture class to represent a 2D color texture.
-         * @augments Texture2D
+         * @memberof ColorTexture2D
          *
          * @param {Object} spec - The specification arguments.
          * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.image - The HTMLImageElement to buffer.
          * @param {String} spec.url - The HTMLImageElement URL to load and buffer.
          * @param {Uint8Array|Float32Array} spec.src - The data to buffer.
-         * @param {number} spec.width - The width of the texture.
-         * @param {number} spec.height - The height of the texture.
+         * @param {Number} spec.width - The width of the texture.
+         * @param {Number} spec.height - The height of the texture.
          * @param {String} spec.wrap - The wrapping type over both S and T dimension.
          * @param {String} spec.wrapS - The wrapping type over the S dimension.
          * @param {String} spec.wrapT - The wrapping type over the T dimension.
@@ -113,15 +116,18 @@
             // buffer the texture based on argument type
             if ( typeof spec.src === 'string' ) {
                 // request source from url
+                spec.type = 'UNSIGNED_BYTE';
+                // call base constructor
+                super( spec );
                 // TODO: put extension handling for arraybuffer / image / video differentiation
                 ImageLoader.load({
                     url: spec.src,
                     success: image => {
                         // set to unsigned byte type
-                        spec.type = 'UNSIGNED_BYTE';
-                        spec.src = Util.resizeCanvas( spec, image );
-                        // call base constructor
-                        super( spec );
+                        image = Util.resizeCanvas( spec, image );
+                        // now buffer
+                        this.bufferData( image, spec.width, spec.height );
+                        this.setParameters( this );
                         // execute callback
                         if ( callback ) {
                             callback( null, this );

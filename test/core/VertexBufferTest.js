@@ -2,21 +2,21 @@
 
     'use strict';
 
-    var assert = require('assert');
-    var WebGLContext = require('../../src/core/WebGLContext');
-    var VertexBuffer = require('../../src/core/VertexBuffer');
-    var VertexPackage = require('../../src/core/VertexPackage');
+    let assert = require('assert');
+    let WebGLContext = require('../../src/core/WebGLContext');
+    let VertexBuffer = require('../../src/core/VertexBuffer');
+    let VertexPackage = require('../../src/core/VertexPackage');
     require('webgl-mock');
-    var canvas;
-    var gl;
+    let canvas;
+    let gl;
 
-    var bytesPerComponent = 4;
-    var positions;
-    var normals;
-    var uvs;
-    var pointers;
-    var separate;
-    var interleaved;
+    let bytesPerComponent = 4;
+    let positions;
+    let normals;
+    let uvs;
+    let pointers;
+    let separate;
+    let interleaved;
 
     describe('VertexBuffer', function() {
 
@@ -32,9 +32,9 @@
         });
 
         beforeEach( function() {
-            var maxTriangles = 256;
-            var numTriangles = Math.floor( Math.random() * maxTriangles ) + 1;
-            var numVertices = numTriangles * 3;
+            let maxTriangles = 256;
+            let numTriangles = Math.floor( Math.random() * maxTriangles ) + 1;
+            let numVertices = numTriangles * 3;
             positions = [];
             normals = [];
             uvs = [];
@@ -64,7 +64,7 @@
                     }
                 }
             };
-            for ( var i=0; i<numVertices; i++ ) {
+            for ( let i=0; i<numVertices; i++ ) {
                 // separate
                 // positions
                 positions.push( 0 );
@@ -123,28 +123,20 @@
 
         describe('#constructor()', function() {
             it('should accept a VertexPackage as an argument', function() {
-                var pkg = new VertexPackage({
+                let pkg = new VertexPackage({
                     0: positions,
                     1: normals,
                     2: uvs
                 });
-                try {
-                    new VertexBuffer( pkg );
-                } catch( err ) {
-                    assert( false );
-                }
+                new VertexBuffer( pkg );
             });
             it('should accept a WebGLBuffer and attribute pointers as arguments', function() {
-                try {
-                    new VertexBuffer( new WebGLBuffer(), separate.pointers, {
-                        byteLength: 4
-                    });
-                } catch( err ) {
-                    assert( false );
-                }
+                new VertexBuffer( new WebGLBuffer(), separate.pointers, {
+                    byteLength: 4
+                });
             });
             it('should throw an exception if WebGLBuffer argument is not complimented with a corresponding `byteLength` option', function() {
-                var result = false;
+                let result = false;
                 try {
                     new VertexBuffer( new WebGLBuffer(), separate.pointers );
                 } catch( err ) {
@@ -153,64 +145,46 @@
                 assert( result );
             });
             it('should accept an Array and attribute pointers as arguments', function() {
-                try {
-                    new VertexBuffer( separate.buffer, separate.pointers );
-                } catch( err ) {
-                    assert( false );
-                }
+                new VertexBuffer( separate.buffer, separate.pointers );
             });
             it('should accept a numeric byte length and attribute pointers as arguments', function() {
-                try {
-                    new VertexBuffer( separate.buffer.length * bytesPerComponent, separate.pointers );
-                } catch( err ) {
-                    assert( false );
-                }
+                new VertexBuffer( separate.buffer.length * bytesPerComponent, separate.pointers );
             });
             it('should accept a null value and attribute pointers as arguments', function() {
-                try {
-                    new VertexBuffer( null, separate.pointers );
-                } catch( err ) {
-                    assert( false );
-                }
+                new VertexBuffer( null, separate.pointers );
             });
             it('should set byteStride to 0 for a buffer with separate attributes', function() {
-                var vb = new VertexBuffer( separate.buffer, separate.pointers );
+                let vb = new VertexBuffer( separate.buffer, separate.pointers );
                 assert( vb.byteStride === 0 );
             });
             it('should set byteStride to 0 for a buffer with separate attributes', function() {
-                var vb = new VertexBuffer( separate.buffer, separate.pointers );
+                let vb = new VertexBuffer( separate.buffer, separate.pointers );
                 assert( vb.byteStride === 0 );
             });
             it('should set byteStride to 0 if given only a single attribute', function() {
-                var vb = new VertexBuffer( positions, pointers );
+                let vb = new VertexBuffer( positions, pointers );
                 assert( vb.byteStride === 0 );
             });
             it('should calculate byteStride from an interleaved buffer', function() {
-                var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
+                let vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
                 assert( vb.byteStride === (( 3 * bytesPerComponent ) + ( 3 * bytesPerComponent ) + ( 2 * bytesPerComponent )) );
             });
             it('should calculate the byteLength from an Array or ArrayBuffer argument', function() {
-                var vb0 = new VertexBuffer( interleaved.buffer, interleaved.pointers );
+                let vb0 = new VertexBuffer( interleaved.buffer, interleaved.pointers );
                 assert( vb0.byteLength === interleaved.buffer.length * bytesPerComponent );
-                var vb1 = new VertexBuffer( separate.buffer, separate.pointers );
+                let vb1 = new VertexBuffer( separate.buffer, separate.pointers );
                 assert( vb1.byteLength === separate.buffer.length * bytesPerComponent );
             });
             it('should default mode to TRIANGLES', function() {
-                var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
+                let vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
                 assert( vb.mode === 'TRIANGLES' );
             });
             it('should default `indexOffset` to 0', function() {
-                var vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
+                let vb = new VertexBuffer( interleaved.buffer, interleaved.pointers );
                 assert( vb.indexOffset === 0 );
             });
-            it('should default count to length of the attribute arrays, or 0', function() {
-                var vb0 = new VertexBuffer( interleaved.buffer, interleaved.pointers );
-                assert( vb0.count === ( positions.length / 3 ) );
-                var vb1 = new VertexBuffer( null, pointers );
-                assert( vb1.count === 0 );
-            });
             it('should accept `mode`, `count`, and `indexOffset` options for drawing', function() {
-                var vb = new VertexBuffer( positions, pointers, {
+                let vb = new VertexBuffer( positions, pointers, {
                     mode: 'POINTS',
                     count: ( positions.length / 3 ) / 2,
                     indexOffset: ( positions.length / 3 ) / 2
@@ -219,20 +193,8 @@
                 assert( vb.count === ( positions.length / 3 ) / 2 );
                 assert( vb.indexOffset === ( positions.length / 3 ) / 2 );
             });
-            it('should throw an exception if count + indexOffset overflows the buffer', function() {
-                var result = false;
-                try {
-                    new VertexBuffer( positions, pointers, {
-                        count: positions.length / 3,
-                        indexOffset: 1
-                    });
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
             it('should throw an exception if attribute pointer indices are invalid ', function() {
-                var result = false;
+                let result = false;
                 try {
                     new VertexBuffer( positions, {
                         'invalid': {
@@ -247,7 +209,7 @@
                 assert( result );
             });
             it('should throw an exception if attribute pointer size is missing or invalid', function() {
-                var result = false;
+                let result = false;
                 try {
                     new VertexBuffer( positions, {
                         0: {
@@ -287,7 +249,7 @@
                 assert( result );
             });
             it('should throw an exception if attribute pointer type is missing or invalid ', function() {
-                var result = false;
+                let result = false;
                 try {
                     new VertexBuffer( positions, {
                         0: {
@@ -317,76 +279,24 @@
 
         describe('#bufferData()', function() {
             it('should accept an Array argument', function() {
-                var vb = new VertexBuffer( null, pointers );
-                try {
-                    vb.bufferData( positions );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( null, pointers );
+                vb.bufferData( positions );
             });
             it('should accept an ArrayBufferView argument', function() {
-                var vb = new VertexBuffer( null, pointers );
-                try {
-                    vb.bufferData( new Float32Array( positions ) );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( null, pointers );
+                vb.bufferData( new Float32Array( positions ) );
             });
             it('should accept an ArrayBuffer argument', function() {
-                var vb = new VertexBuffer( null, pointers );
-                try {
-                    vb.bufferData( new ArrayBuffer( positions.length * bytesPerComponent ) );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( null, pointers );
+                vb.bufferData( new ArrayBuffer( positions.length * bytesPerComponent ) );
             });
             it('should accept numeric byte length argument', function() {
-                var vb0 = new VertexBuffer( null, pointers );
-                var vb1 = new VertexBuffer( null, pointers );
-                try {
-                    vb0.bind(); // code coverage to ensure next call re-binds after
-                    vb1.bufferData( positions.length * bytesPerComponent );
-                } catch( err ) {
-                    assert( false );
-                }
-            });
-            it('should throw an exception if byte length is not multiple of component byte size', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers, {
-                    count: positions.length / 3
-                });
-                var result = false;
-                try {
-                    vb.bufferData( positions.length * bytesPerComponent + 1 );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
-            it('should not overwrite count if count is not zero', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers, {
-                    count: ( positions.length / 3 ) / 2
-                });
-                vb.bufferData( positions );
-                assert( vb.count === ( positions.length / 3 ) / 2 );
-            });
-            it('should throw an exception if calculated count is not an integer', function() {
-                var vb = new VertexBuffer( null, {
-                    0: {
-                        size: 3,
-                        type: 'FLOAT'
-                    }
-                });
-                var result = false;
-                try {
-                    vb.bufferData( new Float32Array( new ArrayBuffer( 4 * bytesPerComponent ) ) );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
+                let vb = new VertexBuffer( null, pointers );
+                vb.bufferData( positions.length * bytesPerComponent );
             });
             it('should throw an exception when given an invalid argument', function() {
-                var vb = new VertexBuffer( null, pointers );
-                var result = false;
+                let vb = new VertexBuffer( null, pointers );
+                let result = false;
                 try {
                     vb.bufferData( 'str' );
                 } catch( err ) {
@@ -405,42 +315,25 @@
 
         describe('#bufferSubData()', function() {
             it('should accept an Array argument', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
-                try {
-                    vb.bufferSubData( positions );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
+                vb.bufferSubData( positions );
             });
             it('should accept an ArrayBufferView argument', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
-                try {
-                    vb.bufferSubData( new Float32Array( positions ) );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
+                vb.bufferSubData( new Float32Array( positions ) );
             });
             it('should accept an ArrayBuffer argument', function() {
-                var vb0 = new VertexBuffer( positions.length * bytesPerComponent, pointers );
-                var vb1 = new VertexBuffer( positions.length * bytesPerComponent, pointers );
-                try {
-                    vb0.bind(); // code coverage to ensure next call re-binds after
-                    vb1.bufferSubData( new ArrayBuffer( positions.length ) );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
+                vb.bind(); // code coverage to ensure next call re-binds after
+                vb.bufferSubData( new ArrayBuffer( positions.length ) );
             });
             it('should accept a second numberic byte offset argument', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent * 2, pointers );
-                try {
-                    vb.bufferSubData( positions, positions.length * bytesPerComponent );
-                } catch( err ) {
-                    assert( false );
-                }
+                let vb = new VertexBuffer( positions.length * bytesPerComponent * 2, pointers );
+                vb.bufferSubData( positions, positions.length * bytesPerComponent );
             });
             it('should throw an exception if the buffer has not been initialized', function() {
-                var vb = new VertexBuffer( null, pointers );
-                var result = false;
+                let vb = new VertexBuffer( null, pointers );
+                let result = false;
                 try {
                     vb.bufferSubData( new ArrayBuffer( positions.length * bytesPerComponent ) );
                 } catch( err ) {
@@ -449,8 +342,8 @@
                 assert( result );
             });
             it('should throw an exception when given an invalid argument', function() {
-                var vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
-                var result = false;
+                let vb = new VertexBuffer( positions.length * bytesPerComponent, pointers );
+                let result = false;
                 try {
                     vb.bufferSubData( 'str' );
                 } catch( err ) {
@@ -479,7 +372,7 @@
 
         describe('#bind()', function() {
             it('should bind the attribute pointers', function() {
-                var vb = new VertexBuffer( positions, pointers );
+                let vb = new VertexBuffer( positions, pointers );
                 vb.bind();
                 vb.unbind();
             });
@@ -487,25 +380,23 @@
 
         describe('#unbind()', function() {
             it('should unbind the attribute pointers', function() {
-                var vb0 = new VertexBuffer( positions, pointers );
-                var vb1 = new VertexBuffer( positions, pointers );
-                vb0.bind();
-                vb1.bind();
-                vb0.unbind();
-                vb1.unbind();
+                let vb = new VertexBuffer( positions, pointers );
+                vb.bind();
+                vb.unbind();
             });
         });
 
         describe('#draw()', function() {
             it('should draw the buffer', function() {
-                var vb = new VertexBuffer( positions, pointers );
-                vb.bind();
+                let vb = new VertexBuffer( positions, pointers, {
+                    count: ( positions.length / 3 )
+                });
                 vb.bind();
                 vb.draw();
                 vb.unbind();
             });
             it('should accept `mode`, `count`, and `byteOffset` overrides', function() {
-                var vb = new VertexBuffer( positions, pointers );
+                let vb = new VertexBuffer( positions, pointers );
                 vb.bind();
                 vb.draw({
                     mode: 'POINTS',
@@ -514,19 +405,9 @@
                 });
                 vb.unbind();
             });
-            it('should throw an exception if the buffer is not bound', function() {
-                var vb = new VertexBuffer( positions, pointers );
-                var result = false;
-                try {
-                    vb.draw();
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
-            });
             it('should throw an exception if the count is zero', function() {
-                var vb = new VertexBuffer( positions, pointers );
-                var result = false;
+                let vb = new VertexBuffer( positions, pointers );
+                let result = false;
                 try {
                     vb.bind();
                     vb.draw({
@@ -536,21 +417,6 @@
                     result = true;
                 }
                 vb.unbind();
-                assert( result );
-            });
-            it('should throw an exception if the `count` and `byteOffset` overflow the buffer', function() {
-                var vb = new VertexBuffer( positions, pointers );
-                var result = false;
-                try {
-                    vb.bind();
-                    vb.draw({
-                        count: positions.length,
-                        byteOffset: 1 * bytesPerComponent
-                    });
-                    vb.unbind();
-                } catch( err ) {
-                    result = true;
-                }
                 assert( result );
             });
         });

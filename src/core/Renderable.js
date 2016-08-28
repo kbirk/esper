@@ -28,12 +28,15 @@
         });
     }
 
+    /**
+     * @class Renderable
+     * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
+     */
     class Renderable {
 
         /**
          * Instantiates an Renderable object.
-         * @class Renderable
-         * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
+         * @memberof Renderable
          *
          * @param {Object} spec - The renderable specification object.
          * @param {Array|Float32Array} spec.vertices - The vertices to interleave and buffer.

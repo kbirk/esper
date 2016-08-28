@@ -2,16 +2,16 @@
 
     'use strict';
 
-    var assert = require('assert');
-    var WebGLContext = require('../../src/core/WebGLContext');
-    var Shader = require('../../src/core/Shader');
-    var XHRLoader = require('../../src/util/XHRLoader');
+    let assert = require('assert');
+    let WebGLContext = require('../../src/core/WebGLContext');
+    let Shader = require('../../src/core/Shader');
+    let XHRLoader = require('../../src/util/XHRLoader');
     require('webgl-mock');
-    var canvas;
-    var gl;
-    var _load;
+    let canvas;
+    let gl;
+    let _load;
 
-    var vert = [
+    let vert = [
         'attribute highp vec3 aVertexPosition;',
         'attribute highp vec3 aVertexNormal;',
         'attribute highp vec2 aTextureCoord;',
@@ -23,7 +23,7 @@
         '}'
     ].join('\n');
 
-    var frag = [
+    let frag = [
         'uniform highp mat4 uViewMatrix;',
         'uniform highp vec3 uLightPosition;',
         'uniform bool uUseTexture;',
@@ -38,12 +38,12 @@
         '}'
     ].join('\n');
 
-    var urls = {
+    let urls = {
         'path/to/vert': vert,
         'path/to/frag': frag
     };
 
-    var identity = [
+    let identity = [
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
@@ -72,7 +72,7 @@
 
         describe('#constructor()', function() {
             it('should throw an exception if there is no `vert` argument', function() {
-                var result = false;
+                let result = false;
                 try {
                     new Shader();
                 } catch( err ) {
@@ -81,7 +81,7 @@
                 assert( result );
             });
             it('should throw an exception if there is no `frag` argument', function() {
-                var result = false;
+                let result = false;
                 try {
                     new Shader({
                         vert: vert
@@ -92,11 +92,11 @@
                 assert( result );
             });
             it('should throw an exception if there is a compilation error', function() {
-                var getShaderParameter = gl.getShaderParameter;
+                let getShaderParameter = gl.getShaderParameter;
                 gl.getShaderParameter = function() {
                     return false;
                 };
-                var result = false;
+                let result = false;
                 try {
                     new Shader({
                         vert: vert,
@@ -105,15 +105,15 @@
                 } catch( err ) {
                     result = true;
                 }
-                assert( result );
                 gl.getShaderParameter = getShaderParameter;
+                assert( result );
             });
             it('should throw an exception if there is a linking error', function() {
-                var getProgramParameter = gl.getProgramParameter;
+                let getProgramParameter = gl.getProgramParameter;
                 gl.getProgramParameter = function() {
                     return false;
                 };
-                var result = false;
+                let result = false;
                 try {
                     new Shader({
                         vert: vert,
@@ -122,18 +122,18 @@
                 } catch( err ) {
                     result = true;
                 }
-                assert( result );
                 gl.getProgramParameter = getProgramParameter;
+                assert( result );
             });
             it('should accept shader arguments as glsl source', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
                 assert( shader );
             });
             it('should accept shader arguments as URLs', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: 'path/to/vert',
                     frag: 'path/to/frag'
                 }, function() {
@@ -141,8 +141,8 @@
                 });
             });
             it('should execute callback function passing an error as first argument if a URL results in an error', function( done ) {
-                var load = XHRLoader.load;
-                var err = new Error( 'error' );
+                let load = XHRLoader.load;
+                let err = new Error( 'error' );
                 XHRLoader.load = function( opts ) {
                     setTimeout( function() {
                         opts.error( err );
@@ -152,13 +152,13 @@
                     vert: 'path/to/vert',
                     frag: 'path/to/frag'
                 }, function( e ) {
-                    assert( e === err );
                     XHRLoader.load = load;
+                    assert( e === err );
                     done();
                 });
             });
             it('should accept an `attributes` array argument to override attribute indices', function() {
-                var shader0 = new Shader({
+                let shader0 = new Shader({
                     vert: vert,
                     frag: frag,
                     attributes: [
@@ -170,7 +170,7 @@
                 assert( shader0.attributes.aTextureCoord.index === 0 );
                 assert( shader0.attributes.aVertexNormal.index === 1 );
                 assert( shader0.attributes.aVertexPosition.index === 2 );
-                var shader1 = new Shader({
+                let shader1 = new Shader({
                     vert: vert,
                     frag: frag,
                     attributes: [
@@ -184,124 +184,73 @@
             });
         });
 
-        describe('#push()', function() {
-            it('should push the shader onto the stack', function() {
-                var shader = new Shader({
+        describe('#use()', function() {
+            it('should use the shader', function() {
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
-                shader.push();
-                shader.pop();
-                shader.pop();
-            });
-        });
-
-        describe('#pop()', function() {
-            it('should pop the shader off the stack', function() {
-                var shader0 = new Shader({
-                    vert: vert,
-                    frag: frag
-                });
-                var shader1 = new Shader({
-                    vert: vert,
-                    frag: frag
-                });
-                shader0.push();
-                shader1.push();
-                shader1.pop();
-                shader0.pop();
-            });
-            it('should throw an exception if this shader is not the top of the stack', function() {
-                var shader = new Shader({
-                    vert: vert,
-                    frag: frag
-                });
-                var result = false;
-                try {
-                    shader.pop();
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
+                shader.use();
             });
         });
 
         describe('#setUniform()', function() {
             it('should accept value of type `boolean`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniform( 'uUseTexture', true );
                 shader.setUniform( 'uUseTexture', false );
-                shader.pop();
             });
             it('should accept value of type `number`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniform( 'uSpecularComponent', 10 );
-                shader.pop();
             });
             it('should accept value of type `Array`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniform( 'uModelMatrix', identity );
-                shader.pop();
             });
             it('should accept value of type `Float32Array`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniform( 'uModelMatrix', new Float32Array( identity ) );
                 shader.setUniform( 'uMat2Array', new Float32Array( identity ) );
                 shader.setUniform( 'uMat3Array', new Float32Array( identity ) );
-                shader.pop();
-            });
-            it('should throw an exception if the shader is not the top of the stack', function() {
-                var shader = new Shader({
-                    vert: vert,
-                    frag: frag
-                });
-                var result = false;
-                try {
-                    shader.setUniform( 'uModelMatrix', identity );
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
             });
             it('should throw an exception if the uniform does not exist', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
-                var result = false;
+                shader.use();
+                let result = false;
                 try {
                     shader.setUniform( 'doesNotExist', identity );
                 } catch( err ) {
                     result = true;
                 }
                 assert( result );
-                shader.pop();
             });
             it('should throw an exception if the value is undefined or null', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
-                var result = false;
+                shader.use();
+                let result = false;
                 try {
                     shader.setUniform( 'uModelMatrix' );
                 } catch( err ) {
@@ -315,79 +264,59 @@
                     result = true;
                 }
                 assert( result );
-                shader.pop();
             });
         });
 
         describe('#setUniforms()', function() {
             it('should accept value of type `boolean`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniforms({
                     uUseTexture: true
                 });
-                shader.pop();
             });
             it('should accept value of type `number`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniforms({
                     uSpecularComponent: 10
                 });
-                shader.pop();
             });
             it('should accept value of type `Array`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniforms({
                     uModelMatrix: identity
                 });
-                shader.pop();
             });
             it('should accept value of type `Float32Array`', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
+                shader.use();
                 shader.setUniforms({
                     uModelMatrix: new Float32Array( identity ),
                     uMat2Array: new Float32Array( identity ),
                     uMat3Array: new Float32Array( identity )
                 });
-                shader.pop();
-            });
-            it('should throw an exception if the shader is not the top of the stack', function() {
-                var shader = new Shader({
-                    vert: vert,
-                    frag: frag
-                });
-                var result = false;
-                try {
-                    shader.setUniforms({
-                        uModelMatrix: identity
-                    });
-                } catch( err ) {
-                    result = true;
-                }
-                assert( result );
             });
             it('should throw an exception if the uniform does not exist', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
-                var result = false;
+                shader.use();
+                let result = false;
                 try {
                     shader.setUniforms({
                         doesNotExist: identity
@@ -396,15 +325,14 @@
                     result = true;
                 }
                 assert( result );
-                shader.pop();
             });
             it('should throw an exception if the value is undefined or null', function() {
-                var shader = new Shader({
+                let shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
-                shader.push();
-                var result = false;
+                shader.use();
+                let result = false;
                 try {
                     shader.setUniforms({
                         uModelMatrix: undefined
@@ -422,7 +350,6 @@
                     result = true;
                 }
                 assert( result );
-                shader.pop();
             });
         });
 

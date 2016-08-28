@@ -46,18 +46,21 @@
      */
     let DEFAULT_FILTER = 'LINEAR';
 
+    /**
+     * @class DepthTexture2D
+     * @classdesc A texture class to represent a 2D depth texture.
+     * @augments Texture2D
+     */
     class DepthTexture2D extends Texture2D {
 
         /**
          * Instantiates a DepthTexture2D object.
-         * @class DepthTexture2D
-         * @classdesc A texture class to represent a 2D depth texture.
-         * @augments Texture2D
+         * @memberof DepthTexture2D
          *
          * @param {Object} spec - The specification arguments.
          * @param {Uint8Array|Uint16Array|Uint32Array} spec.src - The data to buffer.
-         * @param {number} spec.width - The width of the texture.
-         * @param {number} spec.height - The height of the texture.
+         * @param {Number} spec.width - The width of the texture.
+         * @param {Number} spec.height - The height of the texture.
          * @param {String} spec.wrap - The wrapping type over both S and T dimension.
          * @param {String} spec.wrapS - The wrapping type over the S dimension.
          * @param {String} spec.wrapT - The wrapping type over the T dimension.

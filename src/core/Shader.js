@@ -4,7 +4,6 @@
 
     let WebGLContext = require('./WebGLContext');
     let ShaderParser = require('./ShaderParser');
-    let WebGLContextState = require('./WebGLContextState');
     let Async = require('../util/Async');
     let XHRLoader = require('../util/XHRLoader');
     let UNIFORM_FUNCTIONS = {
@@ -47,7 +46,7 @@
      * @param {Object} attributes - The existing attributes object.
      * @param {Object} declaration - The attribute declaration object.
      *
-     * @returns {number} The attribute index.
+     * @returns {Number} The attribute index.
      */
     function getAttributeIndex( attributes, declaration ) {
         // check if attribute is already declared, if so, use that index
@@ -195,7 +194,7 @@
         return function( done ) {
             let tasks = [];
             sources = sources || [];
-            sources = ( !( sources instanceof Array ) ) ? [ sources ] : sources;
+            sources = !Array.isArray(sources) ? [ sources ] : sources;
             sources.forEach( source => {
                 if ( ShaderParser.isGLSL( source ) ) {
                     tasks.push( passThroughSource( source ) );
@@ -247,13 +246,15 @@
         getUniformLocations( shader );
     }
 
+    /**
+     * @class Shader
+     * @classdesc A shader class to assist in compiling and linking webgl shaders, storing attribute and uniform locations, and buffering uniforms.
+     */
     class Shader {
 
         /**
          * Instantiates a Shader object.
-         * @class Shader
-         * @classdesc A shader class to assist in compiling and linking webgl
-         * shaders, storing attribute and uniform locations, and buffering uniforms.
+         * @memberof Shader
          *
          * @param {Object} spec - The shader specification object.
          * @param {String|String[]|Object} spec.common - Sources / URLs to be shared by both vertex and fragment shaders.
@@ -272,7 +273,6 @@
             }
             this.program = 0;
             this.gl = WebGLContext.get();
-            this.state = WebGLContextState.get( this.gl );
             this.version = spec.version || '1.00';
             this.attributes = {};
             this.uniforms = {};
@@ -310,37 +310,9 @@
          *
          * @returns {Shader} - The shader object, for chaining.
          */
-        push() {
-            // if this shader is already bound, no need to rebind
-            if ( this.state.shaders.top() !== this ) {
-                this.gl.useProgram( this.program );
-            }
-            this.state.shaders.push( this );
-            return this;
-        }
-
-        /**
-         * Unbinds the shader object and binds the shader beneath it on this stack. If there is no underlying shader, bind the backbuffer.
-         * @memberof Shader
-         *
-         * @returns {Shader} - The shader object, for chaining.
-         */
-        pop() {
-            let state = this.state;
-            // if there is no shader bound, exit early
-            if ( state.shaders.top() !== this ) {
-                throw 'Shader is not the top most element on the stack';
-            }
-            // pop shader off stack
-            state.shaders.pop();
-            // if there is an underlying shader, bind it
-            let top = state.shaders.top();
-            if ( top && top !== this ) {
-                top.gl.useProgram( top.program );
-            } else {
-                // unbind the shader
-                this.gl.useProgram( null );
-            }
+        use() {
+            // use the shader
+            this.gl.useProgram( this.program );
             return this;
         }
 
@@ -354,10 +326,6 @@
          * @returns {Shader} The shader object, for chaining.
          */
         setUniform( name, value ) {
-            // ensure shader is bound
-            if ( this !== this.state.shaders.top() ) {
-                throw 'Attempting to set uniform `' + name + '` for an unbound shader';
-            }
             let uniform = this.uniforms[ name ];
             // ensure that the uniform spec exists for the name
             if ( !uniform ) {
@@ -389,10 +357,6 @@
          * @returns {Shader} - The shader object, for chaining.
          */
         setUniforms( args ) {
-            // ensure shader is bound
-            if ( this !== this.state.shaders.top() ) {
-                throw 'Attempting to set uniform `' + name + '` for an unbound shader';
-            }
             let gl = this.gl;
             let uniforms = this.uniforms;
             Object.keys( args ).forEach( name => {

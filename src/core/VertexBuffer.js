@@ -3,7 +3,6 @@
     'use strict';
 
     let WebGLContext = require('./WebGLContext');
-    let WebGLContextState = require('./WebGLContextState');
     let VertexPackage = require('./VertexPackage');
     let MODES = {
         POINTS: true,
@@ -63,7 +62,7 @@
      *
      * @param {Object} attributePointers - The attribute pointer map.
      *
-     * @returns {number} - The byte stride of the buffer.
+     * @returns {Number} - The byte stride of the buffer.
      */
     function getStride( attributePointers ) {
         // if there is only one attribute pointer assigned to this buffer,
@@ -140,35 +139,33 @@
     }
 
     class VertexBuffer {
-        
+
         /**
          * Instantiates an VertexBuffer object.
          * @class VertexBuffer
          * @classdesc A vertex buffer object.
          *
-         * @param {Array|Float32Array|VertexPackage|number} arg - The buffer or length of the buffer.
+         * @param {WebGLBuffer|VertexPackage|Float32Array|Array|Number} arg - The buffer or length of the buffer.
          * @param {Object} attributePointers - The array pointer map, or in the case of a vertex package arg, the options.
          * @param {Object} options - The rendering options.
          * @param {String} options.mode - The draw mode / primitive type.
          * @param {String} options.indexOffset - The index offset into the drawn buffer.
          * @param {String} options.count - The number of indices to draw.
          */
-        constructor( arg, attributePointers, options = {} ) {
+        constructor( arg, attributePointers = {}, options = {} ) {
             this.gl = WebGLContext.get();
-            this.state = WebGLContextState.get( this.gl );
             this.buffer = null;
             this.mode = MODES[ options.mode ] ? options.mode : DEFAULT_MODE;
             this.count = ( options.count !== undefined ) ? options.count : DEFAULT_COUNT;
             this.indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : DEFAULT_INDEX_OFFSET;
             this.byteLength = 0;
             // first, set the attribute pointers
-            if ( arg instanceof VertexPackage ) {
+            if ( arg && arg.buffer && arg.pointers ) {
                 // VertexPackage argument, use its attribute pointers
                 this.pointers = arg.pointers;
                 // shift options arg since there will be no attrib pointers arg
-                options = attributePointers || {};
+                options = attributePointers;
             } else {
-                attributePointers = attributePointers || {};
                 this.pointers = getAttributePointers( attributePointers );
             }
             // set the byte stride
@@ -215,7 +212,11 @@
                 throw 'Argument must be of type `Array`, `ArrayBuffer`, `ArrayBufferView`, or `Number`';
             }
             // set byte length
-            this.byteLength = arg.byteLength;
+            if ( Number.isInteger(arg) ) {
+                this.byteLength = arg;
+            } else {
+                this.byteLength = arg.byteLength;
+            }
             // create buffer if it doesn't exist already
             if ( !this.buffer ) {
                 this.buffer = gl.createBuffer();
@@ -223,10 +224,6 @@
             // buffer the data
             gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
             gl.bufferData( gl.ARRAY_BUFFER, arg, gl.STATIC_DRAW );
-            // rebind prev buffer
-            if ( this.state.boundVertexBuffer ) {
-                gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
-            }
         }
 
         /**
@@ -234,7 +231,7 @@
          * @memberof VertexBuffer
          *
          * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
-         * @param {number} byteOffset - The byte offset at which to buffer.
+         * @param {Number} byteOffset - The byte offset at which to buffer.
          *
          * @returns {VertexBuffer} - The vertex buffer object for chaining.
          */
@@ -253,7 +250,7 @@
                 ) {
                 throw 'Argument must be of type `Array`, `ArrayBuffer`, or `ArrayBufferView`';
             }
-            // get the total number of attribute components from pointers
+            // check that we aren't overflowing the buffer
             if ( byteOffset + array.byteLength > this.byteLength ) {
                 throw 'Argument of length ' + array.byteLength +
                     ' bytes and offset of ' + byteOffset +
@@ -262,10 +259,6 @@
             }
             gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
             gl.bufferSubData( gl.ARRAY_BUFFER, byteOffset, array );
-            // rebind prev buffer
-            if ( this.state.boundVertexBuffer ) {
-                gl.bindBuffer( gl.ARRAY_BUFFER, this.state.boundVertexBuffer );
-            }
             return this;
         }
 
@@ -277,13 +270,8 @@
          */
         bind() {
             let gl = this.gl;
-            let state = this.state;
-            // cache this vertex buffer
-            if ( state.boundVertexBuffer !== this.buffer ) {
-                // bind buffer
-                gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-                state.boundVertexBuffer = this.buffer;
-            }
+            // bind buffer
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
             // for each attribute pointer
             Object.keys( this.pointers ).forEach( index => {
                 let pointer = this.pointers[ index ];
@@ -296,10 +284,7 @@
                     this.byteStride,
                     pointer.byteOffset );
                 // enable attribute index
-                if ( !state.enabledVertexAttributes[ index ] ) {
-                    gl.enableVertexAttribArray( index );
-                    state.enabledVertexAttributes[ index ] = true;
-                }
+                gl.enableVertexAttribArray( index );
             });
             return this;
         }
@@ -312,19 +297,11 @@
          */
         unbind() {
             let gl = this.gl;
-            let state = this.state;
-            // only bind if it already isn't bound
-            if ( state.boundVertexBuffer !== this.buffer ) {
-                // bind buffer
-                gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
-                state.boundVertexBuffer = this.buffer;
-            }
+            // unbind buffer
+            gl.bindBuffer( gl.ARRAY_BUFFER, this.buffer );
             Object.keys( this.pointers ).forEach( index => {
                 // disable attribute index
-                if ( state.enabledVertexAttributes[ index ] ) {
-                    gl.disableVertexAttribArray( index );
-                    state.enabledVertexAttributes[ index ] = false;
-                }
+                gl.disableVertexAttribArray( index );
             });
             return this;
         }
@@ -341,9 +318,6 @@
          * @returns {VertexBuffer} - Returns the vertex buffer object for chaining.
          */
         draw( options = {} ) {
-            if ( this.state.boundVertexBuffer !== this.buffer ) {
-                throw 'Attempting to draw an unbound VertexBuffer';
-            }
             let gl = this.gl;
             let mode = gl[ options.mode || this.mode ];
             let indexOffset = ( options.indexOffset !== undefined ) ? options.indexOffset : this.indexOffset;

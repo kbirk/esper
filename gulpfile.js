@@ -2,22 +2,22 @@
 
     'use strict';
 
-    var gulp = require('gulp');
-    var runSequence = require('run-sequence');
-    var uglify = require('gulp-uglify');
-    var buffer = require('vinyl-buffer');
-    var source = require('vinyl-source-stream');
-    var browserify = require('browserify');
-    var istanbul = require('gulp-istanbul');
-    var mocha = require('gulp-mocha');
-    var del = require('del');
-    var jshint = require('gulp-jshint');
-    var coveralls = require('gulp-coveralls');
-    var shell = require('gulp-shell');
-	var babel = require('babelify');
+    let gulp = require('gulp');
+    let runSequence = require('run-sequence');
+    let uglify = require('gulp-uglify');
+    let buffer = require('vinyl-buffer');
+    let source = require('vinyl-source-stream');
+    let browserify = require('browserify');
+    let istanbul = require('gulp-istanbul');
+    let mocha = require('gulp-mocha');
+    let del = require('del');
+    let jshint = require('gulp-jshint');
+    let coveralls = require('gulp-coveralls');
+    let shell = require('gulp-shell');
+	let babel = require('babelify');
 
-    var project = 'esper';
-    var paths = {
+    let project = 'esper';
+    let paths = {
         root: 'src/exports.js',
         src: [
             'src/**/*.js'
@@ -41,7 +41,7 @@
 
     function handleErrorTimeout( err ) {
         console.error( err );
-        setTimeout( function() {
+        setTimeout( () => {
             // set delay for full mocha error message
             process.exit( 1 );
         });
@@ -64,7 +64,7 @@
     }
 
     function build( root, output, minify ) {
-        var b = browserify( root, {
+        let b = browserify( root, {
             debug: !minify,
             standalone: project
         }).transform(babel, {
@@ -85,10 +85,13 @@
     });
 
     gulp.task('test', function() {
+        // return gulp.src( paths.tests )
+        //     .pipe( mocha({ reporter: 'list' })
+        //         .on( 'error', handleErrorTimeout ) ); // print mocha error message
         return gulp.src( paths.coverage )
             .pipe( istanbul({ includeUntested: false }) ) // Covering files
             .pipe( istanbul.hookRequire() )
-            .on( 'finish', function () {
+            .on( 'finish', () => {
                 return gulp.src( paths.tests )
                     .pipe( mocha({ reporter: 'list' })
                         .on( 'error', handleErrorTimeout ) ) // print mocha error message

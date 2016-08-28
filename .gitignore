@@ -1,4 +1,4 @@
 .DS_Store
-TODO.txt
+TODO.md
 node_modules/*
 coverage/*
