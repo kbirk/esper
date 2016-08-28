@@ -46,7 +46,7 @@ bower install esper
 
 ## Example
 
-* [Full JSFiddle Example](https://jsfiddle.net/2on2g24k/)
+* [Full JSFiddle Example](https://jsfiddle.net/ppvv2x03/)
 
 ```javascript
 
