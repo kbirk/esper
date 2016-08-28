@@ -1,4 +1,4 @@
-( function() {
+(function() {
 
     'use strict';
 
@@ -34,93 +34,95 @@
         build: 'build'
     };
 
-    function handleError( err ) {
-        console.error( err );
-        this.emit( 'end' );
+    function handleError(err) {
+        console.error(err);
+        this.emit('end');
     }
 
-    function handleErrorTimeout( err ) {
-        console.error( err );
-        setTimeout( () => {
+    function handleErrorTimeout(err) {
+        console.error(err);
+        setTimeout(() => {
             // set delay for full mocha error message
-            process.exit( 1 );
+            process.exit(1);
         });
     }
 
-    function bundle( b, output ) {
+    function bundle(b, output) {
         return b.bundle()
-            .on( 'error', handleError )
-            .pipe( source( output ) )
-            .pipe( gulp.dest( paths.build ) );
+            .on('error', handleError)
+            .pipe(source(output))
+            .pipe(gulp.dest(paths.build));
     }
 
-    function bundleMin( b, output ) {
+    function bundleMin(b, output) {
         return b.bundle()
-            .on( 'error', handleError )
-            .pipe( source( output ) )
-            .pipe( buffer() )
-            .pipe( uglify() )
-            .pipe( gulp.dest( paths.build ) );
+            .on('error', handleError)
+            .pipe(source(output))
+            .pipe(buffer())
+            .pipe(uglify())
+            .pipe(gulp.dest(paths.build));
     }
 
-    function build( root, output, minify ) {
-        let b = browserify( root, {
+    function build(root, output, minify) {
+        let b = browserify(root, {
             debug: !minify,
             standalone: project
         }).transform(babel, {
             presets: [ 'es2015' ]
         });
-        return ( minify ) ? bundleMin( b, output ) : bundle( b, output );
+        return (minify) ? bundleMin(b, output) : bundle(b, output);
     }
 
-    gulp.task('clean', function( done ) {
-        del.sync( paths.build );
+    gulp.task('clean', function(done) {
+        del.sync(paths.build);
+        done();
+    });
+
+    gulp.task('clean-docs', function(done) {
+        del.sync('docs');
         done();
     });
 
     gulp.task('lint', function() {
-        return gulp.src( paths.src )
-            .pipe( jshint('.jshintrc') )
-            .pipe( jshint.reporter('jshint-stylish') );
+        return gulp.src(paths.src)
+            .pipe(jshint('.jshintrc'))
+            .pipe(jshint.reporter('jshint-stylish'));
     });
 
     gulp.task('test', function() {
-        // return gulp.src( paths.tests )
-        //     .pipe( mocha({ reporter: 'list' })
-        //         .on( 'error', handleErrorTimeout ) ); // print mocha error message
-        return gulp.src( paths.coverage )
-            .pipe( istanbul({ includeUntested: false }) ) // Covering files
-            .pipe( istanbul.hookRequire() )
-            .on( 'finish', () => {
-                return gulp.src( paths.tests )
-                    .pipe( mocha({ reporter: 'list' })
-                        .on( 'error', handleErrorTimeout ) ) // print mocha error message
-                    .pipe( istanbul.writeReports() ); // Creating the reports after tests runned
+        return gulp.src(paths.coverage)
+            .pipe(istanbul({ includeUntested: false })) // Covering files
+            .pipe(istanbul.hookRequire())
+            .on('finish', () => {
+                return gulp.src(paths.tests)
+                    .pipe(mocha({ reporter: 'list' })
+                        .on('error', handleErrorTimeout)) // print mocha error message
+                    .pipe(istanbul.writeReports()); // Creating the reports after tests runned
             });
     });
 
     gulp.task('coveralls', function() {
         return gulp.src('./coverage/**/lcov.info')
-            .pipe( coveralls() );
+            .pipe(coveralls());
     });
 
     gulp.task('build-min-js', function() {
-        return build( paths.root, project + '.min.js', true );
+        return build(paths.root, project + '.min.js', true);
     });
 
     gulp.task('build-js', function() {
-        return build( paths.root, project + '.js', false );
+        return build(paths.root, project + '.js', false);
     });
 
-    gulp.task('docs', shell.task([
-      './node_modules/.bin/jsdoc ' + paths.docs + ' --readme README.md --destination docs --template node_modules/minami'
+    gulp.task('docs', [ 'clean-docs' ], shell.task([
+        './node_modules/.bin/jsdoc ' + paths.docs + ' --readme README.md --destination docs --template node_modules/minami'
     ]));
 
-    gulp.task('build', function( done ) {
+    gulp.task('build', function(done) {
         runSequence(
             [ 'clean', 'lint' ],
             [ 'build-js', 'build-min-js', 'docs' ],
-            done );
+            done);
     });
 
     gulp.task('default', [ 'build' ], function() {

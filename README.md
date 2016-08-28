@@ -58,20 +58,19 @@ let texture;
 function render() {
 	// setup
 	viewport.push();
-	shader.push();
+	shader.use();
 	shader.setUniform('uLightPosition', light);
 	shader.setUniform('uModelMatrix', model);
 	shader.setUniform('uViewMatrix', view);
 	shader.setUniform('uProjectionMatrix', projection);
 	shader.setUniform('uTextureSampler', 0);
-	texture.push(0);
+	texture.bind(0);
 	// draw
 	renderable.draw();
 	// teardown
-	texture.pop(0);
+	texture.unbind();
 	viewport.pop();
-	shader.pop();
-	// continue to next frame
+	// queue next frame
 	requestAnimationFrame(render);
 }
 
@@ -217,18 +216,22 @@ Multiple source arguments can be provided as arrays and are concatenated togethe
 ```javascript
 // Create shader object and using source URLs (also supports source code strings).
 let shader = new esper.Shader({
-	common: 'uniform highp float uTime;'
-	vert: `
+	common: 'uniform highp float uTime;',
+	vert:
+		`
 		shaders/noise.vert
 		attribute highp vec3 aVertexPosition;
 		void main() {
 			gl_Position = vec4(aVertexPosition * noise(uTime), 1.0);
 			vPosition = aVertexPosition.xyz;
-		}`
-	frag:`
+		}
+		`,
+	frag:
+		`
 		void main() {
 			gl_FragColor = vec4(1*uTime, 1*uTime, 1*uTime, 1.0);
-		}`
+		}
+		`
 }, (err, shader) => {
 	if (err) {
 		console.error(err);
@@ -412,16 +415,17 @@ indexBuffer.draw({
 	mode: TRIANGLES
 });
 
-// Draw points from an offset.
-indexBuffer.draw({
-	mode: POINTS,
-	byteOffset: 100 * 4 * 2
-});
-
 // Draw n lines.
 indexBuffer.draw({
 	mode: LINES,
 	count: n * 2
+});
+
+// Draw points from an offset.
+indexBuffer.draw({
+	mode: POINTS,
+	byteOffset: 100 * (4 * 3),
+	count: n - (100)
 });
 
 vertexBuffer.unbind();
@@ -454,7 +458,7 @@ let renderable = new esper.Renderable({
 // Draw the renderable.
 renderable.draw({
 	mode: 'LINES', // render lines instead of triangles
-	byteOffset: 100 * 4 * 2, // exclude the first 100 lines
+	byteOffset: 100 * (4 * 3) * 2, // exclude the first 100 lines
 	count: 500 * 2 // only render 500 lines
 });
 ```
@@ -486,11 +490,11 @@ let texture = new esper.Texture2D({
 });
 ```
 
-Using textures is easy, simply push the texture onto the stack, providing the texture unit number, then set the texture sampler unit in the shader.
+Using textures is easy, simply bind the texture, providing the texture unit number, then set the texture sampler unit in the shader.
 
 ```javascript
 // Bind to texture unit 0
-texture.push(0);
+texture.bind(0);
 
 // Bind texture sampler to the same unit.
 shader.setUniform('uTextureSampler', 0);
@@ -498,7 +502,7 @@ shader.setUniform('uTextureSampler', 0);
 // .. draw using texture
 
 // Unbind from texture unit 0.
-texture.pop(0);
+texture.unbind();
 ```
 
 ### ColorTextures
@@ -568,18 +572,18 @@ let cubeMapTexture = new TextureCubeMap({
 });
 ```
 
-Using cubemap textures is easy, simply push the texture onto the stack, providing the texture unit number, then set the texture sampler unit in the shader.
+Using cubemap textures is easy, simply bind the texture, providing the texture unit number, then set the texture sampler unit in the shader.
 
 ```javascript
 // Bind to texture unit 0.
-cubeMapTexture.push(0);
+cubeMapTexture.bind(0);
 // Bind texture sampler to the same unit.
 shader.setUniform('uTextureSampler', 0);
 
 // .. draw using cubemap texture
 
 // Unbind from texture unit 0.
-cubeMapTexture.pop(0);
+cubeMapTexture.unbind();
 ```
 
 ### RenderTargets
@@ -609,7 +613,7 @@ Drawing to the texture unit is simple:
 
 ```javascript
 // Bind the render target.
-renderTarget.push();
+renderTarget.bind();
 
 // Clear the bound color and depth textures.
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -617,12 +621,12 @@ gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 // .. render to the render target
 
 // Unbind the the render target.
-renderTarget.pop();
+renderTarget.unbind();
 
 // Now use the bound textures as you would normally.
 
 // Bind shadow map to texture unit 0.
-shadowTexture.push(0);
+shadowTexture.bind(0);
 
 // Bind texture sampler to the same unit.
 shader.setUniform('uShadowTextureSampler', 0);
@@ -630,5 +634,5 @@ shader.setUniform('uShadowTextureSampler', 0);
 // ... render using the texture
 
 // Unbind from texture unit 0.
-shadowTexture.pop(0);
+shadowTexture.unbind();
 ```
