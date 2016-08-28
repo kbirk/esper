@@ -82,7 +82,7 @@
                     type: declaration.type,
                     index: index
                 };
-            } else if (declaration.qualifier === 'uniform') {
+            } else { // if (declaration.qualifier === 'uniform') {
                 // if uniform, store type and buffer function name
                 shader.uniforms[declaration.name] = {
                     type: declaration.type,
@@ -141,7 +141,15 @@
         let uniforms = shader.uniforms;
         Object.keys(uniforms).forEach(key => {
             // get the uniform location
-            uniforms[key].location = gl.getUniformLocation(shader.program, key);
+            let location = gl.getUniformLocation(shader.program, key);
+            // check if null, parse may detect uniform that is compiled out
+            // due to a preprocessor evaluation.
+            // TODO: fix parser so that it evaluates these correctly.
+            if (location === null) {
+                delete uniforms[key];
+            } else {
+                uniforms[key].location = location;
+            }
         });
     }
 

@@ -180,32 +180,22 @@
                 assert(declarations[4].count === 1);
                 assert(declarations[5].count === 11);
             });
-            it('should parse precision statements', function() {
-                let source =
-                    `
-                    precision highp float;
-                     uniform float A;
-                     precision
-                    mediump
-                     int;
-                     uniform uint B;
-                     mediump;
-                    void main() {}
-                    `;
-                let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
-                assert(declarations[0].precision === 'highp');
-                assert(declarations[1].precision === 'mediump');
-            });
             it('should handle preprocessor statements', function() {
                 let source =
                     `
                     precision highp float;
                     #define TEST 5
                     #define CONST 6
+                    #DEFINE MAX(x, y) ((x > y) ? x : y)
+                    #DEFINE MIN(x, y) \\
+                        ((x < y) ? x : y)
+                    #ifdef
+                    uniform mat4 uOptionalUniform;
+                    #endif
                     void main() {}
                     `;
                 let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
-                assert(declarations.length === 0);
+                assert(declarations.length === 1);
             });
         });
         describe('#isGLSL()', function() {

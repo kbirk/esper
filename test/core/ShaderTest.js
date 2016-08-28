@@ -146,6 +146,11 @@
                         opts.error(err);
                     }, 100);
                 };
+                // coverage, for no supplied callback branch
+                new Shader({
+                    vert: 'path/to/vert',
+                    frag: 'path/to/frag'
+                });
                 new Shader({
                     vert: 'path/to/vert',
                     frag: 'path/to/frag'
@@ -179,6 +184,29 @@
                 assert(shader1.attributes.aTextureCoord.index === 0);
                 assert(shader1.attributes.aVertexPosition.index === 1);
                 assert(shader1.attributes.aVertexNormal.index === 2);
+            });
+            it('should discard any uniforms that are compiled out by preprocessor statements', function() {
+                let vert =
+                    `
+                    attribute highp vec3 A;
+                    attribute highp vec3 B;
+                    attribute highp vec3 C;
+                    #ifdef IGNORE_UNIFORM
+                        uniform mat4 uOptionalArg;
+                    #endif
+                    void main() {}
+                    `;
+                let frag = `void main() {}`;
+                var getUniformLocation = gl.getUniformLocation;
+                gl.getUniformLocation = function() {
+                    return null;
+                };
+                let shader = new Shader({
+                    vert: vert,
+                    frag: frag,
+                });
+                gl.getUniformLocation = getUniformLocation;
+                assert(shader.uniforms.uOptionalArg === undefined);
             });
         });
 
