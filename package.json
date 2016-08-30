@@ -1,7 +1,7 @@
 {
   "name": "esper",
   "version": "0.11.0",
-  "description": "A low-level WebGL rendering framework",
+  "description": "A low-level ES6 WebGL rendering framework",
   "author": "Kevin Birk <birk.kevin@gmail.com>",
   "main": "src/exports.js",
   "license": "MIT",
@@ -20,8 +20,8 @@
   ],
   "dependencies": {},
   "devDependencies": {
-	"babel-preset-es2015": "6.14.0",
-	"babelify": "7.3.0",
+    "babel-preset-es2015": "6.14.0",
+    "babelify": "7.3.0",
     "browserify": "13.1.0",
     "del": "2.2.2",
     "gulp": "3.9.1",

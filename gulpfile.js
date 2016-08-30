@@ -115,7 +115,7 @@
     });
 
     gulp.task('docs', [ 'clean-docs' ], shell.task([
-        './node_modules/.bin/jsdoc ' + paths.docs + ' --readme README.md --destination docs --template node_modules/minami'
+        `./node_modules/.bin/jsdoc ${paths.docs} --readme README.md --destination docs --template node_modules/minami`
     ]));
 
     gulp.task('build', function(done) {
