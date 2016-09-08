@@ -109,6 +109,45 @@
                     indexBuffer: indexBuffer
                 });
             });
+            it('should throw an exception if there is no IndexBuffer and VertexBuffer `counts` do not match', function() {
+                let result = false;
+                try {
+                    new Renderable({
+                        vertexBuffers: [
+                            new VertexBuffer(null, {
+                                0: {
+                                    type: 'FLOAT',
+                                    size: 3,
+                                    count: 36
+                                }
+                            }, {
+                                count: 36
+                            }),
+                            new VertexBuffer(null, {
+                                1: {
+                                    type: 'FLOAT',
+                                    size: 3,
+                                    byteOffset: 36 * 4 * 3
+                                }
+                            }, {
+                                count: 36
+                            }),
+                            new VertexBuffer(null, {
+                                2: {
+                                    type: 'FLOAT',
+                                    size: 3,
+                                    byteOffset: (36 * 4 * 3) * 2
+                                }
+                            }, {
+                                count: 42
+                            })
+                        ]
+                    });
+                } catch(err) {
+                    result = true;
+                }
+                assert(result);
+            });
             it('should throw an exception if contains multiple attribute pointers for the same index', function() {
                 let result = false;
                 try {

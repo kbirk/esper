@@ -7,6 +7,28 @@
     let IndexBuffer = require('../core/IndexBuffer');
 
     /**
+     * Iterates over all vertex buffers and throws an exception if the counts
+     * are not equal.
+     * @private
+     *
+     * @param {Array} vertexBuffers - The array of vertexBuffers.
+     */
+    function checkVertexBufferCounts(vertexBuffers) {
+        let count = null;
+        vertexBuffers.forEach(buffer => {
+            if (count === null) {
+                count = buffer.count;
+            } else {
+                if (count !== buffer.count) {
+                    throw `VertexBuffers must all have the same count to be rendered without an IndexBuffer, mismatch of ${count} and ${buffer.count} found`;
+                } else {
+                    console.log('count ' + count + ' === ' + buffer.count);
+                }
+            }
+        });
+    }
+
+    /**
      * Iterates over all attribute pointers and throws an exception if an index
      * occurs more than once.
      * @private
@@ -65,6 +87,11 @@
             } else {
                 this.indexBuffer = null;
             }
+            // if there is no index buffer, check that vertex buffers all have
+            // the same count
+            if (!this.indexBuffer) {
+                checkVertexBufferCounts(this.vertexBuffers);
+            }
             // check that no attribute indices clash
             checkIndexCollisions(this.vertexBuffers);
         }
@@ -97,9 +124,16 @@
                 // no advantage to unbinding as there is no stack used
             } else {
                 // no index buffer, use draw arrays
+                // set all attribute pointers
                 this.vertexBuffers.forEach(vertexBuffer => {
                     vertexBuffer.bind();
-                    vertexBuffer.draw(options);
+                });
+                if (this.vertexBuffers.length > 0) {
+                    // draw the buffer
+                    this.vertexBuffers[0].draw(options);
+                }
+                // disable all attribute pointers
+                this.vertexBuffers.forEach(vertexBuffer => {
                     vertexBuffer.unbind();
                 });
             }
