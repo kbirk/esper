@@ -84,7 +84,7 @@
             // set mip-mapping and format
             spec.mipMap = false; // disable mip-mapping
             spec.invertY = false; // no need to invert-y
-            spec.preMultiplyAlpha = false; // no alpha to pre-multiply
+            spec.premultiplyAlpha = false; // no alpha to pre-multiply
             spec.format = FORMATS[spec.format] ? spec.format : DEFAULT_FORMAT;
             // check if stencil-depth, or just depth
             if (spec.format === 'DEPTH_STENCIL') {

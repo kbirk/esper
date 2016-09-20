@@ -284,17 +284,17 @@
                 assert(tex.minFilter === 'LINEAR_MIPMAP_LINEAR');
                 assert(tex.magFilter === 'LINEAR');
             });
-            it('should accept `mipMap`, `invertY`, and `preMultiplyAlpha` boolean parameters`', function() {
+            it('should accept `mipMap`, `invertY`, and `premultiplyAlpha` boolean parameters`', function() {
                 let tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false,
                     invertY: false,
-                    preMultiplyAlpha: false
+                    premultiplyAlpha: false
                 });
                 assert(tex.mipMap === false);
                 assert(tex.invertY === false);
-                assert(tex.preMultiplyAlpha === false);
+                assert(tex.premultiplyAlpha === false);
             });
             it('should default `mipMap` to `true`', function() {
                 let tex = new TextureCubeMap({
@@ -310,12 +310,12 @@
                 });
                 assert(tex.invertY);
             });
-            it('should default `preMultiplyAlpha` to `true`', function() {
+            it('should default `premultiplyAlpha` to `true`', function() {
                 let tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
-                assert(tex.preMultiplyAlpha);
+                assert(tex.premultiplyAlpha);
             });
             it('should accept `format`, and `type` options`', function() {
                 new TextureCubeMap({
@@ -499,7 +499,7 @@
                 });
                 let result = false;
                 try {
-                    tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', 'derp');
+                    tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', 'invalid');
                 } catch(err) {
                     result = true;
                 }

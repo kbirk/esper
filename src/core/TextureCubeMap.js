@@ -206,7 +206,7 @@
          * @param {String} spec.magFilter - The magnification filter used during scaling.
          * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
          * @param {bool} spec.invertY - Whether or not invert-y is enabled.
-         * @param {bool} spec.preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+         * @param {bool} spec.premultiplyAlpha - Whether or not alpha premultiplying is enabled.
          * @param {String} spec.format - The texture pixel format.
          * @param {String} spec.type - The texture pixel component type.
          */
@@ -226,7 +226,7 @@
             // set other properties
             this.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
             this.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
-            this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
+            this.premultiplyAlpha = spec.premultiplyAlpha !== undefined ? spec.premultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
             // set format and type
             this.format = FORMATS[spec.format] ? spec.format : DEFAULT_FORMAT;
             this.type = spec.type || DEFAULT_TYPE;
@@ -336,7 +336,7 @@
             // invert y if specified
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this.invertY);
             // premultiply alpha if specified
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
             // cast array arg
             if (Array.isArray(data)) {
                 if (this.type === 'UNSIGNED_SHORT') {

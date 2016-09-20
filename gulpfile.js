@@ -59,7 +59,7 @@
             .on('error', handleError)
             .pipe(source(output))
             .pipe(buffer())
-            .pipe(uglify())
+            .pipe(uglify().on('error', handleError))
             .pipe(gulp.dest(paths.build));
     }
 
@@ -73,14 +73,12 @@
         return (minify) ? bundleMin(b, output) : bundle(b, output);
     }
 
-    gulp.task('clean', function(done) {
+    gulp.task('clean', function() {
         del.sync(paths.build);
-        done();
     });
 
-    gulp.task('clean-docs', function(done) {
+    gulp.task('clean-docs', function() {
         del.sync('docs');
-        done();
     });
 
     gulp.task('lint', function() {

@@ -97,7 +97,7 @@
          * @param {String} spec.magFilter - The magnification filter used during scaling.
          * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
          * @param {bool} spec.invertY - Whether or not invert-y is enabled.
-         * @param {bool} spec.preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+         * @param {bool} spec.premultiplyAlpha - Whether or not alpha premultiplying is enabled.
          * @param {String} spec.format - The texture pixel format.
          * @param {String} spec.type - The texture pixel component type.
          */
@@ -119,7 +119,7 @@
             // set other properties
             this.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
             this.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
-            this.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
+            this.premultiplyAlpha = spec.premultiplyAlpha !== undefined ? spec.premultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
             // set format
             this.format = spec.format || DEFAULT_FORMAT;
             if (DEPTH_TYPES[this.format] && !WebGLContext.checkExtension('WEBGL_depth_texture')) {
@@ -206,7 +206,7 @@
             // invert y if specified
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this.invertY);
             // premultiply alpha if specified
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.preMultiplyAlpha);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
             // cast array arg
             if (Array.isArray(data)) {
                 if (this.type === 'UNSIGNED_SHORT') {
@@ -240,7 +240,7 @@
                 // buffer the texture
                 gl.texImage2D(
                     gl.TEXTURE_2D,
-                    0, // mip-map level,
+                    0, // mip-map level
                     gl[this.format], // webgl requires format === internalFormat
                     gl[this.format],
                     gl[this.type],
@@ -257,6 +257,106 @@
                     this.width,
                     this.height,
                     0, // border, must be 0
+                    gl[this.format],
+                    gl[this.type],
+                    data);
+            }
+            // generate mip maps
+            if (this.mipMap) {
+                gl.generateMipmap(gl.TEXTURE_2D);
+            }
+            // unbind texture
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            return this;
+        }
+
+        /**
+         * Buffer partial data into the texture.
+         *
+         * @param {Array|ArrayBufferView|null} data - The data array to buffer.
+         * @param {Number} xOffset - The x offset at which to buffer.
+         * @param {Number} yOffset - The y offset at which to buffer.
+         * @param {Number} width - The width of the data.
+         * @param {Number} height - The height of the data.
+         *
+         * @return {Texture2D} The texture object, for chaining.
+         */
+        bufferSubData(data, xOffset = 0, yOffset = 0, width = undefined, height = undefined) {
+            let gl = this.gl;
+            // bind texture
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+            // cast array arg
+            if (Array.isArray(data)) {
+                if (this.type === 'UNSIGNED_SHORT') {
+                    data = new Uint16Array(data);
+                } else if (this.type === 'UNSIGNED_INT') {
+                    data = new Uint32Array(data);
+                } else if (this.type === 'FLOAT') {
+                    data = new Float32Array(data);
+                } else {
+                    data = new Uint8Array(data);
+                }
+            }
+            // set ensure type corresponds to data
+            if (data instanceof Uint8Array) {
+                if (this.type !== 'UNSIGNED_BYTE') {
+                    throw 'Provided argument of type `Uint8Array` does not match type of `UNSIGNED_BYTE`';
+                }
+            } else if (data instanceof Uint16Array) {
+                if (this.type !== 'UNSIGNED_SHORT') {
+                    throw 'Provided argument of type `Uint16Array` does not match type of `UNSIGNED_SHORT`';
+                }
+            } else if (data instanceof Uint32Array) {
+                if (this.type !== 'UNSIGNED_INT') {
+                    throw 'Provided argument of type `Uint32Array` does not match type of `UNSIGNED_INT`';
+                }
+            } else if (data instanceof Float32Array) {
+                if (this.type !== 'FLOAT') {
+                    throw 'Provided argument of type `Float32Array` does not match type of `FLOAT`';
+                }
+            } else if (!(data instanceof ArrayBuffer) && !Util.isCanvasType(data)) {
+                throw 'Argument must be of type `Array`, `ArrayBuffer`, ' +
+                    '`ArrayBufferView`, `ImageData`, `HTMLImageElement`, ' +
+                    '`HTMLCanvasElement`, or `HTMLVideoElement`';
+            }
+            if (Util.isCanvasType(data)) {
+                // buffer the texture
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D,
+                    0, // mip-map level
+                    xOffset,
+                    yOffset,
+                    gl[this.format],
+                    gl[this.type],
+                    data);
+            } else {
+                // check that width is provided
+                if (!Number.isInteger(width)) {
+                    throw `Provided width of \`${width}\` is invalid`;
+                }
+                // check that height is provided
+                if (!Number.isInteger(height)) {
+                    throw `Provided height of \`${height}\` is invalid`;
+                }
+                // check that we aren't overflowing the buffer
+                if (width + xOffset > this.width) {
+                    throw `Provided width of \`${width}\` and xOffset of ` +
+                        ` \`${xOffset}\` overflows the texture width of ` +
+                        `\`${this.width}\``;
+                }
+                if (height + yOffset > this.height) {
+                    throw `Provided width of \`${height}\` and xOffset of ` +
+                        ` \`${yOffset}\` overflows the texture width of ` +
+                        `\`${this.height}\``;
+                }
+                // buffer the texture data
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D,
+                    0, // mip-map level
+                    xOffset,
+                    yOffset,
+                    width,
+                    height,
                     gl[this.format],
                     gl[this.type],
                     data);

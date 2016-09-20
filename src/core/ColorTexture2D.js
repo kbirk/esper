@@ -91,7 +91,7 @@
          * @param {String} spec.magFilter - The magnification filter used during scaling.
          * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
          * @param {bool} spec.invertY - Whether or not invert-y is enabled.
-         * @param {bool} spec.preMultiplyAlpha - Whether or not alpha premultiplying is enabled.
+         * @param {bool} spec.premultiplyAlpha - Whether or not alpha premultiplying is enabled.
          * @param {String} spec.format - The texture pixel format.
          * @param {String} spec.type - The texture pixel component type.
          * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
@@ -110,7 +110,7 @@
             // set other properties
             spec.mipMap = spec.mipMap !== undefined ? spec.mipMap : DEFAULT_MIPMAP;
             spec.invertY = spec.invertY !== undefined ? spec.invertY : DEFAULT_INVERT_Y;
-            spec.preMultiplyAlpha = spec.preMultiplyAlpha !== undefined ? spec.preMultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
+            spec.premultiplyAlpha = spec.premultiplyAlpha !== undefined ? spec.premultiplyAlpha : DEFAULT_PREMULTIPLY_ALPHA;
             // set format
             spec.format = FORMATS[spec.format] ? spec.format : DEFAULT_FORMAT;
             // buffer the texture based on argument type
