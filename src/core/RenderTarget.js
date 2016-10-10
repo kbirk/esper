@@ -1,15 +1,15 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
+    const WebGLContext = require('./WebGLContext');
 
-    let TEXTURE_TARGETS = {
+    const TEXTURE_TARGETS = {
         TEXTURE_2D: true,
         TEXTURE_CUBE_MAP: true
     };
 
-    let DEPTH_FORMATS = {
+    const DEPTH_FORMATS = {
         DEPTH_COMPONENT: true,
         DEPTH_STENCIL: true
     };
@@ -26,7 +26,7 @@
          constructor() {
             this.gl = WebGLContext.get();
             this.framebuffer = this.gl.createFramebuffer();
-            this.textures = {};
+            this.textures = new Map();
         }
 
         /**
@@ -36,7 +36,7 @@
          */
         bind() {
             // bind framebuffer
-            let gl = this.gl;
+            const gl = this.gl;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
             return this;
         }
@@ -48,7 +48,7 @@
          */
         unbind() {
             // unbind framebuffer
-            let gl = this.gl;
+            const gl = this.gl;
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             return this;
         }
@@ -63,7 +63,7 @@
          * @return {RenderTarget} The renderTarget object, for chaining.
          */
         setColorTarget(texture, index, target) {
-            let gl = this.gl;
+            const gl = this.gl;
             if (!texture) {
                 throw 'Texture argument is missing';
             }
@@ -79,7 +79,7 @@
             if (target && !TEXTURE_TARGETS[target]) {
                 throw 'Texture target is invalid';
             }
-            this.textures['color' + index] = texture;
+            this.textures.set(`color_${index}`, texture);
             this.bind();
             gl.framebufferTexture2D(
                 gl.FRAMEBUFFER,
@@ -105,8 +105,8 @@
             if (!DEPTH_FORMATS[texture.format]) {
                 throw 'Provided texture is not of format `DEPTH_COMPONENT` or `DEPTH_STENCIL`';
             }
-            let gl = this.gl;
-            this.textures.depth = texture;
+            const gl = this.gl;
+            this.textures.set('depth', texture);
             this.bind();
             gl.framebufferTexture2D(
                 gl.FRAMEBUFFER,
@@ -133,9 +133,8 @@
             if (typeof height !== 'number' || (height <= 0)) {
                 throw `Provided \`height\` of ${height} is invalid`;
             }
-            let textures = this.textures;
-            Object.keys(textures).forEach(key => {
-                textures[key].resize(width, height);
+            this.textures.forEach(texture => {
+                texture.resize(width, height);
             });
             return this;
         }

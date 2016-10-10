@@ -2,20 +2,21 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let ColorTexture2D = require('../../src/core/ColorTexture2D');
-    let ImageLoader = require('../../src/util/ImageLoader');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const ColorTexture2D = require('../../src/core/ColorTexture2D');
+    const ImageLoader = require('../../src/util/ImageLoader');
     require('webgl-mock');
+
+    const potImage = new HTMLImageElement(256, 256);
+    const npotImage = new HTMLImageElement(300, 300);
+
     let _load;
     let canvas;
     let gl;
     let data;
     let width;
     let height;
-
-    let potImage = new HTMLImageElement(256, 256);
-    let npotImage = new HTMLImageElement(300, 300);
 
     describe('ColorTexture2D', function() {
 
@@ -44,7 +45,7 @@
         });
 
         beforeEach(function() {
-            let dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
+            const dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
             data = new Uint8Array(dim * dim * 4);
             for (let i = 0; i<dim * dim * 4; i++) {
                 data[i] = 255;
@@ -78,8 +79,8 @@
                 });
             });
             it('should execute callback function passing an error as first argument if a URL `src` results in an error', function(done) {
-                let load = ImageLoader.load;
-                let err = new Error('error');
+                const load = ImageLoader.load;
+                const err = new Error('error');
                 ImageLoader.load = function(opts) {
                     setTimeout(function() {
                         opts.error(err);
@@ -123,7 +124,7 @@
                 });
             });
             it('should accept `wrapS`, `wrapT`, `minFilter`, and `magFilter` parameters', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height,
                     minFilter: 'NEAREST',
@@ -137,7 +138,7 @@
                 assert(tex.wrapT === 'CLAMP_TO_EDGE');
             });
             it('should default `wrapS` and `wrapT` parameters to `REPEAT`', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
@@ -145,7 +146,7 @@
                 assert(tex.wrapT === 'REPEAT');
             });
             it('should default `minFilter` and `magFilter` parameters to `LINEAR` with mip-mapping disabled', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height,
                     mipMap: false
@@ -154,14 +155,14 @@
                 assert(tex.magFilter === 'LINEAR');
             });
             it('should default `minFilter` to `LINEAR_MIPMAP_LINEAR` and `magFilter` to `LINEAR` with mip-mapping enabled', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     src: potImage
                 });
                 assert(tex.minFilter === 'LINEAR_MIPMAP_LINEAR');
                 assert(tex.magFilter === 'LINEAR');
             });
             it('should accept `mipMap`, `invertY`, and `premultiplyAlpha` boolean parameters`', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height,
                     mipMap: false,
@@ -173,17 +174,17 @@
                 assert(tex.premultiplyAlpha === false);
             });
             it('should default `mipMap` to `true` for textures instantiated with `data`, `image`, or `url` argument', function(done) {
-                let tex0 = new ColorTexture2D({
+                const tex0 = new ColorTexture2D({
                     src: data,
                     width: width,
                     height: height
                 });
                 assert(tex0.mipMap);
-                let tex1 = new ColorTexture2D({
+                const tex1 = new ColorTexture2D({
                     src: potImage
                 });
                 assert(tex1.mipMap);
-                let tex2 = new ColorTexture2D({
+                const tex2 = new ColorTexture2D({
                     src: 'path/to/image'
                 }, function() {
                     assert(tex2.mipMap);
@@ -191,21 +192,21 @@
                 });
             });
             it('should default `mipMap` to `false` for textures without `data`, `image`, or `url` argument', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
                 assert(!tex.mipMap);
             });
             it('should default `invertY` to `true`', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
                 assert(tex.invertY);
             });
             it('should default `premultiplyAlpha` to `true`', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });
@@ -222,7 +223,7 @@
                 });
             });
             it('should default `format` to `RGBA`', function() {
-                let tex = new ColorTexture2D({
+                const tex = new ColorTexture2D({
                     width: width,
                     height: height
                 });

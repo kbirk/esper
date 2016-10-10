@@ -1,10 +1,10 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let VertexPackage = require('../core/VertexPackage');
-    let VertexBuffer = require('../core/VertexBuffer');
-    let IndexBuffer = require('../core/IndexBuffer');
+    const VertexPackage = require('../core/VertexPackage');
+    const VertexBuffer = require('../core/VertexBuffer');
+    const IndexBuffer = require('../core/IndexBuffer');
 
     /**
      * Iterates over all vertex buffers and throws an exception if the counts
@@ -20,9 +20,9 @@
                 count = buffer.count;
             } else {
                 if (count !== buffer.count) {
-                    throw `VertexBuffers must all have the same count to be rendered without an IndexBuffer, mismatch of ${count} and ${buffer.count} found`;
-                } else {
-                    console.log('count ' + count + ' === ' + buffer.count);
+                    throw `VertexBuffers must all have the same count to be ` +
+                        `rendered without an IndexBuffer, mismatch of ` +
+                        `${count} and ${buffer.count} found`;
                 }
             }
         });
@@ -36,15 +36,15 @@
      * @param {Array} vertexBuffers - The array of vertexBuffers.
      */
     function checkIndexCollisions(vertexBuffers) {
-        let indices = {};
+        const indices = new Map();
         vertexBuffers.forEach(buffer => {
-            Object.keys(buffer.pointers).forEach(index => {
-                indices[index] = indices[index] || 0;
-                indices[index]++;
+            buffer.pointers.forEach((pointer, index) => {
+                const count = indices.get(index) || 0;
+                indices.set(index, count + 1);
             });
         });
-        Object.keys(indices).forEach(index => {
-            if (indices[index] > 1) {
+        indices.forEach(index => {
+            if (index > 1) {
                 throw `More than one attribute pointer exists for index \`${index}\``;
             }
         });
@@ -72,9 +72,11 @@
                 this.vertexBuffers = spec.vertexBuffers || [spec.vertexBuffer];
             } else if (spec.vertices) {
                 // create vertex package
-                let vertexPackage = new VertexPackage(spec.vertices);
+                const vertexPackage = new VertexPackage(spec.vertices);
                 // create vertex buffer
-                this.vertexBuffers = [new VertexBuffer(vertexPackage)];
+                this.vertexBuffers = [
+                    new VertexBuffer(vertexPackage)
+                ];
             } else {
                 this.vertexBuffers = [];
             }

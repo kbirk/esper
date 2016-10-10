@@ -1,15 +1,15 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
-    let Util = require('../util/Util');
+    const WebGLContext = require('./WebGLContext');
+    const Util = require('../util/Util');
 
-    let MAG_FILTERS = {
+    const MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
     };
-    let MIN_FILTERS = {
+    const MIN_FILTERS = {
         NEAREST: true,
         LINEAR: true,
         NEAREST_MIPMAP_NEAREST: true,
@@ -17,22 +17,22 @@
         NEAREST_MIPMAP_LINEAR: true,
         LINEAR_MIPMAP_LINEAR: true
     };
-    let NON_MIPMAP_MIN_FILTERS = {
+    const NON_MIPMAP_MIN_FILTERS = {
         NEAREST: true,
         LINEAR: true,
     };
-    let MIPMAP_MIN_FILTERS = {
+    const MIPMAP_MIN_FILTERS = {
         NEAREST_MIPMAP_NEAREST: true,
         LINEAR_MIPMAP_NEAREST: true,
         NEAREST_MIPMAP_LINEAR: true,
         LINEAR_MIPMAP_LINEAR: true
     };
-    let WRAP_MODES = {
+    const WRAP_MODES = {
         REPEAT: true,
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
     };
-    let DEPTH_TYPES = {
+    const DEPTH_TYPES = {
         DEPTH_COMPONENT: true,
         DEPTH_STENCIL: true
     };
@@ -40,42 +40,42 @@
     /**
      * The default type for textures.
      */
-    let DEFAULT_TYPE = 'UNSIGNED_BYTE';
+    const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
     /**
      * The default format for textures.
      */
-    let DEFAULT_FORMAT = 'RGBA';
+    const DEFAULT_FORMAT = 'RGBA';
 
     /**
      * The default wrap mode for textures.
      */
-    let DEFAULT_WRAP = 'REPEAT';
+    const DEFAULT_WRAP = 'REPEAT';
 
     /**
      * The default min / mag filter for textures.
      */
-    let DEFAULT_FILTER = 'LINEAR';
+    const DEFAULT_FILTER = 'LINEAR';
 
     /**
      * The default for whether alpha premultiplying is enabled.
      */
-    let DEFAULT_PREMULTIPLY_ALPHA = true;
+    const DEFAULT_PREMULTIPLY_ALPHA = true;
 
     /**
      * The default for whether mipmapping is enabled.
      */
-    let DEFAULT_MIPMAP = true;
+    const DEFAULT_MIPMAP = true;
 
     /**
      * The default for whether invert-y is enabled.
      */
-    let DEFAULT_INVERT_Y = true;
+    const DEFAULT_INVERT_Y = true;
 
     /**
      * The default mip-mapping filter suffix.
      */
-    let DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
+    const DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
     /**
      * @class Texture2D
@@ -168,7 +168,7 @@
                 throw `Texture unit location is invalid`;
             }
             // bind texture
-            let gl = this.gl;
+            const gl = this.gl;
             gl.activeTexture(gl['TEXTURE' + location]);
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             return this;
@@ -181,7 +181,7 @@
          */
         unbind() {
             // unbind texture
-            let gl = this.gl;
+            const gl = this.gl;
             gl.bindTexture(gl.TEXTURE_2D, null);
             return this;
         }
@@ -196,7 +196,7 @@
          * @return {Texture2D} The texture object, for chaining.
          */
         bufferData(data, width, height) {
-            let gl = this.gl;
+            const gl = this.gl;
             // create texture object if it doesn't already exist
             if (!this.texture) {
                 this.texture = gl.createTexture();
@@ -282,7 +282,7 @@
          * @return {Texture2D} The texture object, for chaining.
          */
         bufferSubData(data, xOffset = 0, yOffset = 0, width = undefined, height = undefined) {
-            let gl = this.gl;
+            const gl = this.gl;
             // bind texture
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             // cast array arg
@@ -384,7 +384,7 @@
          * @return {Texture2D} The texture object, for chaining.
          */
         setParameters(params) {
-            let gl = this.gl;
+            const gl = this.gl;
             // bind texture
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             // set wrap S parameter

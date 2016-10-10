@@ -2,16 +2,13 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let Shader = require('../../src/core/Shader');
-    let XHRLoader = require('../../src/util/XHRLoader');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const Shader = require('../../src/core/Shader');
+    const XHRLoader = require('../../src/util/XHRLoader');
     require('webgl-mock');
-    let canvas;
-    let gl;
-    let _load;
 
-    let vert =
+    const vert =
         `
         attribute highp vec3 aVertexPosition;
         attribute highp vec3 aVertexNormal;
@@ -22,7 +19,7 @@
         void main() {}
         `;
 
-    let frag =
+    const frag =
         `
         uniform highp mat4 uViewMatrix;
         uniform highp vec3 uLightPosition;
@@ -36,17 +33,21 @@
         void main() {}
         `;
 
-    let urls = {
+    const urls = {
         'path/to/vert': vert,
         'path/to/frag': frag
     };
 
-    let identity = [
+    const identity = [
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
     ];
+
+    let canvas;
+    let gl;
+    let _load;
 
     describe('Shader', function() {
 
@@ -90,7 +91,7 @@
                 assert(result);
             });
             it('should throw an exception if there is a compilation error', function() {
-                let getShaderParameter = gl.getShaderParameter;
+                const getShaderParameter = gl.getShaderParameter;
                 gl.getShaderParameter = function() {
                     return false;
                 };
@@ -107,7 +108,7 @@
                 assert(result);
             });
             it('should throw an exception if there is a linking error', function() {
-                let getProgramParameter = gl.getProgramParameter;
+                const getProgramParameter = gl.getProgramParameter;
                 gl.getProgramParameter = function() {
                     return false;
                 };
@@ -124,14 +125,14 @@
                 assert(result);
             });
             it('should accept shader arguments as glsl source', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
                 assert(shader);
             });
             it('should accept shader arguments as URLs', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: 'path/to/vert',
                     frag: 'path/to/frag'
                 }, function() {
@@ -139,8 +140,8 @@
                 });
             });
             it('should execute callback function passing an error as first argument if a URL results in an error', function(done) {
-                let load = XHRLoader.load;
-                let err = new Error('error');
+                const load = XHRLoader.load;
+                const err = new Error('error');
                 XHRLoader.load = function(opts) {
                     setTimeout(function() {
                         opts.error(err);
@@ -161,7 +162,7 @@
                 });
             });
             it('should accept an `attributes` array argument to override attribute indices', function() {
-                let shader0 = new Shader({
+                const shader0 = new Shader({
                     vert: vert,
                     frag: frag,
                     attributes: [
@@ -170,10 +171,10 @@
                         'aVertexPosition'
                     ]
                 });
-                assert(shader0.attributes.aTextureCoord.index === 0);
-                assert(shader0.attributes.aVertexNormal.index === 1);
-                assert(shader0.attributes.aVertexPosition.index === 2);
-                let shader1 = new Shader({
+                assert(shader0.attributes.get('aTextureCoord').index === 0);
+                assert(shader0.attributes.get('aVertexNormal').index === 1);
+                assert(shader0.attributes.get('aVertexPosition').index === 2);
+                const shader1 = new Shader({
                     vert: vert,
                     frag: frag,
                     attributes: [
@@ -181,12 +182,12 @@
                         'aVertexPosition'
                     ]
                 });
-                assert(shader1.attributes.aTextureCoord.index === 0);
-                assert(shader1.attributes.aVertexPosition.index === 1);
-                assert(shader1.attributes.aVertexNormal.index === 2);
+                assert(shader1.attributes.get('aTextureCoord').index === 0);
+                assert(shader1.attributes.get('aVertexPosition').index === 1);
+                assert(shader1.attributes.get('aVertexNormal').index === 2);
             });
             it('should discard any uniforms that are compiled out by preprocessor statements', function() {
-                let vert =
+                const vert =
                     `
                     attribute highp vec3 A;
                     attribute highp vec3 B;
@@ -196,23 +197,23 @@
                     #endif
                     void main() {}
                     `;
-                let frag = `void main() {}`;
+                const frag = `void main() {}`;
                 var getUniformLocation = gl.getUniformLocation;
                 gl.getUniformLocation = function() {
                     return null;
                 };
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag,
                 });
                 gl.getUniformLocation = getUniformLocation;
-                assert(shader.uniforms.uOptionalArg === undefined);
+                assert(!shader.uniforms.has('uOptionalArg'));
             });
         });
 
         describe('#use()', function() {
             it('should use the shader', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -222,7 +223,7 @@
 
         describe('#setUniform()', function() {
             it('should accept value of type `boolean`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -231,7 +232,7 @@
                 shader.setUniform('uUseTexture', false);
             });
             it('should accept value of type `number`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -239,7 +240,7 @@
                 shader.setUniform('uSpecularComponent', 10);
             });
             it('should accept value of type `Array`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -247,7 +248,7 @@
                 shader.setUniform('uModelMatrix', identity);
             });
             it('should accept value of type `Float32Array`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -257,7 +258,7 @@
                 shader.setUniform('uMat3Array', new Float32Array(identity));
             });
             it('should throw an exception if the uniform does not exist', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -271,7 +272,7 @@
                 assert(result);
             });
             it('should throw an exception if the value is undefined or null', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -295,7 +296,7 @@
 
         describe('#setUniforms()', function() {
             it('should accept value of type `boolean`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -305,7 +306,7 @@
                 });
             });
             it('should accept value of type `number`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -315,7 +316,7 @@
                 });
             });
             it('should accept value of type `Array`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -325,7 +326,7 @@
                 });
             });
             it('should accept value of type `Float32Array`', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -337,7 +338,7 @@
                 });
             });
             it('should throw an exception if the uniform does not exist', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });
@@ -353,7 +354,7 @@
                 assert(result);
             });
             it('should throw an exception if the value is undefined or null', function() {
-                let shader = new Shader({
+                const shader = new Shader({
                     vert: vert,
                     frag: frag
                 });

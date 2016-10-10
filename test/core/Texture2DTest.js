@@ -2,10 +2,11 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let Texture2D = require('../../src/core/Texture2D');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const Texture2D = require('../../src/core/Texture2D');
     require('webgl-mock');
+
     let canvas;
     let gl;
     let dim;
@@ -174,7 +175,7 @@
                 });
             });
             it('should default `wrapS` and `wrapT` parameters to `REPEAT`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -182,7 +183,7 @@
                 assert(tex.wrapT === 'REPEAT');
             });
             it('should default `minFilter` and `magFilter` parameters to `LINEAR` with mip-mapping disabled', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     mipMap: false
@@ -191,7 +192,7 @@
                 assert(tex.magFilter === 'LINEAR');
             });
             it('should default `minFilter` to `LINEAR_MIPMAP_LINEAR` and `magFilter` to `LINEAR` with mip-mapping enabled', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -199,7 +200,7 @@
                 assert(tex.magFilter === 'LINEAR');
             });
             it('should accept `mipMap`, `invertY`, and `premultiplyAlpha` boolean parameters`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     mipMap: false,
@@ -211,21 +212,21 @@
                 assert(tex.premultiplyAlpha === false);
             });
             it('should default `mipMap` to `true`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 assert(tex.mipMap);
             });
             it('should default `invertY` to `true`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 assert(tex.invertY);
             });
             it('should default `premultiplyAlpha` to `true`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -242,14 +243,14 @@
                 });
             });
             it('should default `format` to `RGBA`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 assert(tex.format === 'RGBA');
             });
             it('should throw exception if `format` is `DEPTH_COMPONENT` or `DEPTH_STENCIL` but not supported by extension', function() {
-                let check = WebGLContext.checkExtension;
+                const check = WebGLContext.checkExtension;
                 WebGLContext.checkExtension = function() {
                     return false;
                 };
@@ -278,14 +279,14 @@
                 WebGLContext.checkExtension = check;
             });
             it('should default `type` to `UNSIGNED_BYTE`', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 assert(tex.type === 'UNSIGNED_BYTE');
             });
             it('should throw exception if `type` is `FLOAT` but not supported by extension', function() {
-                let check = WebGLContext.checkExtension;
+                const check = WebGLContext.checkExtension;
                 WebGLContext.checkExtension = function() {
                     return false;
                 };
@@ -306,40 +307,40 @@
 
         describe('#bufferData()', function() {
             it('should accept a `null` argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(null);
             });
             it('should accept an Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(new Array(data));
             });
             it('should accept a Canvas type argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(new HTMLImageElement(dim, dim));
             });
             it('should cast an Array to the corresponding ArrayBufferView based on the `type`', function() {
-                let tex0 = new Texture2D({
+                const tex0 = new Texture2D({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_SHORT'
                 });
                 tex0.bufferData(new Array(data));
-                let tex1 = new Texture2D({
+                const tex1 = new Texture2D({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_INT'
                 });
                 tex1.bufferData(new Array(data));
-                let tex2 = new Texture2D({
+                const tex2 = new Texture2D({
                     width: width,
                     height: height,
                     type: 'FLOAT'
@@ -347,35 +348,35 @@
                 tex2.bufferData(new Array(data));
             });
             it('should accept a Uint8Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(new Uint8Array());
             });
             it('should accept a Uint16Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(new Uint16Array());
             });
             it('should accept a Uint32Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(new Uint32Array());
             });
             it('should accept a Float32Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
                 tex.bufferData(new Float32Array());
             });
             it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement or null', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -391,7 +392,7 @@
 
         describe('#bufferSubData()', function() {
             it('should accept an Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     src: data
@@ -399,28 +400,28 @@
                 tex.bufferSubData(new Array(data), 0, 0, dim, dim);
             });
             it('should accept a Canvas type argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     src: new HTMLImageElement(dim, dim),
                     mipMap: false
                 });
                 tex.bufferSubData(new HTMLImageElement(dim, dim), 0, 0);
             });
             it('should cast an Array to the corresponding ArrayBufferView based on the `type`', function() {
-                let tex0 = new Texture2D({
+                const tex0 = new Texture2D({
                     width: width,
                     height: height,
                     src: new Array(data),
                     type: 'UNSIGNED_SHORT'
                 });
                 tex0.bufferSubData(new Array(data), 0, 0, dim, dim);
-                let tex1 = new Texture2D({
+                const tex1 = new Texture2D({
                     width: width,
                     height: height,
                     src: new Array(data),
                     type: 'UNSIGNED_INT'
                 });
                 tex1.bufferSubData(new Array(data), 0, 0, dim, dim);
-                let tex2 = new Texture2D({
+                const tex2 = new Texture2D({
                     width: width,
                     height: height,
                     src: new Array(data),
@@ -429,7 +430,7 @@
                 tex2.bufferSubData(new Array(data), 0, 0, dim, dim);
             });
             it('should accept a Uint8Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     src: data
@@ -438,7 +439,7 @@
                 tex.bufferSubData(new Uint8Array(dim * dim * 4), 0, 0, dim, dim);
             });
             it('should accept a Uint16Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -446,7 +447,7 @@
                 tex.bufferSubData(new Uint16Array(dim * dim * 4), 0, 0, dim, dim);
             });
             it('should accept a Uint32Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -454,7 +455,7 @@
                 tex.bufferSubData(new Uint32Array(dim * dim * 4), 0, 0, dim, dim);
             });
             it('should accept a Float32Array argument', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -462,7 +463,7 @@
                 tex.bufferSubData(new Float32Array(dim * dim * 4), 0, 0, dim, dim);
             });
             it('should throw an exception if the data type does not match the `type` of the texture', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     src: new Uint8Array(data)
@@ -505,7 +506,7 @@
                 assert(result);
             });
             it('should throw an exception if the data is not of Canvas type and the `width` argument is not provided', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -519,7 +520,7 @@
                 assert(result);
             });
             it('should throw an exception if the data is not of Canvas type and the `height` argument is not provided', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -533,7 +534,7 @@
                 assert(result);
             });
             it('should throw an exception if the dimensions and offsets overflow the texture', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -554,7 +555,7 @@
                 assert(result);
             });
             it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     src: data,
@@ -571,7 +572,7 @@
 
         describe('#setParameters()', function() {
             it('should accept `wrap`, `wrapS`, and `wrapT` parameters', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -588,7 +589,7 @@
                 assert(tex.wrapT === 'REPEAT');
             });
             it('should accept `filter`, `minFilter`, and `magFilter` parameters', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height,
                     mipMap: false
@@ -606,7 +607,7 @@
                 assert(tex.minFilter === 'LINEAR');
             });
             it('should default `minFilter` suffix to `_MIPMAP_LINEAR` if mip-mapping enabled', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -696,7 +697,7 @@
 
         describe('#bind()', function() {
             it('should bind the texture to a provided unit', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -704,7 +705,7 @@
                 tex.unbind();
             });
             it('should default unit to 0 if not provided', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -735,7 +736,7 @@
 
         describe('#unbind()', function() {
             it('should unbind the texture', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -746,18 +747,18 @@
 
         describe('#resize()', function() {
             it('should resize the underlying buffer', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
-                let nWidth = width / 2;
-                let nHeight = height / 2;
+                const nWidth = width / 2;
+                const nHeight = height / 2;
                 tex.resize(nWidth, nHeight);
                 assert(tex.width === nWidth);
                 assert(tex.height === nHeight);
             });
             it('should throw an exception if the `width` is missing or invalid', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });
@@ -791,7 +792,7 @@
                 assert(result);
             });
             it('should throw an exception if the `height` is missing or invalid', function() {
-                let tex = new Texture2D({
+                const tex = new Texture2D({
                     width: width,
                     height: height
                 });

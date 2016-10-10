@@ -23,7 +23,7 @@
             });
             it('should accept no arguments', function() {
                 let p = new VertexPackage();
-                assert(p.buffer.length === 0);
+                assert(p.buffer === null);
             });
         });
 
@@ -228,25 +228,25 @@
                 let pointers = p.pointers;
                 let type = 'FLOAT';
                 // first
-                assert(pointers['0'].size === 1);
-                assert(pointers['0'].type === type);
-                assert(pointers['0'].byteOffset === 0);
+                assert(pointers.get(0).size === 1);
+                assert(pointers.get(0).type === type);
+                assert(pointers.get(0).byteOffset === 0);
                 // second
-                assert(pointers['1'].size === 2);
-                assert(pointers['1'].type === type);
-                assert(pointers['1'].byteOffset === 1 * bytesPerComponent);
+                assert(pointers.get(1).size === 2);
+                assert(pointers.get(1).type === type);
+                assert(pointers.get(1).byteOffset === 1 * bytesPerComponent);
                 // third
-                assert(pointers['2'].size === 3);
-                assert(pointers['2'].type === type);
-                assert(pointers['2'].byteOffset === (1 + 2) * bytesPerComponent);
+                assert(pointers.get(2).size === 3);
+                assert(pointers.get(2).type === type);
+                assert(pointers.get(2).byteOffset === (1 + 2) * bytesPerComponent);
                 // fourth
-                assert(pointers['3'].size === 4);
-                assert(pointers['3'].type === type);
-                assert(pointers['3'].byteOffset === (1 + 2 + 3) * bytesPerComponent);
+                assert(pointers.get(3).size === 4);
+                assert(pointers.get(3).type === type);
+                assert(pointers.get(3).byteOffset === (1 + 2 + 3) * bytesPerComponent);
             });
             it('should be an empty object if no data as been set', function() {
                 let p = new VertexPackage();
-                assert(Object.keys(p.pointers).length === 0);
+                assert(p.pointers.size === 0);
             });
         });
 
@@ -256,9 +256,7 @@
                     0: [[0,0,0], [0,0,0], [0,0,0], [0,0,0]],
                     1: [[1,1,1], [1,1,1], [1,1,1], [1,1,1]]
                 });
-                let p1 = new VertexPackage();
                 assert(p0.buffer instanceof Float32Array);
-                assert(p1.buffer instanceof Float32Array);
             });
             it('should be the interleaved vertex attributes', function() {
                 let p = new VertexPackage({
@@ -270,9 +268,9 @@
                     assert(buffer[i] === Math.floor(i/3));
                 }
             });
-            it('should be an empty Float32Array if no data has been set', function() {
+            it('should be null if no data has been set', function() {
                 let p = new VertexPackage();
-                assert(p.buffer.length === 0);
+                assert(p.buffer === null);
             });
         });
     });

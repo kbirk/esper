@@ -1,15 +1,15 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
+    const WebGLContext = require('./WebGLContext');
 
-    let TYPES = {
+    const TYPES = {
         UNSIGNED_BYTE: true,
         UNSIGNED_SHORT: true,
         UNSIGNED_INT: true
     };
-    let MODES = {
+    const MODES = {
         POINTS: true,
         LINES: true,
         LINE_STRIP: true,
@@ -18,7 +18,7 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
-    let BYTES_PER_TYPE = {
+    const BYTES_PER_TYPE = {
         UNSIGNED_BYTE: 1,
         UNSIGNED_SHORT: 2,
         UNSIGNED_INT: 4
@@ -27,22 +27,22 @@
     /**
      * The default component type.
      */
-    let DEFAULT_TYPE = 'UNSIGNED_SHORT';
+    const DEFAULT_TYPE = 'UNSIGNED_SHORT';
 
     /**
      * The default render mode (primitive type).
      */
-    let DEFAULT_MODE = 'TRIANGLES';
+    const DEFAULT_MODE = 'TRIANGLES';
 
     /**
      * The default byte offset to render from.
      */
-    let DEFAULT_BYTE_OFFSET = 0;
+    const DEFAULT_BYTE_OFFSET = 0;
 
     /**
      * The default count of indices to render.
      */
-    let DEFAULT_COUNT = 0;
+    const DEFAULT_COUNT = 0;
 
     /**
      * @class IndexBuffer
@@ -106,7 +106,7 @@
          * @return {IndexBuffer} The index buffer object, for chaining.
          */
         bufferData(arg) {
-            let gl = this.gl;
+            const gl = this.gl;
             // cast array to ArrayBufferView based on provided type
             if (Array.isArray(arg)) {
                 // check for type
@@ -173,7 +173,7 @@
          * @return {IndexBuffer} The index buffer object, for chaining.
          */
         bufferSubData(array, byteOffset = DEFAULT_BYTE_OFFSET) {
-            let gl = this.gl;
+            const gl = this.gl;
             if (!this.buffer) {
                 throw 'Buffer has not yet been allocated, allocate with `bufferData`';
             }
@@ -219,11 +219,11 @@
          * @return {IndexBuffer} The index buffer object, for chaining.
          */
         draw(options = {}) {
-            let gl = this.gl;
-            let mode = gl[options.mode || this.mode];
-            let type = gl[this.type];
-            let byteOffset = (options.byteOffset !== undefined) ? options.byteOffset : this.byteOffset;
-            let count = (options.count !== undefined) ? options.count : this.count;
+            const gl = this.gl;
+            const mode = gl[options.mode || this.mode];
+            const type = gl[this.type];
+            const byteOffset = (options.byteOffset !== undefined) ? options.byteOffset : this.byteOffset;
+            const count = (options.count !== undefined) ? options.count : this.count;
             if (count === 0) {
                 throw 'Attempting to draw with a count of 0';
             }

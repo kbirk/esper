@@ -2,20 +2,21 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let TextureCubeMap = require('../../src/core/TextureCubeMap');
-    let ImageLoader = require('../../src/util/ImageLoader');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const TextureCubeMap = require('../../src/core/TextureCubeMap');
+    const ImageLoader = require('../../src/util/ImageLoader');
     require('webgl-mock');
+
+    const potImage = new HTMLImageElement(256, 256);
+    const npotImage = new HTMLImageElement(300, 300);
+
     let _load;
     let canvas;
     let gl;
     let width;
     let height;
     let faces;
-
-    let potImage = new HTMLImageElement(256, 256);
-    let npotImage = new HTMLImageElement(300, 300);
 
     describe('TextureCubeMap', function() {
 
@@ -44,8 +45,8 @@
         });
 
         beforeEach(function() {
-            let dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
-            let data = new Array(dim * dim * 4);
+            const dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
+            const data = new Array(dim * dim * 4);
             for (let i = 0; i<dim * dim * 4; i++) {
                 data[i] = 255;
             }
@@ -169,8 +170,8 @@
                 });
             });
             it('should execute callback function passing an error as first argument if a URL `faces` string results in an error', function(done) {
-                let load = ImageLoader.load;
-                let err = new Error('error');
+                const load = ImageLoader.load;
+                const err = new Error('error');
                 ImageLoader.load = function(opts) {
                     setTimeout(function() {
                         opts.error(err);
@@ -260,7 +261,7 @@
                 });
             });
             it('should default `wrapS` and `wrapT` parameters to `CLAMP_TO_EDGE`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -268,7 +269,7 @@
                 assert(tex.wrapT === 'CLAMP_TO_EDGE');
             });
             it('should default `minFilter` and `magFilter` parameters to `LINEAR` with mip-mapping disabled', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false
@@ -277,7 +278,7 @@
                 assert(tex.magFilter === 'LINEAR');
             });
             it('should default `minFilter` to `LINEAR_MIPMAP_LINEAR` and `magFilter` to `LINEAR` with mip-mapping enabled', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -285,7 +286,7 @@
                 assert(tex.magFilter === 'LINEAR');
             });
             it('should accept `mipMap`, `invertY`, and `premultiplyAlpha` boolean parameters`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false,
@@ -297,21 +298,21 @@
                 assert(tex.premultiplyAlpha === false);
             });
             it('should default `mipMap` to `true`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 assert(tex.mipMap);
             });
             it('should default `invertY` to `true`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 assert(tex.invertY);
             });
             it('should default `premultiplyAlpha` to `true`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -328,14 +329,14 @@
                 });
             });
             it('should default `format` to `RGBA`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 assert(tex.format === 'RGBA');
             });
             it('should default `type` to `UNSIGNED_BYTE`', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -390,7 +391,7 @@
                 assert(result);
             });
             it('should throw exception if `type` is `FLOAT` but not supported by extension', function() {
-                let check = WebGLContext.checkExtension;
+                const check = WebGLContext.checkExtension;
                 WebGLContext.checkExtension = function() {
                     return false;
                 };
@@ -411,40 +412,40 @@
 
         describe('#bufferData()', function() {
             it('should accept a `target` and `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z']);
             });
             it('should accept a null `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', null);
             });
             it('should accept an Array `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z']);
             });
             it('should cast an Array to the corresponding ArrayBufferView based on the `type`', function() {
-                let tex0 = new TextureCubeMap({
+                const tex0 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_SHORT'
                 });
                 tex0.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z']);
-                let tex1 = new TextureCubeMap({
+                const tex1 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'UNSIGNED_INT'
                 });
                 tex1.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z']);
-                let tex2 = new TextureCubeMap({
+                const tex2 = new TextureCubeMap({
                     width: width,
                     height: height,
                     type: 'FLOAT'
@@ -452,35 +453,35 @@
                 tex2.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', faces['+z']);
             });
             it('should accept a Uint8Array `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z',  new Uint8Array(faces['+z']));
             });
             it('should accept a Uint16Array `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z',  new Uint16Array(faces['+z']));
             });
             it('should accept a Uint32Array `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z',  new Uint32Array(faces['+z']));
             });
             it('should accept a Float32Array `data` argument', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
                 tex.bufferData('TEXTURE_CUBE_MAP_POSITIVE_Z', new Float32Array(faces['+z']));
             });
             it('should throw an exception if the `target` argument is invalid', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -493,7 +494,7 @@
                 assert(result);
             });
             it('should throw an exception if the argument is not an Array, ArrayBuffer, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement or null', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -509,7 +510,7 @@
 
         describe('#setParameters()', function() {
             it('should accept `wrap`, `wrapS`, and `wrapT` parameters', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -526,7 +527,7 @@
                 assert(tex.wrapT === 'REPEAT');
             });
             it('should accept `filter`, `minFilter`, and `magFilter` parameters', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height,
                     mipMap: false
@@ -544,7 +545,7 @@
                 assert(tex.minFilter === 'LINEAR');
             });
             it('should default `minFilter` suffix to `_MIPMAP_LINEAR` if mip-mapping enabled', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -634,7 +635,7 @@
 
         describe('#bind()', function() {
             it('should bind the texture to a provided unit', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -642,7 +643,7 @@
                 tex.unbind();
             });
             it('should default unit to 0 if not provided', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });
@@ -673,7 +674,7 @@
 
         describe('#unbind()', function() {
             it('should unbind the texture', function() {
-                let tex = new TextureCubeMap({
+                const tex = new TextureCubeMap({
                     width: width,
                     height: height
                 });

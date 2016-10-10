@@ -2,14 +2,14 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let VertexBuffer = require('../../src/core/VertexBuffer');
-    let VertexPackage = require('../../src/core/VertexPackage');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const VertexBuffer = require('../../src/core/VertexBuffer');
+    const VertexPackage = require('../../src/core/VertexPackage');
     require('webgl-mock');
+
     let canvas;
     let gl;
-
     let bytesPerComponent = 4;
     let positions;
     let normals;
@@ -32,9 +32,9 @@
         });
 
         beforeEach(function() {
-            let maxTriangles = 256;
-            let numTriangles = Math.floor(Math.random() * maxTriangles) + 1;
-            let numVertices = numTriangles * 3;
+            const maxTriangles = 256;
+            const numTriangles = Math.floor(Math.random() * maxTriangles) + 1;
+            const numVertices = numTriangles * 3;
             positions = [];
             normals = [];
             uvs = [];
@@ -123,7 +123,7 @@
 
         describe('#constructor()', function() {
             it('should accept a VertexPackage as an argument', function() {
-                let pkg = new VertexPackage({
+                const pkg = new VertexPackage({
                     0: positions,
                     1: normals,
                     2: uvs
@@ -154,37 +154,37 @@
                 new VertexBuffer(null, separate.pointers);
             });
             it('should set byteStride to 0 for a buffer with separate attributes', function() {
-                let vb = new VertexBuffer(separate.buffer, separate.pointers);
+                const vb = new VertexBuffer(separate.buffer, separate.pointers);
                 assert(vb.byteStride === 0);
             });
             it('should set byteStride to 0 for a buffer with separate attributes', function() {
-                let vb = new VertexBuffer(separate.buffer, separate.pointers);
+                const vb = new VertexBuffer(separate.buffer, separate.pointers);
                 assert(vb.byteStride === 0);
             });
             it('should set byteStride to 0 if given only a single attribute', function() {
-                let vb = new VertexBuffer(positions, pointers);
+                const vb = new VertexBuffer(positions, pointers);
                 assert(vb.byteStride === 0);
             });
             it('should calculate byteStride from an interleaved buffer', function() {
-                let vb = new VertexBuffer(interleaved.buffer, interleaved.pointers);
+                const vb = new VertexBuffer(interleaved.buffer, interleaved.pointers);
                 assert(vb.byteStride === ((3 * bytesPerComponent) + (3 * bytesPerComponent) + (2 * bytesPerComponent)));
             });
             it('should calculate the byteLength from an Array or ArrayBuffer argument', function() {
-                let vb0 = new VertexBuffer(interleaved.buffer, interleaved.pointers);
+                const vb0 = new VertexBuffer(interleaved.buffer, interleaved.pointers);
                 assert(vb0.byteLength === interleaved.buffer.length * bytesPerComponent);
-                let vb1 = new VertexBuffer(separate.buffer, separate.pointers);
+                const vb1 = new VertexBuffer(separate.buffer, separate.pointers);
                 assert(vb1.byteLength === separate.buffer.length * bytesPerComponent);
             });
             it('should default mode to TRIANGLES', function() {
-                let vb = new VertexBuffer(interleaved.buffer, interleaved.pointers);
+                const vb = new VertexBuffer(interleaved.buffer, interleaved.pointers);
                 assert(vb.mode === 'TRIANGLES');
             });
             it('should default `indexOffset` to 0', function() {
-                let vb = new VertexBuffer(interleaved.buffer, interleaved.pointers);
+                const vb = new VertexBuffer(interleaved.buffer, interleaved.pointers);
                 assert(vb.indexOffset === 0);
             });
             it('should accept `mode`, `count`, and `indexOffset` options for drawing', function() {
-                let vb = new VertexBuffer(positions, pointers, {
+                const vb = new VertexBuffer(positions, pointers, {
                     mode: 'POINTS',
                     count: (positions.length / 3) / 2,
                     indexOffset: (positions.length / 3) / 2
@@ -279,25 +279,25 @@
 
         describe('#bufferData()', function() {
             it('should accept an Array argument', function() {
-                let vb = new VertexBuffer(null, pointers);
+                const vb = new VertexBuffer(null, pointers);
                 vb.bufferData(positions);
                 // coverage, existing WebGLBuffer branch
                 vb.bufferData(positions);
             });
             it('should accept an ArrayBufferView argument', function() {
-                let vb = new VertexBuffer(null, pointers);
+                const vb = new VertexBuffer(null, pointers);
                 vb.bufferData(new Float32Array(positions));
             });
             it('should accept an ArrayBuffer argument', function() {
-                let vb = new VertexBuffer(null, pointers);
+                const vb = new VertexBuffer(null, pointers);
                 vb.bufferData(new ArrayBuffer(positions.length * bytesPerComponent));
             });
             it('should accept numeric byte length argument', function() {
-                let vb = new VertexBuffer(null, pointers);
+                const vb = new VertexBuffer(null, pointers);
                 vb.bufferData(positions.length * bytesPerComponent);
             });
             it('should throw an exception when given an invalid argument', function() {
-                let vb = new VertexBuffer(null, pointers);
+                const vb = new VertexBuffer(null, pointers);
                 let result = false;
                 try {
                     vb.bufferData('str');
@@ -317,23 +317,23 @@
 
         describe('#bufferSubData()', function() {
             it('should accept an Array argument', function() {
-                let vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
+                const vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
                 vb.bufferSubData(positions);
             });
             it('should accept an ArrayBufferView argument', function() {
-                let vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
+                const vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
                 vb.bufferSubData(new Float32Array(positions));
             });
             it('should accept an ArrayBuffer argument', function() {
-                let vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
+                const vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
                 vb.bufferSubData(new ArrayBuffer(positions.length));
             });
             it('should accept a second numberic byte offset argument', function() {
-                let vb = new VertexBuffer(positions.length * bytesPerComponent * 2, pointers);
+                const vb = new VertexBuffer(positions.length * bytesPerComponent * 2, pointers);
                 vb.bufferSubData(positions, positions.length * bytesPerComponent);
             });
             it('should throw an exception if the buffer has not been initialized', function() {
-                let vb = new VertexBuffer(null, pointers);
+                const vb = new VertexBuffer(null, pointers);
                 let result = false;
                 try {
                     vb.bufferSubData(new ArrayBuffer(positions.length * bytesPerComponent));
@@ -343,7 +343,7 @@
                 assert(result);
             });
             it('should throw an exception when given an invalid argument', function() {
-                let vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
+                const vb = new VertexBuffer(positions.length * bytesPerComponent, pointers);
                 let result = false;
                 try {
                     vb.bufferSubData('str');
@@ -373,7 +373,7 @@
 
         describe('#bind()', function() {
             it('should bind the attribute pointers', function() {
-                let vb = new VertexBuffer(positions, pointers);
+                const vb = new VertexBuffer(positions, pointers);
                 vb.bind();
                 vb.unbind();
             });
@@ -381,7 +381,7 @@
 
         describe('#unbind()', function() {
             it('should unbind the attribute pointers', function() {
-                let vb = new VertexBuffer(positions, pointers);
+                const vb = new VertexBuffer(positions, pointers);
                 vb.bind();
                 vb.unbind();
             });
@@ -389,7 +389,7 @@
 
         describe('#draw()', function() {
             it('should draw the buffer', function() {
-                let vb = new VertexBuffer(positions, pointers, {
+                const vb = new VertexBuffer(positions, pointers, {
                     count: (positions.length / 3)
                 });
                 vb.bind();
@@ -397,7 +397,7 @@
                 vb.unbind();
             });
             it('should accept `mode`, `count`, and `byteOffset` overrides', function() {
-                let vb = new VertexBuffer(positions, pointers);
+                const vb = new VertexBuffer(positions, pointers);
                 vb.bind();
                 vb.draw({
                     mode: 'POINTS',
@@ -407,7 +407,7 @@
                 vb.unbind();
             });
             it('should throw an exception if the count is zero', function() {
-                let vb = new VertexBuffer(positions, pointers);
+                const vb = new VertexBuffer(positions, pointers);
                 let result = false;
                 try {
                     vb.bind();

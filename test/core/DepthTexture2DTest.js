@@ -2,10 +2,11 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let DepthTexture2D = require('../../src/core/DepthTexture2D');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const DepthTexture2D = require('../../src/core/DepthTexture2D');
     require('webgl-mock');
+    
     let canvas;
     let gl;
     let data;
@@ -26,7 +27,7 @@
         });
 
         beforeEach(function() {
-            let dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
+            const dim = Math.pow(2, Math.floor(Math.random() * 4) + 1);
             data = new Uint8Array(dim * dim * 4);
             for (let i = 0; i<dim * dim * 4; i++) {
                 data[i] = 255;
@@ -57,7 +58,7 @@
                 });
             });
             it('should accept `wrapS`, `wrapT`, `minFilter`, and `magFilter` parameters', function() {
-                let tex = new DepthTexture2D({
+                const tex = new DepthTexture2D({
                     width: width,
                     height: height,
                     minFilter: 'LINEAR',
@@ -71,7 +72,7 @@
                 assert(tex.wrapT === 'REPEAT');
             });
             it('should default `wrapS` and `wrapT` parameters to `CLAMP_TO_EDGE`', function() {
-                let tex = new DepthTexture2D({
+                const tex = new DepthTexture2D({
                     width: width,
                     height: height
                 });
@@ -79,7 +80,7 @@
                 assert(tex.wrapT === 'CLAMP_TO_EDGE');
             });
             it('should default `minFilter` and `magFilter` parameters to `LINEAR`', function() {
-                let tex = new DepthTexture2D({
+                const tex = new DepthTexture2D({
                     width: width,
                     height: height
                 });
@@ -95,7 +96,7 @@
                 });
             });
             it('should set `type` to `UNSIGNED_INT_24_8_WEBGL` if `format` is `DEPTH_STENCIL`', function() {
-                let tex = new DepthTexture2D({
+                const tex = new DepthTexture2D({
                     width: width,
                     height: height,
                     format: 'DEPTH_STENCIL'
@@ -103,14 +104,14 @@
                 assert(tex.type === 'UNSIGNED_INT_24_8_WEBGL');
             });
             it('should default `format` to `DEPTH_COMPONENT`', function() {
-                let tex = new DepthTexture2D({
+                const tex = new DepthTexture2D({
                     width: width,
                     height: height
                 });
                 assert(tex.format === 'DEPTH_COMPONENT');
             });
             it('should default `type` to `UNSIGNED_BYTE`', function() {
-                let tex = new DepthTexture2D({
+                const tex = new DepthTexture2D({
                     width: width,
                     height: height
                 });

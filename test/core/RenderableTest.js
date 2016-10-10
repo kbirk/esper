@@ -2,23 +2,23 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let WebGLContext = require('../../src/core/WebGLContext');
-    let VertexPackage = require('../../src/core/VertexPackage');
-    let VertexBuffer = require('../../src/core/VertexBuffer');
-    let IndexBuffer = require('../../src/core/IndexBuffer');
-    let Renderable = require('../../src/core/Renderable');
+    const assert = require('assert');
+    const WebGLContext = require('../../src/core/WebGLContext');
+    const VertexPackage = require('../../src/core/VertexPackage');
+    const VertexBuffer = require('../../src/core/VertexBuffer');
+    const IndexBuffer = require('../../src/core/IndexBuffer');
+    const Renderable = require('../../src/core/Renderable');
     require('webgl-mock');
     let canvas;
     let gl;
-
-    let bytesPerComponent = 4;
     let positions;
     let normals;
     let uvs;
     let vertexBuffer;
     let indexBuffer;
     let indices;
+
+    const bytesPerComponent = 4;
 
     describe('Renderable', function() {
 
@@ -34,9 +34,9 @@
         });
 
         beforeEach(function() {
-            let maxTriangles = 256;
-            let numTriangles = Math.floor(Math.random() * maxTriangles) + 1;
-            let numVertices = numTriangles * 3;
+            const maxTriangles = 256;
+            const numTriangles = Math.floor(Math.random() * maxTriangles) + 1;
+            const numVertices = numTriangles * 3;
             positions = [];
             normals = [];
             uvs = [];
@@ -172,14 +172,14 @@
 
         describe('#draw()', function() {
             it('should draw the buffer', function() {
-                let renderable = new Renderable({
+                const renderable = new Renderable({
                     vertexBuffer: vertexBuffer,
                     indexBuffer: indexBuffer
                 });
                 renderable.draw();
             });
             it('should accept `mode`, `count`, `indexOffset`, and `byteOffset` overrides', function() {
-                let renderable = new Renderable({
+                const renderable = new Renderable({
                     vertexBuffer: vertexBuffer
                 });
                 renderable.draw({

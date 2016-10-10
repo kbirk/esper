@@ -1,8 +1,8 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let Util = {};
+    const Util = {};
 
     /**
      * Returns true if the argument is one of the WebGL `texImage2D` overridden
@@ -62,13 +62,14 @@
      * @return {Number} - Next highest power of two.
      */
     Util.nextHighestPowerOfTwo = function(num) {
-        let i;
         if (num !== 0) {
             num = num-1;
         }
-        for (i=1; i<32; i<<=1) {
-            num = num | num >> i;
-        }
+        num |= num >> 1;
+        num |= num >> 2;
+        num |= num >> 4;
+        num |= num >> 8;
+        num |= num >> 16;
         return num + 1;
     };
 
@@ -87,11 +88,11 @@
             return img;
         }
         // create an empty canvas element
-        let canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.width = Util.nextHighestPowerOfTwo(img.width);
         canvas.height = Util.nextHighestPowerOfTwo(img.height);
         // copy the image contents to the canvas
-        let ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
         return canvas;
     };

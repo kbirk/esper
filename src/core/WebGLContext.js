@@ -2,7 +2,7 @@
 
     'use strict';
 
-    let EXTENSIONS = [
+    const EXTENSIONS = [
         // ratified
         'OES_texture_float',
         'OES_texture_half_float',
@@ -33,8 +33,9 @@
         'EXT_color_buffer_float'
     ];
 
+    const _contexts = new Map();
+
     let _boundContext = null;
-    let _contexts = {};
 
     /**
      * Returns an rfc4122 version 4 compliant UUID.
@@ -43,9 +44,9 @@
      * @return {String} - The UUID string.
      */
     function getUUID() {
-        let replace = function(c) {
-            let r = Math.random() * 16 | 0;
-            let v = (c === 'x') ? r : (r & 0x3 | 0x8);
+        const replace = function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = (c === 'x') ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         };
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, replace);
@@ -99,9 +100,9 @@
                 return _boundContext;
             }
         } else {
-            let canvas = getCanvas(arg);
+            const canvas = getCanvas(arg);
             if (canvas) {
-                return _contexts[getId(canvas)];
+                return _contexts.get(getId(canvas));
             }
         }
         // no bound context or argument
@@ -115,9 +116,9 @@
      * @param {Object} contextWrapper - The context wrapper.
      */
     function loadExtensions(contextWrapper) {
-        let gl = contextWrapper.gl;
+        const gl = contextWrapper.gl;
         EXTENSIONS.forEach(id => {
-            contextWrapper.extensions[id] = gl.getExtension(id);
+            contextWrapper.extensions.set(id, gl.getExtension(id));
         });
     }
 
@@ -131,17 +132,17 @@
      * @return {Object} The context wrapper.
      */
     function createContextWrapper(canvas, options) {
-        let gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
+        const gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
         // wrap context
-        let contextWrapper = {
+        const contextWrapper = {
             id: getId(canvas),
             gl: gl,
-            extensions: {}
+            extensions: new Map()
         };
         // load WebGL extensions
         loadExtensions(contextWrapper);
         // add context wrapper to map
-        _contexts[getId(canvas)] = contextWrapper;
+        _contexts.set(getId(canvas), contextWrapper);
         // bind the context
         _boundContext = contextWrapper;
         return contextWrapper;
@@ -157,7 +158,7 @@
          * @return {WebGLContext} The namespace, used for chaining.
          */
         bind: function(arg) {
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
                 _boundContext = wrapper;
                 return this;
@@ -175,13 +176,13 @@
          * @return {WebGLRenderingContext} The WebGLRenderingContext object.
          */
         get: function(arg, options) {
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
                // return the native WebGLRenderingContext
                return wrapper.gl;
             }
             // get canvas element
-            let canvas = getCanvas(arg);
+            const canvas = getCanvas(arg);
             // try to find or create context
             if (!canvas) {
                 throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
@@ -199,10 +200,10 @@
          * @return {WebGLRenderingContext} The WebGLRenderingContext object.
          */
         remove: function(arg) {
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
                 // delete the context
-                delete _contexts[wrapper.id];
+                _contexts.delete(wrapper.id);
                 // remove if currently bound
                 if (wrapper === _boundContext) {
                     _boundContext = null;
@@ -220,12 +221,12 @@
          * @return {Array} All supported extensions.
          */
         supportedExtensions: function(arg) {
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
-                let extensions = wrapper.extensions;
-                let supported = [];
-                Object.keys(extensions).forEach(function(key) {
-                    if (extensions[key]) {
+                const extensions = wrapper.extensions;
+                const supported = [];
+                extensions.forEach((extension, key) => {
+                    if (extension) {
                         supported.push(key);
                     }
                 });
@@ -242,12 +243,12 @@
          * @return {Array} All unsupported extensions.
          */
         unsupportedExtensions: function(arg) {
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
-                let extensions = wrapper.extensions;
-                let unsupported = [];
-                Object.keys(extensions).forEach(function(key) {
-                    if (!extensions[key]) {
+                const extensions = wrapper.extensions;
+                const unsupported = [];
+                extensions.forEach((extension, key) => {
+                    if (!extension) {
                         unsupported.push(key);
                     }
                 });
@@ -270,10 +271,10 @@
                 extension = arg;
                 arg = undefined;
             }
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
-                let extensions = wrapper.extensions;
-                return extensions[extension] ? true : false;
+                const extensions = wrapper.extensions;
+                return extensions.get(extension) ? true : false;
             }
             throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
         },
@@ -292,10 +293,10 @@
                 extension = arg;
                 arg = undefined;
             }
-            let wrapper = getContextWrapper(arg);
+            const wrapper = getContextWrapper(arg);
             if (wrapper) {
-                let extensions = wrapper.extensions;
-                return extensions[extension] || null;
+                const extensions = wrapper.extensions;
+                return extensions.get(extension) || null;
             }
             throw `No context is currently bound or could be associated with provided argument of type ${typeof arg}`;
         }

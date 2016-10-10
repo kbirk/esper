@@ -1,9 +1,9 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let COMPONENT_TYPE = 'FLOAT';
-    let BYTES_PER_COMPONENT = 4;
+    const COMPONENT_TYPE = 'FLOAT';
+    const BYTES_PER_COMPONENT = 4;
 
     /**
      * Removes invalid attribute arguments. A valid argument must be an Array of length > 0 key by a string representing an int.
@@ -14,14 +14,14 @@
      * @return {Array} The valid array of arguments.
      */
     function parseAttributeMap(attributes) {
-        let goodAttributes = [];
+        const goodAttributes = [];
         Object.keys(attributes).forEach(key => {
-            let index = parseFloat(key);
+            const index = parseFloat(key);
             // check that key is an valid integer
             if (!Number.isInteger(index) || index < 0) {
                 throw `Attribute index \`${key}\` does not represent a valid integer`;
             }
-            let vertices = attributes[key];
+            const vertices = attributes[key];
             // ensure attribute is valid
             if (Array.isArray(vertices) && vertices.length > 0) {
                 // add attribute data and index
@@ -84,20 +84,18 @@
     function setPointersAndStride(vertexPackage, attributes) {
         let shortestArray = Number.MAX_VALUE;
         let offset = 0;
-        // clear pointers
-        vertexPackage.pointers = {};
         // for each attribute
         attributes.forEach(vertices => {
             // set size to number of components in the attribute
-            let size = getComponentSize(vertices.data[0]);
+            const size = getComponentSize(vertices.data[0]);
             // length of the package will be the shortest attribute array length
             shortestArray = Math.min(shortestArray, vertices.data.length);
             // store pointer under index
-            vertexPackage.pointers[vertices.index] = {
+            vertexPackage.pointers.set(vertices.index, {
                 type: COMPONENT_TYPE,
                 size: size,
                 byteOffset: offset * BYTES_PER_COMPONENT
-            };
+            });
             // accumulate attribute offset
             offset += size;
         });
@@ -118,11 +116,10 @@
      * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set1ComponentAttr(buffer, vertices, length, offset, stride) {
-        let vertex, i, j;
-        for (i=0; i<length; i++) {
-            vertex = vertices[i];
+        for (let i=0; i<length; i++) {
+            const vertex = vertices[i];
             // get the index in the buffer to the particular vertex
-            j = offset + (stride * i);
+            const j = offset + (stride * i);
             if (vertex.x !== undefined) {
                 buffer[j] = vertex.x;
             } else if (vertex[0] !== undefined) {
@@ -144,11 +141,10 @@
      * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set2ComponentAttr(buffer, vertices, length, offset, stride) {
-        let vertex, i, j;
-        for (i=0; i<length; i++) {
-            vertex = vertices[i];
+        for (let i=0; i<length; i++) {
+            const vertex = vertices[i];
             // get the index in the buffer to the particular vertex
-            j = offset + (stride * i);
+            const j = offset + (stride * i);
             buffer[j] = (vertex.x !== undefined) ? vertex.x : vertex[0];
             buffer[j+1] = (vertex.y !== undefined) ? vertex.y : vertex[1];
         }
@@ -165,11 +161,10 @@
      * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set3ComponentAttr(buffer, vertices, length, offset, stride) {
-        let vertex, i, j;
-        for (i=0; i<length; i++) {
-            vertex = vertices[i];
+        for (let i=0; i<length; i++) {
+            const vertex = vertices[i];
             // get the index in the buffer to the particular vertex
-            j = offset + (stride * i);
+            const j = offset + (stride * i);
             buffer[j] = (vertex.x !== undefined) ? vertex.x : vertex[0];
             buffer[j+1] = (vertex.y !== undefined) ? vertex.y : vertex[1];
             buffer[j+2] = (vertex.z !== undefined) ? vertex.z : vertex[2];
@@ -187,11 +182,10 @@
      * @param {Number} stride - The stride of the buffer, not in bytes.
      */
     function set4ComponentAttr(buffer, vertices, length, offset, stride) {
-        let vertex, i, j;
-        for (i=0; i<length; i++) {
-            vertex = vertices[i];
+        for (let i=0; i<length; i++) {
+            const vertex = vertices[i];
             // get the index in the buffer to the particular vertex
-            j = offset + (stride * i);
+            const j = offset + (stride * i);
             buffer[j] = (vertex.x !== undefined) ? vertex.x : vertex[0];
             buffer[j+1] = (vertex.y !== undefined) ? vertex.y : vertex[1];
             buffer[j+2] = (vertex.z !== undefined) ? vertex.z : vertex[2];
@@ -211,11 +205,12 @@
          * @param {Object} attributes - The attributes to interleave keyed by index.
          */
         constructor(attributes) {
-            if (attributes !== undefined) {
+            this.stride = 0;
+            this.length = 0;
+            this.buffer = null;
+            this.pointers = new Map();
+            if (attributes) {
                 this.set(attributes);
-            } else {
-                this.buffer = new Float32Array(0);
-                this.pointers = {};
             }
         }
 
@@ -232,16 +227,16 @@
             // set attribute pointers and stride
             setPointersAndStride(this, attributes);
             // set size of data vector
-            let length = this.length;
-            let stride = this.stride; // not in bytes
-            let pointers = this.pointers;
-            let buffer = this.buffer = new Float32Array(length * stride);
+            const length = this.length;
+            const stride = this.stride; // not in bytes
+            const pointers = this.pointers;
+            const buffer = this.buffer = new Float32Array(length * stride);
             // for each vertex attribute array
             attributes.forEach(vertices => {
                 // get the pointer
-                let pointer = pointers[vertices.index];
+                const pointer = pointers.get(vertices.index);
                 // get the pointers offset
-                let offset = pointer.byteOffset / BYTES_PER_COMPONENT;
+                const offset = pointer.byteOffset / BYTES_PER_COMPONENT;
                 // copy vertex data into arraybuffer
                 switch (pointer.size) {
                     case 2:

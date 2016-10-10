@@ -1,16 +1,16 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let Texture2D = require('./Texture2D');
-    let ImageLoader = require('../util/ImageLoader');
-    let Util = require('../util/Util');
+    const Texture2D = require('./Texture2D');
+    const ImageLoader = require('../util/ImageLoader');
+    const Util = require('../util/Util');
 
-    let MAG_FILTERS = {
+    const MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
     };
-    let MIN_FILTERS = {
+    const MIN_FILTERS = {
         NEAREST: true,
         LINEAR: true,
         NEAREST_MIPMAP_NEAREST: true,
@@ -18,16 +18,16 @@
         NEAREST_MIPMAP_LINEAR: true,
         LINEAR_MIPMAP_LINEAR: true
     };
-    let WRAP_MODES = {
+    const WRAP_MODES = {
         REPEAT: true,
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
     };
-    let TYPES = {
+    const TYPES = {
         UNSIGNED_BYTE: true,
         FLOAT: true
     };
-    let FORMATS = {
+    const FORMATS = {
         RGB: true,
         RGBA: true
     };
@@ -35,37 +35,37 @@
     /**
      * The default type for color textures.
      */
-    let DEFAULT_TYPE = 'UNSIGNED_BYTE';
+    const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
     /**
      * The default format for color textures.
      */
-    let DEFAULT_FORMAT = 'RGBA';
+    const DEFAULT_FORMAT = 'RGBA';
 
     /**
      * The default wrap mode for color textures.
      */
-    let DEFAULT_WRAP = 'REPEAT';
+    const DEFAULT_WRAP = 'REPEAT';
 
     /**
      * The default min / mag filter for color textures.
      */
-    let DEFAULT_FILTER = 'LINEAR';
+    const DEFAULT_FILTER = 'LINEAR';
 
     /**
      * The default for whether alpha premultiplying is enabled.
      */
-    let DEFAULT_PREMULTIPLY_ALPHA = true;
+    const DEFAULT_PREMULTIPLY_ALPHA = true;
 
     /**
      * The default for whether mipmapping is enabled.
      */
-    let DEFAULT_MIPMAP = true;
+    const DEFAULT_MIPMAP = true;
 
     /**
      * The default for whether invert-y is enabled.
      */
-    let DEFAULT_INVERT_Y = true;
+    const DEFAULT_INVERT_Y = true;
 
     /**
      * @class ColorTexture2D

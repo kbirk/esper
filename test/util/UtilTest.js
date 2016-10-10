@@ -2,8 +2,8 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let Util = require('../../src/util/Util');
+    const assert = require('assert');
+    const Util = require('../../src/util/Util');
     require('webgl-mock');
 
     describe('Util', function() {
@@ -45,8 +45,7 @@
         });
         describe('#nextHighestPowerOfTwo()', function() {
             it('should return a power of two', function() {
-                let i;
-                for (i=0; i<257; i++) {
+                for (let i=0; i<257; i++) {
                     assert(Util.isPowerOfTwo(Util.nextHighestPowerOfTwo(Math.random()*100)));
                 }
             });

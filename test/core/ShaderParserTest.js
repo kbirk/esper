@@ -2,46 +2,46 @@
 
     'use strict';
 
-    let assert = require('assert');
-    let ShaderParser = require('../../src/core/ShaderParser');
+    const assert = require('assert');
+    const ShaderParser = require('../../src/core/ShaderParser');
 
     describe('ShaderParser', function() {
         describe('#parseDeclarations()', function() {
             it('should return declarations in the order they are found in the source arguments', function() {
-                let source =
+                const source =
                     `
                     attribute highp vec3 A;
                     attribute highp vec3 B;
                     attribute highp vec3 C;
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations(source, 'attribute');
+                const declarations = ShaderParser.parseDeclarations(source, 'attribute');
                 assert(declarations[0].name === 'A');
                 assert(declarations[1].name === 'B');
                 assert(declarations[2].name === 'C');
             });
             it('should return the each unique declaration only once', function() {
-                let sourceA =
+                const sourceA =
                     `
                     attribute highp vec3 A;
                     attribute highp vec3 A;
                     uniform highp mat4 B;
                     void main() {}
                     `;
-                let sourceB =
+                const sourceB =
                     `
                     attribute highp vec3 A;
                     uniform highp mat4 B;
                     uniform highp mat4 C;
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations([sourceA, sourceB], ['uniform', 'attribute']);
+                const declarations = ShaderParser.parseDeclarations([sourceA, sourceB], ['uniform', 'attribute']);
                 assert(declarations[0].name === 'A');
                 assert(declarations[1].name === 'B');
                 assert(declarations[2].name === 'C');
             });
             it('should return an empty array if no qualifiers are passed', function() {
-                let source =
+                const source =
                     `
                     attribute highp vec3 A;
                     uniform highp mat4 B;
@@ -60,7 +60,7 @@
                 assert(declarations.length === 0);
             });
             it('should ignore comments', function() {
-                let source =
+                const source =
                     `
                     // single line comment // uniform Bad1
                     /* single line block comment uniform Bad2 */
@@ -75,13 +75,13 @@
                     uniform highp mat4 C;
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
+                const declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
                 assert(declarations[0].name === 'A');
                 assert(declarations[1].name === 'B');
                 assert(declarations[2].name === 'C');
             });
             it('should accept declarations broken across multiple lines', function() {
-                let source =
+                const source =
                     `
                     attribute
                     highp vec3
@@ -94,13 +94,13 @@
                     ;
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
+                const declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
                 assert(declarations[0].name === 'A');
                 assert(declarations[1].name === 'B');
                 assert(declarations[2].name === 'C');
             });
             it('should accept declarations using comma shorthand', function() {
-                let source =
+                const source =
                     `
                     attribute highp vec3 A, B;
                     uniform highp mat4 C,
@@ -110,7 +110,7 @@
                      F;
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
+                const declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
                 assert(declarations[0].name === 'A');
                 assert(declarations[1].name === 'B');
                 assert(declarations[2].name === 'C');
@@ -119,13 +119,13 @@
                 assert(declarations[5].name === 'F');
             });
             it('should parse source arguments in the order they are passed', function() {
-                let sourceAB =
+                const sourceAB =
                     `
                     attribute highp vec3 A;
                     uniform highp mat4 B;
                     void main() {}
                     `;
-                let sourceCD =
+                const sourceCD =
                     `
                     attribute highp vec3 C;
                     uniform highp mat4 D;
@@ -143,7 +143,7 @@
                 assert(declarations[3].name === 'B');
             });
             it('should not take into account what order the qualifer arguments are passed', function() {
-                let source =
+                const source =
                     `
                     'attribute highp vec3 A;',
                     'uniform highp mat4 B;',
@@ -160,7 +160,7 @@
                 assert(declarations[2].name === 'C');
             });
             it('should parse the count from array and non-array declarations', function() {
-                let source =
+                const source =
                     `
                     uniform highp mat4 A[10], B, C [2];
                     uniform highp mat4 D;
@@ -172,7 +172,7 @@
                     [11] ;
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
+                const declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
                 assert(declarations[0].count === 10);
                 assert(declarations[1].count === 1);
                 assert(declarations[2].count === 2);
@@ -181,7 +181,7 @@
                 assert(declarations[5].count === 11);
             });
             it('should handle preprocessor statements', function() {
-                let source =
+                const source =
                     `
                     precision highp float;
                     #define TEST 5
@@ -194,13 +194,13 @@
                     #endif
                     void main() {}
                     `;
-                let declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
+                const declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
                 assert(declarations.length === 1);
             });
         });
         describe('#isGLSL()', function() {
             it('should return true if the argument string contains a `void main(...) {}`', function() {
-                let source0 =
+                const source0 =
                     `
                     uniform highp mat4 A[10], B, C[2];
                     uniform highp mat4 D;
@@ -211,7 +211,7 @@
                         v = vec4(1.0, 1.0, 1.0, 1.0);
                     }
                     `;
-                let source1 =
+                const source1 =
                     `
                     attribute highp vec3 aVertexPosition;
                     attribute highp vec3 aVertexNormal;
@@ -227,7 +227,7 @@
                         vMVNormal = mat3(uViewMatrix * uModelMatrix) * aVertexNormal;
                     }
                     `;
-                let source2 =
+                const source2 =
                     `
             		uniform highp mat4 uViewMatrix;
                     uniform highp vec3 uLightPosition;
@@ -249,14 +249,14 @@
                 assert(ShaderParser.isGLSL(source2));
             });
             it('should return false if the argument string does not contain a `void main(...) {}`', function() {
-                let url0 = 'shaders/vert.glsl';
-                let url1 = 'shaders/main.vert';
-                let url3 = 'shaders/void/main.frag';
-                let url4 = 'shaders/voidmain(void).frag';
-                let url5 = 'shaders/voidmain(){}.frag';
-                let url6 = 'shaders/voidmain(void){}.frag';
-                let url7 = 'shaders/voidmain(){}.frag';
-                let url8 = 'shaders/voidmain(){}.frag';
+                const url0 = 'shaders/vert.glsl';
+                const url1 = 'shaders/main.vert';
+                const url3 = 'shaders/void/main.frag';
+                const url4 = 'shaders/voidmain(void).frag';
+                const url5 = 'shaders/voidmain(){}.frag';
+                const url6 = 'shaders/voidmain(void){}.frag';
+                const url7 = 'shaders/voidmain(){}.frag';
+                const url8 = 'shaders/voidmain(){}.frag';
                 assert(!ShaderParser.isGLSL(url0));
                 assert(!ShaderParser.isGLSL(url1));
                 assert(!ShaderParser.isGLSL(url3));

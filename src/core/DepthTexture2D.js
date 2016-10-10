@@ -1,28 +1,28 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let Texture2D = require('./Texture2D');
+    const Texture2D = require('./Texture2D');
 
-    let MAG_FILTERS = {
+    const MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
     };
-    let MIN_FILTERS = {
+    const MIN_FILTERS = {
         NEAREST: true,
         LINEAR: true
     };
-    let WRAP_MODES = {
+    const WRAP_MODES = {
         REPEAT: true,
         CLAMP_TO_EDGE: true,
         MIRRORED_REPEAT: true
     };
-    let DEPTH_TYPES = {
+    const DEPTH_TYPES = {
         UNSIGNED_BYTE: true,
         UNSIGNED_SHORT: true,
         UNSIGNED_INT: true
     };
-    let FORMATS = {
+    const FORMATS = {
         DEPTH_COMPONENT: true,
         DEPTH_STENCIL: true
     };
@@ -30,22 +30,22 @@
     /**
      * The default type for depth textures.
      */
-    let DEFAULT_TYPE = 'UNSIGNED_INT';
+    const DEFAULT_TYPE = 'UNSIGNED_INT';
 
     /**
      * The default format for depth textures.
      */
-    let DEFAULT_FORMAT = 'DEPTH_COMPONENT';
+    const DEFAULT_FORMAT = 'DEPTH_COMPONENT';
 
     /**
      * The default wrap mode for depth textures.
      */
-    let DEFAULT_WRAP = 'CLAMP_TO_EDGE';
+    const DEFAULT_WRAP = 'CLAMP_TO_EDGE';
 
     /**
      * The default min / mag filter for depth textures.
      */
-    let DEFAULT_FILTER = 'LINEAR';
+    const DEFAULT_FILTER = 'LINEAR';
 
     /**
      * @class DepthTexture2D

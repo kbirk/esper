@@ -1,16 +1,16 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let COMMENTS_REGEXP = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
-    let ENDLINE_REGEXP = /(\r\n|\n|\r)/gm;
-    let WHITESPACE_REGEXP = /\s{2,}/g;
-    let BRACKET_WHITESPACE_REGEXP = /(\s*)(\[)(\s*)(\d+)(\s*)(\])(\s*)/g;
-    let NAME_COUNT_REGEXP = /([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?/;
-    let PRECISION_REGEX = /\bprecision\s+\w+\s+\w+;/g;
-    let INLINE_PRECISION_REGEX = /\b(highp|mediump|lowp)\s+/g;
-    let GLSL_REGEXP = /void\s+main\s*\(\s*(void)*\s*\)\s*/mi;
-    let PREP_REGEXP = /#([\W\w\s\d])(?:.*\\r?\n)*.*$/gm;
+    const COMMENTS_REGEXP = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
+    const ENDLINE_REGEXP = /(\r\n|\n|\r)/gm;
+    const WHITESPACE_REGEXP = /\s{2,}/g;
+    const BRACKET_WHITESPACE_REGEXP = /(\s*)(\[)(\s*)(\d+)(\s*)(\])(\s*)/g;
+    const NAME_COUNT_REGEXP = /([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?/;
+    const PRECISION_REGEX = /\bprecision\s+\w+\s+\w+;/g;
+    const INLINE_PRECISION_REGEX = /\b(highp|mediump|lowp)\s+/g;
+    const GLSL_REGEXP = /void\s+main\s*\(\s*(void)*\s*\)\s*/mi;
+    const PREP_REGEXP = /#([\W\w\s\d])(?:.*\\r?\n)*.*$/gm;
 
     /**
      * Removes standard comments from the provided string.
@@ -66,9 +66,9 @@
      */
     function parseNameAndCount(qualifier, type, entry) {
         // determine name and size of variable
-        let matches = entry.match(NAME_COUNT_REGEXP);
-        let name = matches[1];
-        let count = (matches[2] === undefined) ? 1 : parseInt(matches[2], 10);
+        const matches = entry.match(NAME_COUNT_REGEXP);
+        const name = matches[1];
+        const count = (matches[2] === undefined) ? 1 : parseInt(matches[2], 10);
         return {
             qualifier: qualifier,
             type: type,
@@ -93,7 +93,7 @@
         //
         // ['uniform mat4 A[10]', 'B', 'C[2]']
         //
-        let split = statement.split(',').map(elem => {
+        const split = statement.split(',').map(elem => {
             return elem.trim();
         });
 
@@ -101,25 +101,25 @@
         //
         // ['uniform', 'mat4', 'A[10]']
         //
-        let header = split.shift().split(' ');
+        const header = split.shift().split(' ');
 
         // qualifier is always first element
         //
         // 'uniform'
         //
-        let qualifier = header.shift();
+        const qualifier = header.shift();
 
         // type will be the second element
         //
         // 'mat4'
         //
-        let type = header.shift();
+        const type = header.shift();
 
         // last part of header will be the first, and possible only variable name
         //
         // ['A[10]', 'B', 'C[2]']
         //
-        let names = header.concat(split);
+        const names = header.concat(split);
 
         // if there are other names after a ',' add them as well
         return names.map(name => {
@@ -139,10 +139,10 @@
      */
     function parseSource(source, keywords) {
         // get individual statements (any sequence ending in ;)
-        let statements = source.split(';');
+        const statements = source.split(';');
         // build regex for parsing statements with targetted keywords
-        let keywordStr = keywords.join('|');
-        let keywordRegex = new RegExp('\\b(' + keywordStr + ')\\b.*');
+        const keywordStr = keywords.join('|');
+        const keywordRegex = new RegExp('\\b(' + keywordStr + ')\\b.*');
         // parse and store global precision statements and any declarations
         let matched = [];
         // for each statement
@@ -151,7 +151,7 @@
             //
             // ['uniform float uTime']
             //
-            let kmatch = statement.match(keywordRegex);
+            const kmatch = statement.match(keywordRegex);
             if (kmatch) {
                 // parse statement and add to array
                 matched = matched.concat(parseStatement(kmatch[0]));
@@ -172,7 +172,7 @@
     function filterDuplicatesByName(declarations) {
         // in cases where the same declarations are present in multiple
         // sources, this function will remove duplicates from the results
-        let seen = {};
+        const seen = {};
         return declarations.filter(declaration => {
             if (seen[declaration.name]) {
                 return false;

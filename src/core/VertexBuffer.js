@@ -1,11 +1,11 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
-    let VertexPackage = require('./VertexPackage');
+    const WebGLContext = require('./WebGLContext');
+    const VertexPackage = require('./VertexPackage');
 
-    let MODES = {
+    const MODES = {
         POINTS: true,
         LINES: true,
         LINE_STRIP: true,
@@ -14,7 +14,7 @@
         TRIANGLE_STRIP: true,
         TRIANGLE_FAN: true
     };
-    let TYPES = {
+    const TYPES = {
         BYTE: true,
         UNSIGNED_BYTE: true,
         SHORT: true,
@@ -22,7 +22,7 @@
         FIXED: true,
         FLOAT: true
     };
-    let BYTES_PER_TYPE = {
+    const BYTES_PER_TYPE = {
         BYTE: 1,
         UNSIGNED_BYTE: 1,
         SHORT: 2,
@@ -30,7 +30,7 @@
         FIXED: 4,
         FLOAT: 4
     };
-    let SIZES = {
+    const SIZES = {
         1: true,
         2: true,
         3: true,
@@ -40,46 +40,44 @@
     /**
      * The default attribute point byte offset.
      */
-    let DEFAULT_BYTE_OFFSET = 0;
+    const DEFAULT_BYTE_OFFSET = 0;
 
     /**
      * The default render mode (primitive type).
      */
-    let DEFAULT_MODE = 'TRIANGLES';
+    const DEFAULT_MODE = 'TRIANGLES';
 
     /**
      * The default index offset to render from.
      */
-    let DEFAULT_INDEX_OFFSET = 0;
+    const DEFAULT_INDEX_OFFSET = 0;
 
     /**
      * The default count of indices to render.
      */
-    let DEFAULT_COUNT = 0;
+    const DEFAULT_COUNT = 0;
 
     /**
      * Parse the attribute pointers and determine the byte stride of the buffer.
      * @private
      *
-     * @param {Object} attributePointers - The attribute pointer map.
+     * @param {Map} attributePointers - The attribute pointer map.
      *
      * @return {Number} The byte stride of the buffer.
      */
     function getStride(attributePointers) {
         // if there is only one attribute pointer assigned to this buffer,
         // there is no need for stride, set to default of 0
-        let indices = Object.keys(attributePointers);
-        if (indices.length === 1) {
+        if (attributePointers.size === 1) {
             return 0;
         }
         let maxByteOffset = 0;
         let byteSizeSum = 0;
         let byteStride = 0;
-        indices.forEach(index => {
-            let pointer = attributePointers[index];
-            let byteOffset = pointer.byteOffset;
-            let size = pointer.size;
-            let type = pointer.type;
+        attributePointers.forEach(pointer => {
+            const byteOffset = pointer.byteOffset;
+            const size = pointer.size;
+            const type = pointer.type;
             // track the sum of each attribute size
             byteSizeSum += size * BYTES_PER_TYPE[type];
             // track the largest offset to determine the byte stride of the buffer
@@ -109,17 +107,17 @@
      */
     function getAttributePointers(attributePointers) {
         // parse pointers to ensure they are valid
-        let pointers = {};
+        const pointers = new Map();
         Object.keys(attributePointers).forEach(key => {
-            let index = parseInt(key, 10);
+            const index = parseInt(key, 10);
             // check that key is an valid integer
             if (isNaN(index)) {
                 throw `Attribute index \`${key}\` does not represent an integer`;
             }
-            let pointer = attributePointers[key];
-            let size = pointer.size;
-            let type = pointer.type;
-            let byteOffset = pointer.byteOffset;
+            const pointer = attributePointers[key];
+            const size = pointer.size;
+            const type = pointer.type;
+            const byteOffset = pointer.byteOffset;
             // check size
             if (!SIZES[size]) {
                 throw 'Attribute pointer `size` parameter is invalid, must be one of ' +
@@ -130,11 +128,11 @@
                 throw 'Attribute pointer `type` parameter is invalid, must be one of ' +
                     JSON.stringify(Object.keys(TYPES));
             }
-            pointers[index] = {
+            pointers.set(index, {
                 size: size,
                 type: type,
                 byteOffset: (byteOffset !== undefined) ? byteOffset : DEFAULT_BYTE_OFFSET
-            };
+            });
         });
         return pointers;
     }
@@ -200,7 +198,7 @@
          * @return {VertexBuffer} The vertex buffer object, for chaining.
          */
         bufferData(arg) {
-            let gl = this.gl;
+            const gl = this.gl;
             // ensure argument is valid
             if (Array.isArray(arg)) {
                 // cast array into Float32Array
@@ -237,7 +235,7 @@
          * @return {VertexBuffer} The vertex buffer object, for chaining.
          */
         bufferSubData(array, byteOffset = DEFAULT_BYTE_OFFSET) {
-            let gl = this.gl;
+            const gl = this.gl;
             // ensure the buffer exists
             if (!this.buffer) {
                 throw 'Buffer has not yet been allocated, allocate with ' +
@@ -270,12 +268,11 @@
          * @return {VertexBuffer} - Returns the vertex buffer object for chaining.
          */
         bind() {
-            let gl = this.gl;
+            const gl = this.gl;
             // bind buffer
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
             // for each attribute pointer
-            Object.keys(this.pointers).forEach(index => {
-                let pointer = this.pointers[index];
+            this.pointers.forEach((pointer, index) => {
                 // set attribute pointer
                 gl.vertexAttribPointer(
                     index,
@@ -296,10 +293,10 @@
          * @return {VertexBuffer} The vertex buffer object, for chaining.
          */
         unbind() {
-            let gl = this.gl;
+            const gl = this.gl;
             // unbind buffer
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-            Object.keys(this.pointers).forEach(index => {
+            this.pointers.forEach((pointer, index) => {
                 // disable attribute index
                 gl.disableVertexAttribArray(index);
             });
@@ -317,10 +314,10 @@
          * @return {VertexBuffer} The vertex buffer object, for chaining.
          */
         draw(options = {}) {
-            let gl = this.gl;
-            let mode = gl[options.mode || this.mode];
-            let indexOffset = (options.indexOffset !== undefined) ? options.indexOffset : this.indexOffset;
-            let count = (options.count !== undefined) ? options.count : this.count;
+            const gl = this.gl;
+            const mode = gl[options.mode || this.mode];
+            const indexOffset = (options.indexOffset !== undefined) ? options.indexOffset : this.indexOffset;
+            const count = (options.count !== undefined) ? options.count : this.count;
             if (count === 0) {
                 throw 'Attempting to draw with a count of 0';
             }

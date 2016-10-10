@@ -1,13 +1,13 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
-    let ShaderParser = require('./ShaderParser');
-    let Async = require('../util/Async');
-    let XHRLoader = require('../util/XHRLoader');
+    const WebGLContext = require('./WebGLContext');
+    const ShaderParser = require('./ShaderParser');
+    const Async = require('../util/Async');
+    const XHRLoader = require('../util/XHRLoader');
 
-    let UNIFORM_FUNCTIONS = {
+    const UNIFORM_FUNCTIONS = {
         'bool': 'uniform1i',
         'bool[]': 'uniform1iv',
         'float': 'uniform1f',
@@ -44,18 +44,18 @@
      * instead.
      * @private
      *
-     * @param {Object} attributes - The existing attributes object.
+     * @param {Map} attributes - The existing attributes map.
      * @param {Object} declaration - The attribute declaration object.
      *
      * @return {Number} The attribute index.
      */
     function getAttributeIndex(attributes, declaration) {
         // check if attribute is already declared, if so, use that index
-        if (attributes[declaration.name]) {
-            return attributes[declaration.name].index;
+        if (attributes.has(declaration.name)) {
+            return attributes.get(declaration.name).index;
         }
         // return next available index
-        return Object.keys(attributes).length;
+        return attributes.size;
     }
 
     /**
@@ -69,7 +69,7 @@
      * @return {Object} The attribute and uniform information.
      */
     function setAttributesAndUniforms(shader, vertSource, fragSource) {
-        let declarations = ShaderParser.parseDeclarations(
+        const declarations = ShaderParser.parseDeclarations(
             [vertSource, fragSource],
             ['uniform', 'attribute']);
         // for each declaration in the shader
@@ -77,17 +77,18 @@
             // check if its an attribute or uniform
             if (declaration.qualifier === 'attribute') {
                 // if attribute, store type and index
-                let index = getAttributeIndex(shader.attributes, declaration);
-                shader.attributes[declaration.name] = {
+                const index = getAttributeIndex(shader.attributes, declaration);
+                shader.attributes.set(declaration.name, {
                     type: declaration.type,
                     index: index
-                };
+                });
             } else { // if (declaration.qualifier === 'uniform') {
                 // if uniform, store type and buffer function name
-                shader.uniforms[declaration.name] = {
+                const type = declaration.type + (declaration.count > 1 ? '[]' : '');
+                shader.uniforms.set(declaration.name, {
                     type: declaration.type,
-                    func: UNIFORM_FUNCTIONS[declaration.type + (declaration.count > 1 ? '[]' : '')]
-                };
+                    func: UNIFORM_FUNCTIONS[type]
+                });
             }
         });
     }
@@ -103,7 +104,7 @@
      * @return {WebGLShader} The compiled shader object.
      */
     function compileShader(gl, shaderSource, type) {
-        let shader = gl.createShader(gl[type]);
+        const shader = gl.createShader(gl[type]);
         gl.shaderSource(shader, shaderSource);
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -119,14 +120,13 @@
      * @param {Shader} shader - The Shader object.
      */
     function bindAttributeLocations(shader) {
-        let gl = shader.gl;
-        let attributes = shader.attributes;
-        Object.keys(attributes).forEach(key => {
+        const gl = shader.gl;
+        shader.attributes.forEach((attribute, name) => {
             // bind the attribute location
             gl.bindAttribLocation(
                 shader.program,
-                attributes[key].index,
-                key);
+                attribute.index,
+                name);
         });
     }
 
@@ -137,18 +137,18 @@
      * @param {Shader} shader - The Shader object.
      */
     function getUniformLocations(shader) {
-        let gl = shader.gl;
-        let uniforms = shader.uniforms;
-        Object.keys(uniforms).forEach(key => {
+        const gl = shader.gl;
+        const uniforms = shader.uniforms;
+        uniforms.forEach((uniform, name) => {
             // get the uniform location
-            let location = gl.getUniformLocation(shader.program, key);
+            const location = gl.getUniformLocation(shader.program, name);
             // check if null, parse may detect uniform that is compiled out
             // due to a preprocessor evaluation.
             // TODO: fix parser so that it evaluates these correctly.
             if (location === null) {
-                delete uniforms[key];
+                uniforms.delete(name);
             } else {
-                uniforms[key].location = location;
+                uniform.location = location;
             }
         });
     }
@@ -200,7 +200,7 @@
      */
     function resolveSources(sources) {
         return function(done) {
-            let tasks = [];
+            const tasks = [];
             sources = sources || [];
             sources = !Array.isArray(sources) ? [sources] : sources;
             sources.forEach(source => {
@@ -228,13 +228,13 @@
      * @return {Shader} The shader object, for chaining.
      */
     function createProgram(shader, sources) {
-        let gl = shader.gl;
-        let common = sources.common.join('');
-        let vert = sources.vert.join('');
-        let frag = sources.frag.join('');
+        const gl = shader.gl;
+        const common = sources.common.join('');
+        const vert = sources.vert.join('');
+        const frag = sources.frag.join('');
         // compile shaders
-        let vertexShader = compileShader(gl, common + vert, 'VERTEX_SHADER');
-        let fragmentShader = compileShader(gl, common + frag, 'FRAGMENT_SHADER');
+        const vertexShader = compileShader(gl, common + vert, 'VERTEX_SHADER');
+        const fragmentShader = compileShader(gl, common + frag, 'FRAGMENT_SHADER');
         // parse source for attribute and uniforms
         setAttributesAndUniforms(shader, vert, frag);
         // create the shader program
@@ -281,14 +281,14 @@
             this.program = 0;
             this.gl = WebGLContext.get();
             this.version = spec.version || '1.00';
-            this.attributes = {};
-            this.uniforms = {};
+            this.attributes = new Map();
+            this.uniforms = new Map();
             // if attribute ordering is provided, use those indices
             if (spec.attributes) {
                 spec.attributes.forEach((attr, index) => {
-                    this.attributes[attr] = {
+                    this.attributes.set(attr, {
                         index: index
-                    };
+                    });
                 });
             }
             // create the shader
@@ -335,7 +335,7 @@
          * @return {Shader} - The shader object, for chaining.
          */
         setUniform(name, value) {
-            let uniform = this.uniforms[name];
+            const uniform = this.uniforms.get(name);
             // ensure that the uniform spec exists for the name
             if (!uniform) {
                 throw `No uniform found under name \`${name}\``;
@@ -344,13 +344,10 @@
             if (value === undefined || value === null) {
                 // ensure that the uniform argument is defined
                 throw `Value passed for uniform \`${name}\` is undefined or null`;
-            } else if (typeof value === 'boolean') {
-                // convert boolean's to 0 or 1
-                // TODO: is this necessary?
-                value = value ? 1 : 0;
             }
-            // pass the arguments depending on the type
-            // TODO: remove string comparions from here...
+            // set the uniform
+            // NOTE: checking type by string comparison is faster than wrapping
+            // the functions.
             if (uniform.type === 'mat2' || uniform.type === 'mat3' || uniform.type === 'mat4') {
                 this.gl[uniform.func](uniform.location, false, value);
             } else {

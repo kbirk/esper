@@ -2,7 +2,7 @@
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
+    const WebGLContext = require('./WebGLContext');
 
     /**
      * Bind the viewport to the rendering context.
@@ -14,7 +14,7 @@
      * @param {Number} y - The vertical offset override.
      */
     function set(viewport, x, y, width, height) {
-        let gl = viewport.gl;
+        const gl = viewport.gl;
         x = (x !== undefined) ? x : viewport.x;
         y = (y !== undefined) ? y : viewport.y;
         width = (width !== undefined) ? width : viewport.width;
@@ -112,7 +112,7 @@
             }
             this.stack.pop();
             if (this.stack.length > 0) {
-                let top = this.stack[this.stack.length - 1];
+                const top = this.stack[this.stack.length - 1];
                 set(this, top.x, top.y, top.width, top.height);
             } else {
                 set(this);

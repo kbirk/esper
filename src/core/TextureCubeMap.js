@@ -1,18 +1,18 @@
-(function () {
+(function() {
 
     'use strict';
 
-    let WebGLContext = require('./WebGLContext');
-    let Async = require('../util/Async');
-    let Util = require('../util/Util');
-    let ImageLoader = require('../util/ImageLoader');
+    const WebGLContext = require('./WebGLContext');
+    const Async = require('../util/Async');
+    const Util = require('../util/Util');
+    const ImageLoader = require('../util/ImageLoader');
 
-    let FACES = [
+    const FACES = [
         '-x', '+x',
         '-y', '+y',
         '-z', '+z'
     ];
-    let FACE_TARGETS = {
+    const FACE_TARGETS = {
         '+z': 'TEXTURE_CUBE_MAP_POSITIVE_Z',
         '-z': 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
         '+x': 'TEXTURE_CUBE_MAP_POSITIVE_X',
@@ -20,7 +20,7 @@
         '+y': 'TEXTURE_CUBE_MAP_POSITIVE_Y',
         '-y': 'TEXTURE_CUBE_MAP_NEGATIVE_Y'
     };
-    let TARGETS = {
+    const TARGETS = {
         TEXTURE_CUBE_MAP_POSITIVE_Z: true,
         TEXTURE_CUBE_MAP_NEGATIVE_Z: true,
         TEXTURE_CUBE_MAP_POSITIVE_X: true,
@@ -28,11 +28,11 @@
         TEXTURE_CUBE_MAP_POSITIVE_Y: true,
         TEXTURE_CUBE_MAP_NEGATIVE_Y: true
     };
-    let MAG_FILTERS = {
+    const MAG_FILTERS = {
         NEAREST: true,
         LINEAR: true
     };
-    let MIN_FILTERS = {
+    const MIN_FILTERS = {
         NEAREST: true,
         LINEAR: true,
         NEAREST_MIPMAP_NEAREST: true,
@@ -40,22 +40,22 @@
         NEAREST_MIPMAP_LINEAR: true,
         LINEAR_MIPMAP_LINEAR: true
     };
-    let NON_MIPMAP_MIN_FILTERS = {
+    const NON_MIPMAP_MIN_FILTERS = {
         NEAREST: true,
         LINEAR: true,
     };
-    let MIPMAP_MIN_FILTERS = {
+    const MIPMAP_MIN_FILTERS = {
         NEAREST_MIPMAP_NEAREST: true,
         LINEAR_MIPMAP_NEAREST: true,
         NEAREST_MIPMAP_LINEAR: true,
         LINEAR_MIPMAP_LINEAR: true
     };
-    let WRAP_MODES = {
+    const WRAP_MODES = {
         REPEAT: true,
         MIRRORED_REPEAT: true,
         CLAMP_TO_EDGE: true
     };
-    let FORMATS = {
+    const FORMATS = {
         RGB: true,
         RGBA: true
     };
@@ -63,42 +63,42 @@
     /**
      * The default type for textures.
      */
-    let DEFAULT_TYPE = 'UNSIGNED_BYTE';
+    const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
     /**
      * The default format for textures.
      */
-    let DEFAULT_FORMAT = 'RGBA';
+    const DEFAULT_FORMAT = 'RGBA';
 
     /**
      * The default wrap mode for textures.
      */
-    let DEFAULT_WRAP = 'CLAMP_TO_EDGE';
+    const DEFAULT_WRAP = 'CLAMP_TO_EDGE';
 
     /**
      * The default min / mag filter for textures.
      */
-    let DEFAULT_FILTER = 'LINEAR';
+    const DEFAULT_FILTER = 'LINEAR';
 
     /**
      * The default for whether alpha premultiplying is enabled.
      */
-    let DEFAULT_PREMULTIPLY_ALPHA = true;
+    const DEFAULT_PREMULTIPLY_ALPHA = true;
 
     /**
      * The default for whether mipmapping is enabled.
      */
-    let DEFAULT_MIPMAP = true;
+    const DEFAULT_MIPMAP = true;
 
     /**
      * The default for whether invert-y is enabled.
      */
-    let DEFAULT_INVERT_Y = true;
+    const DEFAULT_INVERT_Y = true;
 
     /**
      * The default mip-mapping filter suffix.
      */
-    let DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
+    const DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
     /**
      * Checks the width and height of the cubemap and throws an exception if
@@ -240,10 +240,10 @@
             this.bufferedFaces = [];
             // create cube map based on input
             if (spec.faces) {
-                let tasks = [];
+                const tasks = [];
                 FACES.forEach(id => {
-                    let face = spec.faces[id];
-                    let target = FACE_TARGETS[id];
+                    const face = spec.faces[id];
+                    const target = FACE_TARGETS[id];
                     // load based on type
                     if (typeof face === 'string') {
                         // url
@@ -296,7 +296,7 @@
                 throw 'Texture unit location is invalid';
             }
             // bind cube map texture
-            let gl = this.gl;
+            const gl = this.gl;
             gl.activeTexture(gl['TEXTURE' + location]);
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
             return this;
@@ -309,7 +309,7 @@
          */
         unbind() {
             // unbind cube map texture
-            let gl = this.gl;
+            const gl = this.gl;
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             return this;
         }
@@ -326,7 +326,7 @@
             if (!TARGETS[target]) {
                 throw `Provided \`target\` of ${target}  is invalid`;
             }
-            let gl = this.gl;
+            const gl = this.gl;
             // create texture object if it doesn't already exist
             if (!this.texture) {
                 this.texture = gl.createTexture();
@@ -417,7 +417,7 @@
          * @return {TextureCubeMap} The texture object, for chaining.
          */
         setParameters(params) {
-            let gl = this.gl;
+            const gl = this.gl;
             // bind texture
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
             // set wrap S parameter
