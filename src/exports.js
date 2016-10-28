@@ -1,20 +1,16 @@
-(function() {
+'use strict';
 
-    'use strict';
-
-    module.exports = {
-        IndexBuffer: require('./core/IndexBuffer'),
-        Renderable: require('./core/Renderable'),
-        RenderTarget: require('./core/RenderTarget'),
-        Shader: require('./core/Shader'),
-        Texture2D: require('./core/Texture2D'),
-        ColorTexture2D: require('./core/ColorTexture2D'),
-        DepthTexture2D: require('./core/DepthTexture2D'),
-        TextureCubeMap: require('./core/TextureCubeMap'),
-        VertexBuffer: require('./core/VertexBuffer'),
-        VertexPackage: require('./core/VertexPackage'),
-        Viewport: require('./core/Viewport'),
-        WebGLContext: require('./core/WebGLContext')
-    };
-
-}());
+module.exports = {
+	ColorTexture2D: require('./core/ColorTexture2D'),
+	DepthTexture2D: require('./core/DepthTexture2D'),
+	IndexBuffer: require('./core/IndexBuffer'),
+	Renderable: require('./core/Renderable'),
+	RenderTarget: require('./core/RenderTarget'),
+	Shader: require('./core/Shader'),
+	Texture2D: require('./core/Texture2D'),
+	TextureCubeMap: require('./core/TextureCubeMap'),
+	VertexBuffer: require('./core/VertexBuffer'),
+	VertexPackage: require('./core/VertexPackage'),
+	Viewport: require('./core/Viewport'),
+	WebGLContext: require('./core/WebGLContext')
+};

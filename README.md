@@ -31,7 +31,6 @@ A low-level ES6 WebGL rendering framework.
 
 <!-- /TOC -->
 
-
 ## Installation
 
 Requires [node](http://nodejs.org/) or [bower](http://bower.io/).
@@ -270,7 +269,7 @@ let viewport = new esper.Viewport({
 // Have the viewport always fit to the window.
 window.addEventListener('resize', () => {
 	viewport.resize(window.innerWidth, window.innerHeight);
-}
+});
 
 // Push the viewport onto the stack at its current size.
 viewport.push();
@@ -350,7 +349,7 @@ let vertexBuffer = new esper.VertexBuffer(array, {
 		type: 'FLOAT',
 		byteOffset: 26
 	}
-);
+});
 ```
 
 Drawing with `esper.VertexBuffers` is easy, simply bind it, and draw.
@@ -396,7 +395,7 @@ let vertexPackage = new esper.VertexPackage({
 An instantiated `esper.VertexPackage` can then be passed to a `esper.VertexBuffer` constructor for simple instantiation.
 
 ```javascript
-let vertexBuffer = new esper.VertexBuffer(vertexPackage);
+let vertexBuffer = new esper.VertexBuffer(vertexPackage.buffer, vertexPackage.pointers);
 ```
 
 ### IndexBuffers
