@@ -32,16 +32,26 @@ const paths = {
 	build: 'build'
 };
 
+function logError(err) {
+	if (err instanceof SyntaxError) {
+		console.error('Syntax Error:');
+		console.error(err.message);
+		console.error(err.codeFrame);
+	} else {
+		console.error(err.message);
+	}
+}
+
 function handleError(err) {
-	console.error(err);
+	logError(err);
 	this.emit('end');
 }
 
 function handleErrorTimeout(err) {
-	console.error(err);
+	logError(err);
 	setTimeout(() => {
 		// set delay for full mocha error message
-		process.exit(1);
+		this.emit('end');
 	});
 }
 
@@ -85,16 +95,17 @@ gulp.task('lint', () => {
 		.pipe(eslint.format());
 });
 
-gulp.task('test', function() {
+gulp.task('coverage', () => {
 	return gulp.src(paths.coverage)
-		.pipe(istanbul({ includeUntested: false })) // Covering files
-		.pipe(istanbul.hookRequire())
-		.on('finish', () => {
-			return gulp.src(paths.tests)
-				.pipe(mocha({ reporter: 'list' })
-					.on('error', handleErrorTimeout)) // print mocha error message
-				.pipe(istanbul.writeReports()); // Creating the reports after tests runned
-		});
+		.pipe(istanbul({ includeUntested: false }))
+		.pipe(istanbul.hookRequire());
+});
+
+gulp.task('test', [ 'coverage' ], () => {
+	return gulp.src(paths.tests)
+		.pipe(mocha({ reporter: 'list' })
+			.on('error', handleErrorTimeout))
+		.pipe(istanbul.writeReports());
 });
 
 gulp.task('coveralls', () => {
