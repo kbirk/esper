@@ -27,21 +27,29 @@ const FORMATS = {
 
 /**
  * The default type for depth textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_TYPE = 'UNSIGNED_INT';
 
 /**
  * The default format for depth textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_FORMAT = 'DEPTH_COMPONENT';
 
 /**
  * The default wrap mode for depth textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_WRAP = 'CLAMP_TO_EDGE';
 
 /**
  * The default min / mag filter for depth textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_FILTER = 'LINEAR';
 

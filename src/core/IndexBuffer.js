@@ -24,21 +24,29 @@ const BYTES_PER_TYPE = {
 
 /**
  * The default component type.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_TYPE = 'UNSIGNED_SHORT';
 
 /**
  * The default render mode (primitive type).
+ * @private
+ * @constant {String}
  */
 const DEFAULT_MODE = 'TRIANGLES';
 
 /**
  * The default byte offset to render from.
+ * @private
+ * @constant {Number}
  */
 const DEFAULT_BYTE_OFFSET = 0;
 
 /**
  * The default count of indices to render.
+ * @private
+ * @constant {Number}
  */
 const DEFAULT_COUNT = 0;
 

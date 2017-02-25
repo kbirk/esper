@@ -36,21 +36,29 @@ const SIZES = {
 
 /**
  * The default attribute point byte offset.
+ * @private
+ * @constant {Number}
  */
 const DEFAULT_BYTE_OFFSET = 0;
 
 /**
  * The default render mode (primitive type).
+ * @private
+ * @constant {String}
  */
 const DEFAULT_MODE = 'TRIANGLES';
 
 /**
  * The default index offset to render from.
+ * @private
+ * @constant {Number}
  */
 const DEFAULT_INDEX_OFFSET = 0;
 
 /**
  * The default count of indices to render.
+ * @private
+ * @constant {Number}
  */
 const DEFAULT_COUNT = 0;
 

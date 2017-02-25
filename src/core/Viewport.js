@@ -4,6 +4,7 @@ const WebGLContext = require('./WebGLContext');
 
 /**
  * Bind the viewport to the rendering context.
+ * @private
  *
  * @param {Viewport} viewport - The viewport object.
  * @param {Number} width - The width override.

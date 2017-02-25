@@ -60,41 +60,57 @@ const FORMATS = {
 
 /**
  * The default type for textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
 /**
  * The default format for textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_FORMAT = 'RGBA';
 
 /**
  * The default wrap mode for textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_WRAP = 'CLAMP_TO_EDGE';
 
 /**
  * The default min / mag filter for textures.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_FILTER = 'LINEAR';
 
 /**
  * The default for whether alpha premultiplying is enabled.
+ * @private
+ * @constant {boolean}
  */
 const DEFAULT_PREMULTIPLY_ALPHA = true;
 
 /**
  * The default for whether mipmapping is enabled.
+ * @private
+ * @constant {boolean}
  */
 const DEFAULT_MIPMAP = true;
 
 /**
  * The default for whether invert-y is enabled.
+ * @private
+ * @constant {boolean}
  */
 const DEFAULT_INVERT_Y = true;
 
 /**
  * The default mip-mapping filter suffix.
+ * @private
+ * @constant {String}
  */
 const DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
