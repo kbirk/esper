@@ -213,6 +213,24 @@ function resolveSources(sources) {
 }
 
 /**
+ * Injects the defines into the shader source.
+ * @private
+ *
+ * @param {Array} sources - The shader sources.
+ *
+ * @return {Function} A function to resolve the shader sources.
+ */
+const createDefines = function(defines) {
+	const res = [];
+	for (let name in defines) {
+		if(defines.hasOwnProperty(name)) {
+			res.push(`#define ${name} ${defines[name]}`);
+		}
+	}
+	return res.join('\n');
+};
+
+/**
  * Creates the shader program object from source strings. This includes:
  *	1) Compiling and linking the shader program.
  *	2) Parsing shader source for attribute and uniform information.
@@ -227,7 +245,8 @@ function resolveSources(sources) {
  */
 function createProgram(shader, sources) {
 	const gl = shader.gl;
-	const common = sources.common.join('');
+	const defines = createDefines(sources.define);
+	const common = defines + (sources.common || '');
 	const vert = sources.vert.join('');
 	const frag = sources.frag.join('');
 	// compile shaders
@@ -265,6 +284,7 @@ class Shader {
 	 * @param {String|String[]|Object} spec.common - Sources / URLs to be shared by both vertex and fragment shaders.
 	 * @param {String|String[]|Object} spec.vert - The vertex shader sources / URLs.
 	 * @param {String|String[]|Object} spec.frag - The fragment shader sources / URLs.
+	 * @param {Object} spec.define - Any `#define` definitions to be injected into the glsl.
 	 * @param {String[]} spec.attributes - The attribute index orderings.
 	 * @param {Function} callback - The callback function to execute once the shader has been successfully compiled and linked.
 	 */

@@ -183,18 +183,23 @@ describe('ShaderParser', function() {
 			const source =
 				`
 				precision highp float;
-				#define TEST 5
-				#define CONST 6
-				#DEFINE MAX(x, y) ((x > y) ? x : y)
-				#DEFINE MIN(x, y) \\
-					((x < y) ? x : y)
-				#ifdef
-				uniform mat4 uOptionalUniform;
+				#define TEST_0
+				#DEFINE TEST_1 1
+
+				#ifdef TEST_0
+					uniform float uUniform;
+				#else
+					uniform vec4 uUniform;
+				#ENDIF
+
+				#if TEST_1 == 0
+					uniform mat4 uOptionalUniform;
 				#endif
-				void main() {}
 				`;
 			const declarations = ShaderParser.parseDeclarations(source, ['uniform', 'attribute']);
 			assert(declarations.length === 1);
+			assert(declarations[0].name === 'uUniform');
+			assert(declarations[0].type === 'float');
 		});
 	});
 

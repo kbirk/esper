@@ -1,5 +1,7 @@
 'use strict';
 
+const ShaderPreprocessor = require('./ShaderPreprocessor');
+
 const COMMENTS_REGEXP = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
 const ENDLINE_REGEXP = /(\r\n|\n|\r)/gm;
 const WHITESPACE_REGEXP = /\s{2,}/g;
@@ -8,7 +10,6 @@ const NAME_COUNT_REGEXP = /([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?/;
 const PRECISION_REGEX = /\bprecision\s+\w+\s+\w+;/g;
 const INLINE_PRECISION_REGEX = /\b(highp|mediump|lowp)\s+/g;
 const GLSL_REGEXP = /void\s+main\s*\(\s*(void)*\s*\)\s*/mi;
-const PREP_REGEXP = /#([\W\w\s\d])(?:.*\\r?\n)*.*$/gm;
 
 /**
  * Removes standard comments from the provided string.
@@ -189,8 +190,7 @@ function filterDuplicatesByName(declarations) {
  * @return {String} The processed source code.
  */
 function preprocess(source) {
-	// TODO: implement this correctly...
-	return source.replace(PREP_REGEXP, '');
+	return ShaderPreprocessor.preprocess(source);
 }
 
 module.exports =  {
@@ -224,12 +224,12 @@ module.exports =  {
 		// parse out targetted declarations
 		let declarations = [];
 		sources.forEach(source => {
+			// remove comments
+			source = stripComments(source);
 			// run preprocessor
 			source = preprocess(source);
 			// remove precision statements
 			source = stripPrecision(source);
-			// remove comments
-			source = stripComments(source);
 			// finally, normalize the whitespace
 			source = normalizeWhitespace(source);
 			// parse out declarations
