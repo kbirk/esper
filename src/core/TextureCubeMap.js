@@ -61,28 +61,28 @@ const FORMATS = {
 /**
  * The default type for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
 /**
  * The default format for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FORMAT = 'RGBA';
 
 /**
  * The default wrap mode for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_WRAP = 'CLAMP_TO_EDGE';
 
 /**
  * The default min / mag filter for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FILTER = 'LINEAR';
 
@@ -110,13 +110,14 @@ const DEFAULT_INVERT_Y = true;
 /**
  * The default mip-mapping filter suffix.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
 /**
- * Checks the width and height of the cubemap and throws an exception if
- * it does not meet requirements.
+ * Checks the width and height of the cubemap and throws an exception if it does
+ * not meet requirements.
+ *
  * @private
  *
  * @param {TextureCubeMap} cubeMap - The cube map texture object.
@@ -138,13 +139,14 @@ function checkDimensions(cubeMap) {
 
 /**
  * Returns a function to load a face from a url.
+ *
  * @private
  *
  * @param {TextureCubeMap} cubeMap - The cube map texture object.
- * @param {String} target - The texture target.
- * @param {String} url - The url to load the face from.
+ * @param {string} target - The texture target.
+ * @param {string} url - The url to load the face from.
  *
- * @return {Function} The loader function.
+ * @returns {Function} The loader function.
  */
 function loadFaceURL(cubeMap, target, url) {
 	return function(done) {
@@ -165,13 +167,14 @@ function loadFaceURL(cubeMap, target, url) {
 
 /**
  * Returns a function to load a face from a canvas type object.
+ *
  * @private
  *
  * @param {TextureCubeMap} cubeMap - The cube map texture object.
- * @param {String} target - The texture target.
+ * @param {string} target - The texture target.
  * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} canvas - The canvas type object.
  *
- * @return {Function} - The loader function.
+ * @returns {Function} - The loader function.
  */
 function loadFaceCanvas(cubeMap, target, canvas) {
 	return function(done) {
@@ -183,13 +186,14 @@ function loadFaceCanvas(cubeMap, target, canvas) {
 
 /**
  * Returns a function to load a face from an array type object.
+ *
  * @private
  *
  * @param {TextureCubeMap} cubeMap - The cube map texture object.
- * @param {String} target - The texture target.
+ * @param {string} target - The texture target.
  * @param {Array|ArrayBuffer|ArrayBufferView} arr - The array type object.
  *
- * @return {Function} The loader function.
+ * @returns {Function} The loader function.
  */
 function loadFaceArray(cubeMap, target, arr) {
 	checkDimensions(cubeMap);
@@ -200,29 +204,29 @@ function loadFaceArray(cubeMap, target, arr) {
 }
 
 /**
- * @class TextureCubeMap
- * @classdesc A texture class to represent a cube map texture.
+ * A texture class to represent a cube map texture.
  */
 class TextureCubeMap {
 
 	/**
 	 * Instantiates a TextureCubeMap object.
 	 *
-	 * @param {Object} spec - The specification arguments
+	 * @param {Object} spec - The specification arguments.
 	 * @param {Object} spec.faces - The faces to buffer, under keys '+x', '+y', '+z', '-x', '-y', and '-z'.
-	 * @param {Number} spec.width - The width of the faces.
-	 * @param {Number} spec.height - The height of the faces.
-	 * @param {String} spec.wrap - The wrapping type over both S and T dimension.
-	 * @param {String} spec.wrapS - The wrapping type over the S dimension.
-	 * @param {String} spec.wrapT - The wrapping type over the T dimension.
-	 * @param {String} spec.filter - The min / mag filter used during scaling.
-	 * @param {String} spec.minFilter - The minification filter used during scaling.
-	 * @param {String} spec.magFilter - The magnification filter used during scaling.
+	 * @param {number} spec.width - The width of the faces.
+	 * @param {number} spec.height - The height of the faces.
+	 * @param {string} spec.wrap - The wrapping type over both S and T dimension.
+	 * @param {string} spec.wrapS - The wrapping type over the S dimension.
+	 * @param {string} spec.wrapT - The wrapping type over the T dimension.
+	 * @param {string} spec.filter - The min / mag filter used during scaling.
+	 * @param {string} spec.minFilter - The minification filter used during scaling.
+	 * @param {string} spec.magFilter - The magnification filter used during scaling.
 	 * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
 	 * @param {bool} spec.invertY - Whether or not invert-y is enabled.
 	 * @param {bool} spec.premultiplyAlpha - Whether or not alpha premultiplying is enabled.
-	 * @param {String} spec.format - The texture pixel format.
-	 * @param {String} spec.type - The texture pixel component type.
+	 * @param {string} spec.format - The texture pixel format.
+	 * @param {string} spec.type - The texture pixel component type.
+	 * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
 	 */
 	constructor(spec = {}, callback = null) {
 		this.gl = WebGLContext.get();
@@ -301,9 +305,9 @@ class TextureCubeMap {
 	/**
 	 * Binds the texture object to the provided texture unit location.
 	 *
-	 * @param {Number} location - The texture unit location index. Defaults to 0.
+	 * @param {number} location - The texture unit location index. Defaults to 0.
 	 *
-	 * @return {TextureCubeMap} The texture object, for chaining.
+	 * @returns {TextureCubeMap} The texture object, for chaining.
 	 */
 	bind(location = 0) {
 		if (!Number.isInteger(location) || location < 0) {
@@ -319,7 +323,7 @@ class TextureCubeMap {
 	/**
 	 * Unbinds the texture object.
 	 *
-	 * @return {TextureCubeMap} - The texture object, for chaining.
+	 * @returns {TextureCubeMap} - The texture object, for chaining.
 	 */
 	unbind() {
 		// unbind cube map texture
@@ -331,10 +335,10 @@ class TextureCubeMap {
 	/**
 	 * Buffer data into the respective cube map face.
 	 *
-	 * @param {String} target - The face target.
+	 * @param {string} target - The face target.
 	 * @param {Object|null} data - The face data.
 	 *
-	 * @return {TextureCubeMap} The texture object, for chaining.
+	 * @returns {TextureCubeMap} The texture object, for chaining.
 	 */
 	bufferData(target, data) {
 		if (!TARGETS[target]) {
@@ -421,14 +425,14 @@ class TextureCubeMap {
 	 * Set the texture parameters.
 	 *
 	 * @param {Object} params - The parameters by name.
-	 * @param {String} params.wrap - The wrapping type over both S and T dimension.
-	 * @param {String} params.wrapS - The wrapping type over the S dimension.
-	 * @param {String} params.wrapT - The wrapping type over the T dimension.
-	 * @param {String} params.filter - The min / mag filter used during scaling.
-	 * @param {String} params.minFilter - The minification filter used during scaling.
-	 * @param {String} params.magFilter - The magnification filter used during scaling.
+	 * @param {string} params.wrap - The wrapping type over both S and T dimension.
+	 * @param {string} params.wrapS - The wrapping type over the S dimension.
+	 * @param {string} params.wrapT - The wrapping type over the T dimension.
+	 * @param {string} params.filter - The min / mag filter used during scaling.
+	 * @param {string} params.minFilter - The minification filter used during scaling.
+	 * @param {string} params.magFilter - The magnification filter used during scaling.
 	 *
-	 * @return {TextureCubeMap} The texture object, for chaining.
+	 * @returns {TextureCubeMap} The texture object, for chaining.
 	 */
 	setParameters(params) {
 		const gl = this.gl;

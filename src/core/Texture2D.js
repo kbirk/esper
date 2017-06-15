@@ -38,28 +38,28 @@ const DEPTH_TYPES = {
 /**
  * The default type for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
 /**
  * The default format for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FORMAT = 'RGBA';
 
 /**
  * The default wrap mode for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_WRAP = 'REPEAT';
 
 /**
  * The default min / mag filter for textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FILTER = 'LINEAR';
 
@@ -87,33 +87,33 @@ const DEFAULT_INVERT_Y = true;
 /**
  * The default mip-mapping filter suffix.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_MIPMAP_MIN_FILTER_SUFFIX = '_MIPMAP_LINEAR';
 
 /**
- * @class Texture2D
- * @classdesc A texture class to represent a 2D texture.
+ * A texture class to represent a 2D texture.
  */
 class Texture2D {
 
 	/**
 	 * Instantiates a Texture2D object.
 	 *
+	 * @param {Object} spec - The specification arguments.
 	 * @param {ArrayBuffer|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.src - The data to buffer.
-	 * @param {Number} spec.width - The width of the texture.
-	 * @param {Number} spec.height - The height of the texture.
-	 * @param {String} spec.wrap - The wrapping type over both S and T dimension.
-	 * @param {String} spec.wrapS - The wrapping type over the S dimension.
-	 * @param {String} spec.wrapT - The wrapping type over the T dimension.
-	 * @param {String} spec.filter - The min / mag filter used during scaling.
-	 * @param {String} spec.minFilter - The minification filter used during scaling.
-	 * @param {String} spec.magFilter - The magnification filter used during scaling.
+	 * @param {number} spec.width - The width of the texture.
+	 * @param {number} spec.height - The height of the texture.
+	 * @param {string} spec.wrap - The wrapping type over both S and T dimension.
+	 * @param {string} spec.wrapS - The wrapping type over the S dimension.
+	 * @param {string} spec.wrapT - The wrapping type over the T dimension.
+	 * @param {string} spec.filter - The min / mag filter used during scaling.
+	 * @param {string} spec.minFilter - The minification filter used during scaling.
+	 * @param {string} spec.magFilter - The magnification filter used during scaling.
 	 * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
 	 * @param {bool} spec.invertY - Whether or not invert-y is enabled.
 	 * @param {bool} spec.premultiplyAlpha - Whether or not alpha premultiplying is enabled.
-	 * @param {String} spec.format - The texture pixel format.
-	 * @param {String} spec.type - The texture pixel component type.
+	 * @param {string} spec.format - The texture pixel format.
+	 * @param {string} spec.type - The texture pixel component type.
 	 */
 	constructor(spec = {}) {
 		// get specific params
@@ -173,9 +173,9 @@ class Texture2D {
 	/**
 	 * Binds the texture object to the provided texture unit location.
 	 *
-	 * @param {Number} location - The texture unit location index. Defaults to 0.
+	 * @param {number} location - The texture unit location index. Defaults to 0.
 	 *
-	 * @return {Texture2D} The texture object, for chaining.
+	 * @returns {Texture2D} The texture object, for chaining.
 	 */
 	bind(location = 0) {
 		if (!Number.isInteger(location) || location < 0) {
@@ -191,7 +191,7 @@ class Texture2D {
 	/**
 	 * Unbinds the texture object.
 	 *
-	 * @return {Texture2D} The texture object, for chaining.
+	 * @returns {Texture2D} The texture object, for chaining.
 	 */
 	unbind() {
 		// unbind texture
@@ -204,10 +204,10 @@ class Texture2D {
 	 * Buffer data into the texture.
 	 *
 	 * @param {Array|ArrayBuffer} data - The data array to buffer.
-	 * @param {Number} width - The width of the data.
-	 * @param {Number} height - The height of the data.
+	 * @param {number} width - The width of the data.
+	 * @param {number} height - The height of the data.
 	 *
-	 * @return {Texture2D} The texture object, for chaining.
+	 * @returns {Texture2D} The texture object, for chaining.
 	 */
 	bufferData(data, width, height) {
 		const gl = this.gl;
@@ -288,12 +288,12 @@ class Texture2D {
 	 * Buffer partial data into the texture.
 	 *
 	 * @param {Array|ArrayBuffer} data - The data array to buffer.
-	 * @param {Number} xOffset - The x offset at which to buffer.
-	 * @param {Number} yOffset - The y offset at which to buffer.
-	 * @param {Number} width - The width of the data.
-	 * @param {Number} height - The height of the data.
+	 * @param {number} xOffset - The x offset at which to buffer.
+	 * @param {number} yOffset - The y offset at which to buffer.
+	 * @param {number} width - The width of the data.
+	 * @param {number} height - The height of the data.
 	 *
-	 * @return {Texture2D} The texture object, for chaining.
+	 * @returns {Texture2D} The texture object, for chaining.
 	 */
 	bufferSubData(data, xOffset = 0, yOffset = 0, width = undefined, height = undefined) {
 		const gl = this.gl;
@@ -388,14 +388,14 @@ class Texture2D {
 	 * Set the texture parameters.
 	 *
 	 * @param {Object} params - The parameters by name.
-	 * @param {String} params.wrap - The wrapping type over both S and T dimension.
-	 * @param {String} params.wrapS - The wrapping type over the S dimension.
-	 * @param {String} params.wrapT - The wrapping type over the T dimension.
-	 * @param {String} params.filter - The min / mag filter used during scaling.
-	 * @param {String} params.minFilter - The minification filter used during scaling.
-	 * @param {String} params.magFilter - The magnification filter used during scaling.
+	 * @param {string} params.wrap - The wrapping type over both S and T dimension.
+	 * @param {string} params.wrapS - The wrapping type over the S dimension.
+	 * @param {string} params.wrapT - The wrapping type over the T dimension.
+	 * @param {string} params.filter - The min / mag filter used during scaling.
+	 * @param {string} params.minFilter - The minification filter used during scaling.
+	 * @param {string} params.magFilter - The magnification filter used during scaling.
 	 *
-	 * @return {Texture2D} The texture object, for chaining.
+	 * @returns {Texture2D} The texture object, for chaining.
 	 */
 	setParameters(params) {
 		const gl = this.gl;
@@ -462,10 +462,10 @@ class Texture2D {
 	/**
 	 * Resize the underlying texture. This clears the texture data.
 	 *
-	 * @param {Number} width - The new width of the texture.
-	 * @param {Number} height - The new height of the texture.
+	 * @param {number} width - The new width of the texture.
+	 * @param {number} height - The new height of the texture.
 	 *
-	 * @return {Texture2D} The texture object, for chaining.
+	 * @returns {Texture2D} The texture object, for chaining.
 	 */
 	resize(width, height) {
 		if (typeof width !== 'number' || (width <= 0)) {

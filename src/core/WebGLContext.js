@@ -45,9 +45,10 @@ let _boundContext = null;
 
 /**
  * Returns an rfc4122 version 4 compliant UUID.
+ *
  * @private
  *
- * @return {String} - The UUID string.
+ * @returns {string} - The UUID string.
  */
 function getUUID() {
 	const replace = function(c) {
@@ -59,12 +60,14 @@ function getUUID() {
 }
 
 /**
- * Returns the id of the HTMLCanvasElement element. If there is no id, it generates one and appends it.
+ * Returns the id of the HTMLCanvasElement element. If there is no id, it
+ * generates one and appends it.
+ *
  * @private
  *
  * @param {HTMLCanvasElement} canvas - The Canvas object.
  *
- * @return {String} The Canvas id string.
+ * @returns {string} The Canvas id string.
  */
 function getId(canvas) {
 	if (!canvas.id) {
@@ -74,12 +77,14 @@ function getId(canvas) {
 }
 
 /**
- * Returns a Canvas element object from either an existing object, or identification string.
+ * Returns a Canvas element object from either an existing object, or
+ * identification string.
+ *
  * @private
  *
  * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas id or selector string.
  *
- * @return {HTMLCanvasElement} The Canvas element object.
+ * @returns {HTMLCanvasElement} The Canvas element object.
  */
 function getCanvas(arg) {
 	if (arg instanceof HTMLCanvasElement) {
@@ -93,11 +98,12 @@ function getCanvas(arg) {
 
 /**
  * Returns a wrapped WebGLRenderingContext from the context itself.
+ *
  * @private
  *
  * @param {WebGLRenderingContext} context - The WebGLRenderingContext.
  *
- * @return {Object} The context wrapper.
+ * @returns {Object} The context wrapper.
  */
 function getWrapperFromContext(context) {
 	let found = null;
@@ -111,11 +117,12 @@ function getWrapperFromContext(context) {
 
 /**
  * Attempts to retrieve a wrapped WebGLRenderingContext.
+ *
  * @private
  *
- * @param {HTMLCanvasElement} The Canvas element object to create the context under.
+ * @param {HTMLCanvasElement} arg - The Canvas element object to create the context under.
  *
- * @return {Object} The context wrapper.
+ * @returns {Object} The context wrapper.
  */
 function getContextWrapper(arg) {
 	if (arg === undefined) {
@@ -136,7 +143,9 @@ function getContextWrapper(arg) {
 }
 
 /**
- * Attempts to load all known extensions for a provided WebGLRenderingContext. Stores the results in the context wrapper for later queries.
+ * Attempts to load all known extensions for a provided WebGLRenderingContext.
+ * Stores the results in the context wrapper for later queries.
+ *
  * @private
  *
  * @param {Object} contextWrapper - The context wrapper.
@@ -150,15 +159,19 @@ function loadExtensions(contextWrapper) {
 
 /**
  * Attempts to create a WebGLRenderingContext and load all extensions.
+ *
  * @private
  *
- * @param {HTMLCanvasElement} - The Canvas element object to create the context under.
- * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
+ * @param {HTMLCanvasElement} canvas - The Canvas element object to create the context under.
+ * @param {Object} options - Parameters to the webgl context, only used during instantiation. Optional.
  *
- * @return {Object} The context wrapper.
+ * @returns {Object} The context wrapper.
  */
 function createContextWrapper(canvas, options) {
 	const gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
+	if (!gl) {
+		throw 'Unable to create a WebGLRenderingContext, please ensure your browser supports WebGL';
+	}
 	// wrap context
 	const contextWrapper = {
 		id: getId(canvas),
@@ -177,11 +190,13 @@ function createContextWrapper(canvas, options) {
 module.exports = {
 
 	/**
-	 * Retrieves an existing WebGL context associated with the provided argument and binds it. While bound, the active context will be used implicitly by any instantiated `esper` constructs.
+	 * Retrieves an existing WebGL context associated with the provided argument
+	 * and binds it. While bound, the active context will be used implicitly by
+	 * any instantiated `esper` constructs.
 	 *
 	 * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string.
 	 *
-	 * @return {WebGLContext} The namespace, used for chaining.
+	 * @returns {WebGLContext} The namespace, used for chaining.
 	 */
 	bind: function(arg) {
 		const wrapper = getContextWrapper(arg);
@@ -193,19 +208,21 @@ module.exports = {
 	},
 
 	/**
-	 * Retrieves an existing WebGL context associated with the provided argument. If no context exists, one is created.
-	 * During creation attempts to load all extensions found at: https://www.khronos.org/registry/webgl/extensions/.
+	 * Retrieves an existing WebGL context associated with the provided
+	 * argument. If no context exists, one is created. During creation attempts
+	 * to load all extensions found at:
+	 *     https://www.khronos.org/registry/webgl/extensions/.
 	 *
 	 * @param {HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
 	 * @param {Object} options - Parameters to the webgl context, only used during instantiation. Optional.
 	 *
-	 * @return {WebGLRenderingContext} The WebGLRenderingContext object.
+	 * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
 	 */
 	get: function(arg, options) {
 		const wrapper = getContextWrapper(arg);
 		if (wrapper) {
-		   // return the native WebGLRenderingContext
-		   return wrapper.gl;
+			// return the native WebGLRenderingContext
+			return wrapper.gl;
 		}
 		// get canvas element
 		const canvas = getCanvas(arg);
@@ -218,12 +235,12 @@ module.exports = {
 	},
 
 	/**
-	 * Removes an existing WebGL context object for the provided or currently bound context object.
+	 * Removes an existing WebGL context object for the provided or currently
+	 * bound context object.
 	 *
 	 * @param {WebGLRenderingContext|HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
-	 * @param {Object}} options - Parameters to the webgl context, only used during instantiation. Optional.
 	 *
-	 * @return {WebGLRenderingContext} The WebGLRenderingContext object.
+	 * @returns {WebGLRenderingContext} The WebGLRenderingContext object.
 	 */
 	remove: function(arg) {
 		const wrapper = getContextWrapper(arg);
@@ -240,11 +257,12 @@ module.exports = {
 	},
 
 	/**
-	 * Returns an array of all supported extensions for the provided or currently bound context object.
+	 * Returns an array of all supported extensions for the provided or
+	 * currently bound context object.
 	 *
 	 * @param {WebGLRenderingContext|HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
 	 *
-	 * @return {Array} All supported extensions.
+	 * @returns {Array} All supported extensions.
 	 */
 	supportedExtensions: function(arg) {
 		const wrapper = getContextWrapper(arg);
@@ -262,11 +280,12 @@ module.exports = {
 	},
 
 	/**
-	 * Returns an array of all unsupported extensions for the provided or currently bound context object.
+	 * Returns an array of all unsupported extensions for the provided or
+	 * currently bound context object.
 	 *
 	 * @param {WebGLRenderingContext|HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
 	 *
-	 * @return {Array} All unsupported extensions.
+	 * @returns {Array} All unsupported extensions.
 	 */
 	unsupportedExtensions: function(arg) {
 		const wrapper = getContextWrapper(arg);
@@ -284,12 +303,13 @@ module.exports = {
 	},
 
 	/**
-	 * Checks if an extension has been successfully loaded for the provided or currently bound context object.
+	 * Checks if an extension has been successfully loaded for the provided or
+	 * currently bound context object.
 	 *
 	 * @param {WebGLRenderingContext|HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
-	 * @param {String} extension - The extension name.
+	 * @param {string} extension - The extension name.
 	 *
-	 * @return {boolean} Whether or not the provided extension has been loaded successfully.
+	 * @returns {boolean} Whether or not the provided extension has been loaded successfully.
 	 */
 	checkExtension: function(arg, extension) {
 		if (!extension) {
@@ -306,12 +326,13 @@ module.exports = {
 	},
 
 	/**
-	 * Returns an extension if it has been successfully loaded for the provided or currently bound context object.
+	 * Returns an extension if it has been successfully loaded for the provided
+	 * or currently bound context object.
 	 *
 	 * @param {WebGLRenderingContext|HTMLCanvasElement|String} arg - The Canvas object or Canvas identification string. Optional.
-	 * @param {String} extension - The extension name.
+	 * @param {string} extension - The extension name.
 	 *
-	 * @return {boolean} Whether or not the provided extension has been loaded successfully.
+	 * @returns {boolean} Whether or not the provided extension has been loaded successfully.
 	 */
 	getExtension: function(arg, extension) {
 		if (!extension) {

@@ -6,7 +6,7 @@ module.exports = {
 	 * Sends an XMLHttpRequest GET request to the supplied url.
 	 *
 	 * @param {Object} options - The XHR options.
-	 * @param {String} options.url - The URL for the resource.
+	 * @param {string} options.url - The URL for the resource.
 	 * @param {boolean} options.crossOrigin - Enable cross-origin request.
 	 * @param {Function} options.success - The success callback function.
 	 * @param {Function} options.error - The error callback function.

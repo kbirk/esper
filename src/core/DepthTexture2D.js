@@ -28,34 +28,33 @@ const FORMATS = {
 /**
  * The default type for depth textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_TYPE = 'UNSIGNED_INT';
 
 /**
  * The default format for depth textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FORMAT = 'DEPTH_COMPONENT';
 
 /**
  * The default wrap mode for depth textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_WRAP = 'CLAMP_TO_EDGE';
 
 /**
  * The default min / mag filter for depth textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FILTER = 'LINEAR';
 
 /**
- * @class DepthTexture2D
- * @classdesc A texture class to represent a 2D depth texture.
+ * A texture class to represent a 2D depth texture.
  * @augments Texture2D
  */
 class DepthTexture2D extends Texture2D {
@@ -65,16 +64,16 @@ class DepthTexture2D extends Texture2D {
 	 *
 	 * @param {Object} spec - The specification arguments.
 	 * @param {Uint8Array|Uint16Array|Uint32Array} spec.src - The data to buffer.
-	 * @param {Number} spec.width - The width of the texture.
-	 * @param {Number} spec.height - The height of the texture.
-	 * @param {String} spec.wrap - The wrapping type over both S and T dimension.
-	 * @param {String} spec.wrapS - The wrapping type over the S dimension.
-	 * @param {String} spec.wrapT - The wrapping type over the T dimension.
-	 * @param {String} spec.filter - The min / mag filter used during scaling.
-	 * @param {String} spec.minFilter - The minification filter used during scaling.
-	 * @param {String} spec.magFilter - The magnification filter used during scaling.
-	 * @param {String} spec.format - The texture pixel format.
-	 * @param {String} spec.type - The texture pixel component type.
+	 * @param {number} spec.width - The width of the texture.
+	 * @param {number} spec.height - The height of the texture.
+	 * @param {string} spec.wrap - The wrapping type over both S and T dimension.
+	 * @param {string} spec.wrapS - The wrapping type over the S dimension.
+	 * @param {string} spec.wrapT - The wrapping type over the T dimension.
+	 * @param {string} spec.filter - The min / mag filter used during scaling.
+	 * @param {string} spec.minFilter - The minification filter used during scaling.
+	 * @param {string} spec.magFilter - The magnification filter used during scaling.
+	 * @param {string} spec.format - The texture pixel format.
+	 * @param {string} spec.type - The texture pixel component type.
 	 */
 	constructor(spec = {}) {
 		// get specific params

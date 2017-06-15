@@ -25,34 +25,33 @@ const BYTES_PER_TYPE = {
 /**
  * The default component type.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_TYPE = 'UNSIGNED_SHORT';
 
 /**
  * The default render mode (primitive type).
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_MODE = 'TRIANGLES';
 
 /**
  * The default byte offset to render from.
  * @private
- * @constant {Number}
+ * @constant {number}
  */
 const DEFAULT_BYTE_OFFSET = 0;
 
 /**
  * The default count of indices to render.
  * @private
- * @constant {Number}
+ * @constant {number}
  */
 const DEFAULT_COUNT = 0;
 
 /**
- * @class IndexBuffer
- * @classdesc An index buffer class to hole indexing information.
+ * An index buffer class to hole indexing information.
  */
 class IndexBuffer {
 
@@ -61,9 +60,9 @@ class IndexBuffer {
 	 *
 	 * @param {WebGLBuffer|Uint8Array|Uint16Array|Uin32Array|Array|Number} arg - The index data to buffer.
 	 * @param {Object} options - The rendering options.
-	 * @param {String} options.mode - The draw mode / primitive type.
-	 * @param {String} options.byteOffset - The byte offset into the drawn buffer.
-	 * @param {String} options.count - The number of vertices to draw.
+	 * @param {string} options.mode - The draw mode / primitive type.
+	 * @param {string} options.byteOffset - The byte offset into the drawn buffer.
+	 * @param {string} options.count - The number of vertices to draw.
 	 */
 	constructor(arg, options = {}) {
 		this.gl = WebGLContext.get();
@@ -104,7 +103,7 @@ class IndexBuffer {
 	 *
 	 * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer.
 	 *
-	 * @return {IndexBuffer} The index buffer object, for chaining.
+	 * @returns {IndexBuffer} The index buffer object, for chaining.
 	 */
 	bufferData(arg) {
 		const gl = this.gl;
@@ -163,9 +162,9 @@ class IndexBuffer {
 	 * Upload partial index data to the GPU.
 	 *
 	 * @param {Array|ArrayBuffer|ArrayBufferView} array - The array of data to buffer.
-	 * @param {Number} byteOffset - The byte offset at which to buffer.
+	 * @param {number} byteOffset - The byte offset at which to buffer.
 	 *
-	 * @return {IndexBuffer} The index buffer object, for chaining.
+	 * @returns {IndexBuffer} The index buffer object, for chaining.
 	 */
 	bufferSubData(array, byteOffset = DEFAULT_BYTE_OFFSET) {
 		const gl = this.gl;
@@ -201,11 +200,11 @@ class IndexBuffer {
 	 * Execute the draw command for the bound buffer.
 	 *
 	 * @param {Object} options - The options to pass to 'drawElements'. Optional.
-	 * @param {String} options.mode - The draw mode / primitive type.
-	 * @param {String} options.byteOffset - The byteOffset into the drawn buffer.
-	 * @param {String} options.count - The number of vertices to draw.
+	 * @param {string} options.mode - The draw mode / primitive type.
+	 * @param {string} options.byteOffset - The byteOffset into the drawn buffer.
+	 * @param {string} options.count - The number of vertices to draw.
 	 *
-	 * @return {IndexBuffer} The index buffer object, for chaining.
+	 * @returns {IndexBuffer} The index buffer object, for chaining.
 	 */
 	draw(options = {}) {
 		const gl = this.gl;

@@ -6,7 +6,7 @@
  *
  * @param {*} arg - The argument to test.
  *
- * @return {bool} - Whether or not it is a canvas type.
+ * @returns {bool} - Whether or not it is a canvas type.
  */
 function isCanvasType(arg) {
 	return arg instanceof ImageData ||
@@ -20,7 +20,7 @@ function isCanvasType(arg) {
  *
  * @param {Object} spec - The texture specification object.
  *
- * @return {bool} - Whether or not the texture must be a power of two.
+ * @returns {bool} - Whether or not the texture must be a power of two.
  */
 function mustBePowerOfTwo(spec) {
 	// According to:
@@ -36,9 +36,9 @@ function mustBePowerOfTwo(spec) {
 /**
  * Returns true if the provided integer is a power of two.
  *
- * @param {Number} num - The number to test.
+ * @param {number} num - The number to test.
  *
- * @return {boolean} - Whether or not the number is a power of two.
+ * @returns {boolean} - Whether or not the number is a power of two.
  */
 function isPowerOfTwo(num) {
 	return (num !== 0) ? (num & (num - 1)) === 0 : false;
@@ -53,9 +53,9 @@ function isPowerOfTwo(num) {
  *	 256 -> 256
  *	 257 -> 512
  *
- * @param {Number} num - The number to modify.
+ * @param {number} num - The number to modify.
  *
- * @return {Number} - Next highest power of two.
+ * @returns {number} - Next highest power of two.
  */
 function nextHighestPowerOfTwo(num) {
 	if (num !== 0) {
@@ -71,12 +71,13 @@ function nextHighestPowerOfTwo(num) {
 
 /**
  * If the texture must be a POT, resizes and returns the image.
+ *
  * @private
  *
  * @param {Object} spec - The texture specification object.
  * @param {HTMLImageElement} img - The image object.
  *
- * @return {HTMLImageElement|HTMLCanvasElement} - The original image, or the resized canvas element.
+ * @returns {HTMLImageElement|HTMLCanvasElement} - The original image, or the resized canvas element.
  */
 function resizeCanvas(spec, img) {
 	if (!mustBePowerOfTwo(spec) ||

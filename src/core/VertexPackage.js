@@ -5,11 +5,12 @@ const BYTES_PER_COMPONENT = 4;
 
 /**
  * Removes invalid attribute arguments. A valid argument must be an Array of length > 0 key by a string representing an int.
+ *
  * @private
  *
  * @param {Object} attributes - The map of vertex attributes.
  *
- * @return {Array} The valid array of arguments.
+ * @returns {Array} The valid array of arguments.
  */
 function parseAttributeMap(attributes) {
 	const goodAttributes = [];
@@ -40,11 +41,12 @@ function parseAttributeMap(attributes) {
 
 /**
  * Returns a component's byte size.
+ *
  * @private
  *
  * @param {Object|Array} component - The component to measure.
  *
- * @return {Number} The byte size of the component.
+ * @returns {number} The byte size of the component.
  */
 function getComponentSize(component) {
 	// check if array
@@ -73,11 +75,13 @@ function getComponentSize(component) {
 }
 
 /**
- * Calculates the type, size, and offset for each attribute in the attribute array along with the length and stride of the package.
+ * Calculates the type, size, and offset for each attribute in the attribute
+ * array along with the length and stride of the package.
+ *
  * @private
  *
  * @param {VertexPackage} vertexPackage - The VertexPackage object.
- * @param {Array} attributes The array of vertex attributes.
+ * @param {Array} attributes - The array of vertex attributes.
  */
 function setPointersAndStride(vertexPackage, attributes) {
 	let shortestArray = Number.MAX_VALUE;
@@ -105,13 +109,14 @@ function setPointersAndStride(vertexPackage, attributes) {
 
 /**
  * Fill the arraybuffer with a single component attribute.
+ *
  * @private
  *
  * @param {Float32Array} buffer - The arraybuffer to fill.
  * @param {Array} vertices - The vertex attribute array to copy from.
- * @param {Number} length - The length of the buffer to copy from.
- * @param {Number} offset - The offset to the attribute, not in bytes.
- * @param {Number} stride - The stride of the buffer, not in bytes.
+ * @param {number} length - The length of the buffer to copy from.
+ * @param {number} offset - The offset to the attribute, not in bytes.
+ * @param {number} stride - The stride of the buffer, not in bytes.
  */
 function set1ComponentAttr(buffer, vertices, length, offset, stride) {
 	for (let i=0; i<length; i++) {
@@ -130,13 +135,14 @@ function set1ComponentAttr(buffer, vertices, length, offset, stride) {
 
 /**
  * Fill the arraybuffer with a double component attribute.
+ *
  * @private
  *
  * @param {Float32Array} buffer - The arraybuffer to fill.
  * @param {Array} vertices - The vertex attribute array to copy from.
- * @param {Number} length - The length of the buffer to copy from.
- * @param {Number} offset - The offset to the attribute, not in bytes.
- * @param {Number} stride - The stride of the buffer, not in bytes.
+ * @param {number} length - The length of the buffer to copy from.
+ * @param {number} offset - The offset to the attribute, not in bytes.
+ * @param {number} stride - The stride of the buffer, not in bytes.
  */
 function set2ComponentAttr(buffer, vertices, length, offset, stride) {
 	for (let i=0; i<length; i++) {
@@ -150,13 +156,14 @@ function set2ComponentAttr(buffer, vertices, length, offset, stride) {
 
 /**
  * Fill the arraybuffer with a triple component attribute.
+ *
  * @private
  *
  * @param {Float32Array} buffer - The arraybuffer to fill.
  * @param {Array} vertices - The vertex attribute array to copy from.
- * @param {Number} length - The length of the buffer to copy from.
- * @param {Number} offset - The offset to the attribute, not in bytes.
- * @param {Number} stride - The stride of the buffer, not in bytes.
+ * @param {number} length - The length of the buffer to copy from.
+ * @param {number} offset - The offset to the attribute, not in bytes.
+ * @param {number} stride - The stride of the buffer, not in bytes.
  */
 function set3ComponentAttr(buffer, vertices, length, offset, stride) {
 	for (let i=0; i<length; i++) {
@@ -171,13 +178,14 @@ function set3ComponentAttr(buffer, vertices, length, offset, stride) {
 
 /**
  * Fill the arraybuffer with a quadruple component attribute.
+ *
  * @private
  *
  * @param {Float32Array} buffer - The arraybuffer to fill.
  * @param {Array} vertices - The vertex attribute array to copy from.
- * @param {Number} length - The length of the buffer to copy from.
- * @param {Number} offset - The offset to the attribute, not in bytes.
- * @param {Number} stride - The stride of the buffer, not in bytes.
+ * @param {number} length - The length of the buffer to copy from.
+ * @param {number} offset - The offset to the attribute, not in bytes.
+ * @param {number} stride - The stride of the buffer, not in bytes.
  */
 function set4ComponentAttr(buffer, vertices, length, offset, stride) {
 	for (let i=0; i<length; i++) {
@@ -192,8 +200,8 @@ function set4ComponentAttr(buffer, vertices, length, offset, stride) {
 }
 
 /**
- * @class VertexPackage
- * @classdesc A vertex package to assist in interleaving vertex data and building the associated vertex attribute pointers.
+ * A vertex package to assist in interleaving vertex data and building the
+ * associated vertex attribute pointers.
  */
 class VertexPackage {
 
@@ -213,11 +221,12 @@ class VertexPackage {
 	}
 
 	/**
-	 * Set the data to be interleaved inside the package. This clears any previously existing data.
+	 * Set the data to be interleaved inside the package. This clears any
+	 * previously existing data.
 	 *
 	 * @param {Object} attributes - The attributes to interleaved, keyed by index.
 	 *
-	 * @return {VertexPackage} The vertex package object, for chaining.
+	 * @returns {VertexPackage} The vertex package object, for chaining.
 	 */
 	set(attributes) {
 		// remove bad attributes

@@ -137,6 +137,17 @@ describe('Shader', function() {
 				assert(shader);
 			});
 		});
+		it('should accept a `define` object to inject into the shader', function() {
+			const shader = new Shader({
+				vert: 'path/to/vert',
+				frag: 'path/to/frag',
+				define: {
+					SOMETHING: 4
+				}
+			}, function() {
+				assert(shader);
+			});
+		});
 		it('should execute callback function passing an error as first argument if a URL results in an error', function(done) {
 			const load = XHRLoader.load;
 			const err = new Error('error');

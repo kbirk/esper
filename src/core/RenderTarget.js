@@ -12,8 +12,7 @@ const DEPTH_FORMATS = {
 };
 
 /**
- * @class RenderTarget
- * @classdesc A renderTarget class to allow rendering to textures.
+ * A render target class to allow rendering to textures.
  */
 class RenderTarget {
 
@@ -29,7 +28,7 @@ class RenderTarget {
 	/**
 	 * Binds the renderTarget object.
 	 *
-	 * @return {RenderTarget} The renderTarget object, for chaining.
+	 * @returns {RenderTarget} The renderTarget object, for chaining.
 	 */
 	bind() {
 		// bind framebuffer
@@ -41,7 +40,7 @@ class RenderTarget {
 	/**
 	 * Unbinds the renderTarget object.
 	 *
-	 * @return {RenderTarget} The renderTarget object, for chaining.
+	 * @returns {RenderTarget} The renderTarget object, for chaining.
 	 */
 	unbind() {
 		// unbind framebuffer
@@ -54,10 +53,10 @@ class RenderTarget {
 	 * Attaches the provided texture to the provided attachment location.
 	 *
 	 * @param {Texture2D} texture - The texture to attach.
-	 * @param {Number} index - The attachment index. (optional)
-	 * @param {String} target - The texture target type. (optional)
+	 * @param {number} index - The attachment index. (optional)
+	 * @param {string} target - The texture target type. (optional)
 	 *
-	 * @return {RenderTarget} The renderTarget object, for chaining.
+	 * @returns {RenderTarget} The renderTarget object, for chaining.
 	 */
 	setColorTarget(texture, index, target) {
 		const gl = this.gl;
@@ -93,7 +92,7 @@ class RenderTarget {
 	 *
 	 * @param {Texture2D} texture - The texture to attach.
 	 *
-	 * @return {RenderTarget} The renderTarget object, for chaining.
+	 * @returns {RenderTarget} The renderTarget object, for chaining.
 	 */
 	setDepthTarget(texture) {
 		if (!texture) {
@@ -118,10 +117,10 @@ class RenderTarget {
 	/**
 	 * Resizes the renderTarget and all attached textures by the provided height and width.
 	 *
-	 * @param {Number} width - The new width of the renderTarget.
-	 * @param {Number} height - The new height of the renderTarget.
+	 * @param {number} width - The new width of the renderTarget.
+	 * @param {number} height - The new height of the renderTarget.
 	 *
-	 * @return {RenderTarget} The renderTarget object, for chaining.
+	 * @returns {RenderTarget} The renderTarget object, for chaining.
 	 */
 	resize(width, height) {
 		if (typeof width !== 'number' || (width <= 0)) {

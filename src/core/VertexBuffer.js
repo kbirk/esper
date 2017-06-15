@@ -37,38 +37,39 @@ const SIZES = {
 /**
  * The default attribute point byte offset.
  * @private
- * @constant {Number}
+ * @constant {number}
  */
 const DEFAULT_BYTE_OFFSET = 0;
 
 /**
  * The default render mode (primitive type).
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_MODE = 'TRIANGLES';
 
 /**
  * The default index offset to render from.
  * @private
- * @constant {Number}
+ * @constant {number}
  */
 const DEFAULT_INDEX_OFFSET = 0;
 
 /**
  * The default count of indices to render.
  * @private
- * @constant {Number}
+ * @constant {number}
  */
 const DEFAULT_COUNT = 0;
 
 /**
  * Parse the attribute pointers and determine the byte stride of the buffer.
+ *
  * @private
  *
  * @param {Map} attributePointers - The attribute pointer map.
  *
- * @return {Number} The byte stride of the buffer.
+ * @returns {number} The byte stride of the buffer.
  */
 function getStride(attributePointers) {
 	// if there is only one attribute pointer assigned to this buffer,
@@ -104,11 +105,12 @@ function getStride(attributePointers) {
 
 /**
  * Parse the attribute pointers to ensure they are valid.
+ *
  * @private
  *
  * @param {Object} attributePointers - The attribute pointer map.
  *
- * @return {Object} The validated attribute pointer map.
+ * @returns {Object} The validated attribute pointer map.
  */
 function getAttributePointers(attributePointers) {
 	// parse pointers to ensure they are valid
@@ -143,8 +145,7 @@ function getAttributePointers(attributePointers) {
 }
 
 /**
- * @class VertexBuffer
- * @classdesc A vertex buffer object.
+ * A vertex buffer object.
  */
 class VertexBuffer {
 
@@ -154,9 +155,9 @@ class VertexBuffer {
 	 * @param {WebGLBuffer|VertexPackage|ArrayBuffer|Array|Number} arg - The buffer or length of the buffer.
 	 * @param {Object} attributePointers - The array pointer map, or in the case of a vertex package arg, the options.
 	 * @param {Object} options - The rendering options.
-	 * @param {String} options.mode - The draw mode / primitive type.
-	 * @param {String} options.indexOffset - The index offset into the drawn buffer.
-	 * @param {String} options.count - The number of indices to draw.
+	 * @param {string} options.mode - The draw mode / primitive type.
+	 * @param {string} options.indexOffset - The index offset into the drawn buffer.
+	 * @param {string} options.count - The number of indices to draw.
 	 */
 	constructor(arg, attributePointers = {}, options = {}) {
 		this.gl = WebGLContext.get();
@@ -185,7 +186,7 @@ class VertexBuffer {
 	 *
 	 * @param {Array|ArrayBuffer|ArrayBufferView|number} arg - The array of data to buffer, or size of the buffer in bytes.
 	 *
-	 * @return {VertexBuffer} The vertex buffer object, for chaining.
+	 * @returns {VertexBuffer} The vertex buffer object, for chaining.
 	 */
 	bufferData(arg) {
 		const gl = this.gl;
@@ -214,9 +215,9 @@ class VertexBuffer {
 	 * Upload partial vertex data to the GPU.
 	 *
 	 * @param {Array|ArrayBuffer} array - The array of data to buffer.
-	 * @param {Number} byteOffset - The byte offset at which to buffer.
+	 * @param {number} byteOffset - The byte offset at which to buffer.
 	 *
-	 * @return {VertexBuffer} The vertex buffer object, for chaining.
+	 * @returns {VertexBuffer} The vertex buffer object, for chaining.
 	 */
 	bufferSubData(array, byteOffset = DEFAULT_BYTE_OFFSET) {
 		const gl = this.gl;
@@ -241,7 +242,7 @@ class VertexBuffer {
 	/**
 	 * Binds the vertex buffer object.
 	 *
-	 * @return {VertexBuffer} - Returns the vertex buffer object for chaining.
+	 * @returns {VertexBuffer} - Returns the vertex buffer object for chaining.
 	 */
 	bind() {
 		const gl = this.gl;
@@ -266,7 +267,7 @@ class VertexBuffer {
 	/**
 	 * Unbinds the vertex buffer object.
 	 *
-	 * @return {VertexBuffer} The vertex buffer object, for chaining.
+	 * @returns {VertexBuffer} The vertex buffer object, for chaining.
 	 */
 	unbind() {
 		const gl = this.gl;
@@ -283,11 +284,11 @@ class VertexBuffer {
 	 * Execute the draw command for the bound buffer.
 	 *
 	 * @param {Object} options - The options to pass to 'drawArrays'. Optional.
-	 * @param {String} options.mode - The draw mode / primitive type.
-	 * @param {String} options.indexOffset - The index offset into the drawn buffer.
-	 * @param {String} options.count - The number of indices to draw.
+	 * @param {string} options.mode - The draw mode / primitive type.
+	 * @param {string} options.indexOffset - The index offset into the drawn buffer.
+	 * @param {string} options.count - The number of indices to draw.
 	 *
-	 * @return {VertexBuffer} The vertex buffer object, for chaining.
+	 * @returns {VertexBuffer} The vertex buffer object, for chaining.
 	 */
 	draw(options = {}) {
 		const gl = this.gl;

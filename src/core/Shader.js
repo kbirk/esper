@@ -37,15 +37,15 @@ const UNIFORM_FUNCTIONS = {
 };
 
 /**
- * Given a map of existing attributes, find the lowest index that is not
- * already used. If the attribute ordering was already provided, use that
- * instead.
+ * Given a map of existing attributes, find the lowest index that is not already
+ * used. If the attribute ordering was already provided, use that instead.
+ *
  * @private
  *
  * @param {Map} attributes - The existing attributes map.
  * @param {Object} declaration - The attribute declaration object.
  *
- * @return {Number} The attribute index.
+ * @returns {number} The attribute index.
  */
 function getAttributeIndex(attributes, declaration) {
 	// check if attribute is already declared, if so, use that index
@@ -57,14 +57,16 @@ function getAttributeIndex(attributes, declaration) {
 }
 
 /**
- * Given vertex and fragment shader source, parses the declarations and appends information pertaining to the uniforms and attribtues declared.
+ * Given vertex and fragment shader source, parses the declarations and appends
+ * information pertaining to the uniforms and attribtues declared.
+ *
  * @private
  *
  * @param {Shader} shader - The shader object.
- * @param {String} vertSource - The vertex shader source.
- * @param {String} fragSource - The fragment shader source.
+ * @param {string} vertSource - The vertex shader source.
+ * @param {string} fragSource - The fragment shader source.
  *
- * @return {Object} The attribute and uniform information.
+ * @returns {Object} The attribute and uniform information.
  */
 function setAttributesAndUniforms(shader, vertSource, fragSource) {
 	const declarations = ShaderParser.parseDeclarations(
@@ -92,27 +94,56 @@ function setAttributesAndUniforms(shader, vertSource, fragSource) {
 }
 
 /**
- * Given a shader source string and shader type, compiles the shader and returns the resulting WebGLShader object.
+ * Given a lineNumber and max number of digits, pad the line accordingly.
+ *
+ * @private
+ *
+ * @param {number} lineNum - The line number.
+ * @param {number} maxDigits - The max digits to pad.
+ *
+ * @returns {string} The padded string.
+ */
+function padLineNumber(lineNum, maxDigits) {
+	lineNum = lineNum.toString();
+	const diff = maxDigits - lineNum.length;
+	lineNum += ':';
+	for (let i=0; i<diff; i++) {
+		lineNum += ' ';
+	}
+	return lineNum;
+};
+
+/**
+ * Given a shader source string and shader type, compiles the shader and returns
+ * the resulting WebGLShader object.
+ *
  * @private
  *
  * @param {WebGLRenderingContext} gl - The webgl rendering context.
- * @param {String} shaderSource - The shader source.
- * @param {String} type - The shader type.
+ * @param {string} shaderSource - The shader source.
+ * @param {string} type - The shader type.
  *
- * @return {WebGLShader} The compiled shader object.
+ * @returns {WebGLShader} The compiled shader object.
  */
 function compileShader(gl, shaderSource, type) {
 	const shader = gl.createShader(gl[type]);
 	gl.shaderSource(shader, shaderSource);
 	gl.compileShader(shader);
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		throw 'An error occurred compiling the shaders:\n' + gl.getShaderInfoLog(shader);
+		const split = shaderSource.split('\n');
+		const maxDigits = (split.length).toString().length + 1;
+		const srcByLines = split.map((line, index) => {
+			return `${padLineNumber(index+1, maxDigits)} ${line}`;
+		}).join('\n');
+		const shaderLog = gl.getShaderInfoLog(shader);
+		throw `An error occurred compiling the shader:\n\n${shaderLog.slice(0, shaderLog.length-1)}\n${srcByLines}`;
 	}
 	return shader;
 }
 
 /**
  * Binds the attribute locations for the Shader object.
+ *
  * @private
  *
  * @param {Shader} shader - The Shader object.
@@ -130,6 +161,7 @@ function bindAttributeLocations(shader) {
 
 /**
  * Queries the webgl rendering context for the uniform locations.
+ *
  * @private
  *
  * @param {Shader} shader - The Shader object.
@@ -140,9 +172,8 @@ function getUniformLocations(shader) {
 	uniforms.forEach((uniform, name) => {
 		// get the uniform location
 		const location = gl.getUniformLocation(shader.program, name);
-		// check if null, parse may detect uniform that is compiled out
-		// due to a preprocessor evaluation.
-		// TODO: fix parser so that it evaluates these correctly.
+		// check if null, parse may detect uniform that is compiled out due to
+		// not being used, or due to a preprocessor evaluation.
 		if (location === null) {
 			uniforms.delete(name);
 		} else {
@@ -153,11 +184,12 @@ function getUniformLocations(shader) {
 
 /**
  * Returns a function to load shader source from a url.
+ *
  * @private
  *
- * @param {String} url - The url to load the resource from.
+ * @param {string} url - The url to load the resource from.
  *
- * @return {Function} The function to load the shader source.
+ * @returns {Function} The function to load the shader source.
  */
 function loadShaderSource(url) {
 	return function(done) {
@@ -176,11 +208,12 @@ function loadShaderSource(url) {
 
 /**
  * Returns a function to pass through the shader source.
+ *
  * @private
  *
- * @param {String} source - The source of the shader.
+ * @param {string} source - The source of the shader.
  *
- * @return {Function} The function to pass through the shader source.
+ * @returns {Function} The function to pass through the shader source.
  */
 function passThroughSource(source) {
 	return function(done) {
@@ -189,12 +222,14 @@ function passThroughSource(source) {
 }
 
 /**
- * Returns a function that takes an array of GLSL source strings and URLs, and resolves them into and array of GLSL source.
+ * Returns a function that takes an array of GLSL source strings and URLs, and
+ * resolves them into and array of GLSL source.
+ *
  * @private
  *
  * @param {Array} sources - The shader sources.
  *
- * @return {Function} A function to resolve the shader sources.
+ * @returns {Function} A function to resolve the shader sources.
  */
 function resolveSources(sources) {
 	return function(done) {
@@ -214,19 +249,18 @@ function resolveSources(sources) {
 
 /**
  * Injects the defines into the shader source.
+ *
  * @private
  *
- * @param {Array} sources - The shader sources.
+ * @param {Array} defines - The shader defines.
  *
- * @return {Function} A function to resolve the shader sources.
+ * @returns {Function} A function to resolve the shader sources.
  */
-const createDefines = function(defines) {
+const createDefines = function(defines = {}) {
 	const res = [];
-	for (let name in defines) {
-		if(defines.hasOwnProperty(name)) {
-			res.push(`#define ${name} ${defines[name]}`);
-		}
-	}
+	Object.keys(defines).forEach(name => {
+		res.push(`#define ${name} ${defines[name]}`);
+	});
 	return res.join('\n');
 };
 
@@ -236,12 +270,13 @@ const createDefines = function(defines) {
  *	2) Parsing shader source for attribute and uniform information.
  *	3) Binding attribute locations, by order of delcaration.
  *	4) Querying and storing uniform location.
+ *
  * @private
  *
  * @param {Shader} shader - The Shader object.
  * @param {Object} sources - A map containing sources under 'vert' and 'frag' attributes.
  *
- * @return {Shader} The shader object, for chaining.
+ * @returns {Shader} The shader object, for chaining.
  */
 function createProgram(shader, sources) {
 	const gl = shader.gl;
@@ -272,8 +307,8 @@ function createProgram(shader, sources) {
 }
 
 /**
- * @class Shader
- * @classdesc A shader class to assist in compiling and linking webgl shaders, storing attribute and uniform locations, and buffering uniforms.
+ * A shader class to assist in compiling and linking webgl shaders, storing
+ * attribute and uniform locations, and buffering uniforms.
  */
 class Shader {
 
@@ -323,6 +358,8 @@ class Shader {
 				}
 				return;
 			}
+			// append defines
+			sources.define = spec.define;
 			// once all shader sources are loaded
 			createProgram(this, sources);
 			if (callback) {
@@ -336,7 +373,7 @@ class Shader {
 	/**
 	 * Binds the shader program for use.
 	 *
-	 * @return {Shader} The shader object, for chaining.
+	 * @returns {Shader} The shader object, for chaining.
 	 */
 	use() {
 		// use the shader
@@ -347,10 +384,10 @@ class Shader {
 	/**
 	 * Buffer a uniform value by name.
 	 *
-	 * @param {String} name - The uniform name in the shader source.
+	 * @param {string} name - The uniform name in the shader source.
 	 * @param {*} value - The uniform value to buffer.
 	 *
-	 * @return {Shader} - The shader object, for chaining.
+	 * @returns {Shader} - The shader object, for chaining.
 	 */
 	setUniform(name, value) {
 		const uniform = this.uniforms.get(name);
@@ -379,11 +416,11 @@ class Shader {
 	 *
 	 * @param {Object} uniforms - The map of uniforms keyed by name.
 	 *
-	 * @return {Shader} The shader object, for chaining.
+	 * @returns {Shader} The shader object, for chaining.
 	 */
-	setUniforms(args) {
-		Object.keys(args).forEach(name => {
-			this.setUniform(name, args[name]);
+	setUniforms(uniforms) {
+		Object.keys(uniforms).forEach(name => {
+			this.setUniform(name, uniforms[name]);
 		});
 		return this;
 	}

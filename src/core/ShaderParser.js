@@ -13,11 +13,12 @@ const GLSL_REGEXP = /void\s+main\s*\(\s*(void)*\s*\)\s*/mi;
 
 /**
  * Removes standard comments from the provided string.
+ *
  * @private
  *
- * @param {String} str - The string to strip comments from.
+ * @param {string} str - The string to strip comments from.
  *
- * @return {String} The commentless string.
+ * @returns {string} The commentless string.
  */
 function stripComments(str) {
 	// regex source: https://github.com/moagrius/stripcomments
@@ -26,11 +27,12 @@ function stripComments(str) {
 
 /**
  * Removes an precision statements.
+ *
  * @private
  *
- * @param {String} str - The unprocessed source code.
+ * @param {string} str - The unprocessed source code.
  *
- * @return {String} The processed source code.
+ * @returns {string} The processed source code.
  */
 function stripPrecision(str) {
 	return str
@@ -40,11 +42,12 @@ function stripPrecision(str) {
 
 /**
  * Converts all whitespace into a single ' ' space character.
+ *
  * @private
  *
- * @param {String} str - The string to normalize whitespace from.
+ * @param {string} str - The string to normalize whitespace from.
  *
- * @return {String} The normalized string.
+ * @returns {string} The normalized string.
  */
 function normalizeWhitespace(str) {
 	return str
@@ -54,14 +57,16 @@ function normalizeWhitespace(str) {
 }
 
 /**
- * Parses the name and count out of a name statement, returning the declaration object.
+ * Parses the name and count out of a name statement, returning the declaration
+ * object.
+ *
  * @private
  *
- * @param {String} qualifier - The qualifier string.
- * @param {String} type - The type string.
- * @param {String} entry - The variable declaration string.
+ * @param {string} qualifier - The qualifier string.
+ * @param {string} type - The type string.
+ * @param {string} entry - The variable declaration string.
  *
- * @return {Object} The declaration object.
+ * @returns {Object} The declaration object.
  */
 function parseNameAndCount(qualifier, type, entry) {
 	// determine name and size of variable
@@ -81,11 +86,12 @@ function parseNameAndCount(qualifier, type, entry) {
  * characters followed by a semi-colon. Therefore, a single 'statement' in
  * this sense could contain several comma separated declarations. Returns
  * all resulting declarations.
+ *
  * @private
  *
- * @param {String} statement - The statement to parse.
+ * @param {string} statement - The statement to parse.
  *
- * @return {Array} The array of parsed declaration objects.
+ * @returns {Array} The array of parsed declaration objects.
  */
 function parseStatement(statement) {
 	// split statement on commas
@@ -129,12 +135,13 @@ function parseStatement(statement) {
 /**
  * Splits the source string by semi-colons and constructs an array of
  * declaration objects based on the provided qualifier keywords.
+ *
  * @private
  *
- * @param {String} source - The shader source string.
+ * @param {string} source - The shader source string.
  * @param {String|Array} keywords - The qualifier declaration keywords.
  *
- * @return {Array} The array of qualifier declaration objects.
+ * @returns {Array} The array of qualifier declaration objects.
  */
 function parseSource(source, keywords) {
 	// get individual statements (any sequence ending in ;)
@@ -162,11 +169,12 @@ function parseSource(source, keywords) {
 /**
  * Filters out duplicate declarations present between shaders. Currently
  * just removes all # statements.
+ *
  * @private
  *
  * @param {Array} declarations - The array of declarations.
  *
- * @return {Array} The filtered array of declarations.
+ * @returns {Array} The filtered array of declarations.
  */
 function filterDuplicatesByName(declarations) {
 	// in cases where the same declarations are present in multiple
@@ -183,11 +191,12 @@ function filterDuplicatesByName(declarations) {
 
 /**
  * Runs the preprocessor on the glsl code.
+ *
  * @private
  *
- * @param {String} source - The unprocessed source code.
+ * @param {string} source - The unprocessed source code.
  *
- * @return {String} The processed source code.
+ * @returns {string} The processed source code.
  */
 function preprocess(source) {
 	return ShaderPreprocessor.preprocess(source);
@@ -196,23 +205,26 @@ function preprocess(source) {
 module.exports =  {
 
 	/**
-	 * Parses the provided GLSL source, and returns all declaration statements that contain the provided qualifier type. This can be used to extract all attributes and uniform names and types from a shader.
+	 * Parses the provided GLSL source, and returns all declaration statements
+	 * that contain the provided qualifier type. This can be used to extract all
+	 * attributes and uniform names and types from a shader.
 	 *
 	 * For example, when provided a 'uniform' qualifiers, the declaration:
 	 *
 	 *	 'uniform highp vec3 uSpecularColor;'
 	 *
 	 * Would be parsed to:
-	 *	 {
-	 *		 qualifier: 'uniform',
-	 *		 type: 'vec3',
-	 *		 name: 'uSpecularColor',
-	 *		 count: 1
+	 *    {
+	 *        qualifier: 'uniform',
+	 *        type: 'vec3',
+	 *        name: 'uSpecularColor',
+	 *        count: 1
 	 *	 }
+	 *
 	 * @param {Array} sources - The shader sources.
 	 * @param {Array} qualifiers - The qualifiers to extract.
 	 *
-	 * @return {Array} The array of qualifier declaration statements.
+	 * @returns {Array} The array of qualifier declaration statements.
 	 */
 	parseDeclarations: function(sources = [], qualifiers = []) {
 		// if no sources or qualifiers are provided, return empty array
@@ -242,9 +254,9 @@ module.exports =  {
 	/**
 	 * Detects based on the existence of a 'void main() {' statement, if the string is glsl source code.
 	 *
-	 * @param {String} str - The input string to test.
+	 * @param {string} str - The input string to test.
 	 *
-	 * @return {boolean} Whether or not the string is glsl code.
+	 * @returns {boolean} Whether or not the string is glsl code.
 	 */
 	isGLSL: function(str) {
 		return GLSL_REGEXP.test(str);

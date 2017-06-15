@@ -33,28 +33,28 @@ const FORMATS = {
 /**
  * The default type for color textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_TYPE = 'UNSIGNED_BYTE';
 
 /**
  * The default format for color textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FORMAT = 'RGBA';
 
 /**
  * The default wrap mode for color textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_WRAP = 'REPEAT';
 
 /**
  * The default min / mag filter for color textures.
  * @private
- * @constant {String}
+ * @constant {string}
  */
 const DEFAULT_FILTER = 'LINEAR';
 
@@ -80,8 +80,7 @@ const DEFAULT_MIPMAP = true;
 const DEFAULT_INVERT_Y = true;
 
 /**
- * @class ColorTexture2D
- * @classdesc A texture class to represent a 2D color texture.
+ * A texture class to represent a 2D color texture.
  * @augments Texture2D
  */
 class ColorTexture2D extends Texture2D {
@@ -91,21 +90,21 @@ class ColorTexture2D extends Texture2D {
 	 *
 	 * @param {Object} spec - The specification arguments.
 	 * @param {ArrayBuffer|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} spec.image - The HTMLImageElement to buffer.
-	 * @param {String} spec.url - The HTMLImageElement URL to load and buffer.
+	 * @param {string} spec.url - The HTMLImageElement URL to load and buffer.
 	 * @param {Uint8Array|Float32Array} spec.src - The data to buffer.
-	 * @param {Number} spec.width - The width of the texture.
-	 * @param {Number} spec.height - The height of the texture.
-	 * @param {String} spec.wrap - The wrapping type over both S and T dimension.
-	 * @param {String} spec.wrapS - The wrapping type over the S dimension.
-	 * @param {String} spec.wrapT - The wrapping type over the T dimension.
-	 * @param {String} spec.filter - The min / mag filter used during scaling.
-	 * @param {String} spec.minFilter - The minification filter used during scaling.
-	 * @param {String} spec.magFilter - The magnification filter used during scaling.
+	 * @param {number} spec.width - The width of the texture.
+	 * @param {number} spec.height - The height of the texture.
+	 * @param {string} spec.wrap - The wrapping type over both S and T dimension.
+	 * @param {string} spec.wrapS - The wrapping type over the S dimension.
+	 * @param {string} spec.wrapT - The wrapping type over the T dimension.
+	 * @param {string} spec.filter - The min / mag filter used during scaling.
+	 * @param {string} spec.minFilter - The minification filter used during scaling.
+	 * @param {string} spec.magFilter - The magnification filter used during scaling.
 	 * @param {bool} spec.mipMap - Whether or not mip-mapping is enabled.
 	 * @param {bool} spec.invertY - Whether or not invert-y is enabled.
 	 * @param {bool} spec.premultiplyAlpha - Whether or not alpha premultiplying is enabled.
-	 * @param {String} spec.format - The texture pixel format.
-	 * @param {String} spec.type - The texture pixel component type.
+	 * @param {string} spec.format - The texture pixel format.
+	 * @param {string} spec.type - The texture pixel component type.
 	 * @param {Function} callback - The callback to be executed if the data is loaded asynchronously via a URL.
 	 */
 	constructor(spec = {}, callback = null) {

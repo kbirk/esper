@@ -4,13 +4,14 @@ const WebGLContext = require('./WebGLContext');
 
 /**
  * Bind the viewport to the rendering context.
+ *
  * @private
  *
  * @param {Viewport} viewport - The viewport object.
- * @param {Number} width - The width override.
- * @param {Number} height - The height override.
- * @param {Number} x - The horizontal offset override.
- * @param {Number} y - The vertical offset override.
+ * @param {number} x - The horizontal offset override.
+ * @param {number} y - The vertical offset override.
+ * @param {number} width - The width override.
+ * @param {number} height - The height override.
  */
 function set(viewport, x, y, width, height) {
 	const gl = viewport.gl;
@@ -22,8 +23,7 @@ function set(viewport, x, y, width, height) {
 }
 
 /**
- * @class Viewport
- * @classdesc A viewport class for managing WebGL viewports.
+ * A viewport class for managing WebGL viewports.
  */
 class Viewport {
 
@@ -31,8 +31,8 @@ class Viewport {
 	 * Instantiates a Viewport object.
 	 *
 	 * @param {Object} spec - The viewport specification object.
-	 * @param {Number} spec.width - The width of the viewport.
-	 * @param {Number} spec.height - The height of the viewport.
+	 * @param {number} spec.width - The width of the viewport.
+	 * @param {number} spec.height - The height of the viewport.
 	 */
 	constructor(spec = {}) {
 		this.gl = WebGLContext.get();
@@ -46,10 +46,10 @@ class Viewport {
 	/**
 	 * Updates the viewports width and height. This resizes the underlying canvas element.
 	 *
-	 * @param {Number} width - The width of the viewport.
-	 * @param {Number} height - The height of the viewport.
+	 * @param {number} width - The width of the viewport.
+	 * @param {number} height - The height of the viewport.
 	 *
-	 * @return {Viewport} The viewport object, for chaining.
+	 * @returns {Viewport} The viewport object, for chaining.
 	 */
 	resize(width = 0, height = 0) {
 		if (typeof width !== 'number' || width <= 0) {
@@ -66,14 +66,15 @@ class Viewport {
 	}
 
 	/**
-	 * Sets the viewport dimensions and position. The underlying canvas element is not affected.
+	 * Sets the viewport dimensions and position. The underlying canvas element
+	 * is not affected.
 	 *
-	 * @param {Number} width - The width override.
-	 * @param {Number} height - The height override.
-	 * @param {Number} x - The horizontal offset override.
-	 * @param {Number} y - The vertical offset override.
+	 * @param {number} x - The horizontal offset override.
+	 * @param {number} y - The vertical offset override.
+	 * @param {number} width - The width override.
+	 * @param {number} height - The height override.
 	 *
-	 * @return {Viewport} - The viewport object, for chaining.
+	 * @returns {Viewport} - The viewport object, for chaining.
 	 */
 	push(x = 0, y = 0, width = this.width, height = this.height) {
 		if (typeof x !== 'number') {
@@ -103,7 +104,7 @@ class Viewport {
 	/**
 	 * Pops current the viewport object and sets the viewport beneath it.
 	 *
-	 * @return {Viewport} The viewport object, for chaining.
+	 * @returns {Viewport} The viewport object, for chaining.
 	 */
 	pop() {
 		if (this.stack.length === 0) {

@@ -5,8 +5,9 @@ const VertexBuffer = require('./VertexBuffer');
 const IndexBuffer = require('./IndexBuffer');
 
 /**
- * Iterates over all vertex buffers and throws an exception if the counts
- * are not equal.
+ * Iterates over all vertex buffers and throws an exception if the counts are
+ * not equal.
+ *
  * @private
  *
  * @param {Array} vertexBuffers - The array of vertexBuffers.
@@ -29,6 +30,7 @@ function checkVertexBufferCounts(vertexBuffers) {
 /**
  * Iterates over all attribute pointers and throws an exception if an index
  * occurs more than once.
+ *
  * @private
  *
  * @param {Array} vertexBuffers - The array of vertexBuffers.
@@ -49,8 +51,7 @@ function checkIndexCollisions(vertexBuffers) {
 }
 
 /**
- * @class Renderable
- * @classdesc A container for one or more VertexBuffers and an optional IndexBuffer.
+ * A container for one or more VertexBuffers and an optional IndexBuffer.
  */
 class Renderable {
 
@@ -100,12 +101,12 @@ class Renderable {
 	 * Execute the draw command for the underlying buffers.
 	 *
 	 * @param {Object} options - The options to pass to 'drawElements'. Optional.
-	 * @param {String} options.mode - The draw mode / primitive type.
-	 * @param {String} options.byteOffset - The byteOffset into the drawn buffer.
-	 * @param {String} options.indexOffset - The indexOffset into the drawn buffer.
-	 * @param {String} options.count - The number of vertices to draw.
+	 * @param {string} options.mode - The draw mode / primitive type.
+	 * @param {string} options.byteOffset - The byteOffset into the drawn buffer.
+	 * @param {string} options.indexOffset - The indexOffset into the drawn buffer.
+	 * @param {string} options.count - The number of vertices to draw.
 	 *
-	 * @return {Renderable} - The renderable object, for chaining.
+	 * @returns {Renderable} - The renderable object, for chaining.
 	 */
 	draw(options = {}) {
 		// draw the renderable
