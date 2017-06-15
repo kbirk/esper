@@ -4,7 +4,7 @@
 [![Bower version](https://badge.fury.io/bo/esper.svg)](http://badge.fury.io/bo/esper)
 [![Build Status](https://travis-ci.org/kbirk/esper.svg?branch=master)](https://travis-ci.org/kbirk/esper)
 [![Coverage Status](https://coveralls.io/repos/kbirk/esper/badge.svg)](https://coveralls.io/r/kbirk/esper)
-[![Dependency Status](https://david-dm.org/kbirk/esper.svg)](https://david-dm.org/kbirk/esper)
+[![Dependencies Status](https://david-dm.org/kbirk/esper/status.svg)](https://david-dm.org/kbirk/esper)
 
 A low-level ES6 WebGL rendering framework.
 
@@ -49,7 +49,7 @@ bower install esper
 
 ## Example
 
-* [Full JSFiddle Example](https://jsfiddle.net/ppvv2x03/)
+* [Full JSFiddle Example](https://jsfiddle.net/62f5Lc0m/)
 
 ```javascript
 
